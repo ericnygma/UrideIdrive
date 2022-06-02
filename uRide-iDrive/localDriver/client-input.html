@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <div id="app">
+    <v-app>
+      <v-main>
+        <v-container>
+            <div>
+                <v-toolbar
+                    flat
+                    class="mb-5">
+                    <v-toolbar-title>
+                        New Client
+                    </v-toolbar-title>
+                </v-toolbar>
+                
+            </div>
+            <v-form
+                ref="form">
+                <v-row>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                    >
+                      <v-text-field
+                        v-model="first"
+                        label="First Name"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+            
+                    <v-col
+                      cols="12"
+                      sm="6"
+                    >
+                      <v-text-field
+                        v-model="last"
+                        label="Last Name"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+                    <!-- Address -->
+                    <v-col
+                      cols="12"
+                      sm="6"
+                    >
+                      <v-text-field
+                        v-model="address"
+                        label="Address"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+            
+                    <v-col
+                      cols="12"
+                      sm="6"
+                    >
+                      <v-text-field
+                        v-model="city"
+                        label="City"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                    >
+                      <v-text-field
+                        v-model="zip"
+                        label="Zip"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                    >
+                    <v-text-field
+                        v-model="phone"
+                        :counter="10"
+                        label="Phone #"
+                        :rules="[rules.required, rules.length(12), rules.phone]"
+                        required
+                        outlined
+                      ></v-text-field>
+                    
+                    </v-col>
+                    <!-- button -->
+                    <v-col 
+                        col="12"
+                        sm="12">
+                        <v-btn
+                        block
+                        class="ma-2"
+                        outlined
+                        color="indigo"
+                        @click="addClient()"
+                    >
+                    Outlined Button
+                    </v-btn>
+                    </v-col>
+                    
+                  </v-row>
+            </v-form>
+            
+              
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="driverbase.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      data(){
+          return{
+            first: "",
+            last: "",
+            address: "",
+            city: "",
+            zip: "",
+            phone: "",
+            rules: {
+                    phone: v => !!(v || '').match(/-/) || 'Please enter a valid phone number',
+                    required: v=> !!v || 'This field required',
+                    length: len => v => (v || '').length >= len || `Invalid character length, required ${len}`,
+                   }
+            
+          }
+      },
+      methods:{
+          addClient(){
+                db.collection("clients").add({
+                    first: this.first,
+                    last: this.last,
+                    address: this.address,
+                    city: this.city,
+                    zip: this.zip,
+                    phone: this.phone
+                })
+                .then((docRef)=>{
+                    console.log("Document written with ID: ", docRef.id);
+                })
+                .catch((error)=> {
+                    console.log("Error adding document: ", error);
+                });
+                this.$refs.form.reset()
+          }
+
+      }
+    })
+  </script>
+</body>
+</html>
