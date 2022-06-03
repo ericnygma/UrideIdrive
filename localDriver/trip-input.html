@@ -474,9 +474,10 @@
                     console.log("Error adding document: ", error);
                 });
                 this.$refs.form.reset()
-          },
+          }
 
-          mounted(){
+      },
+      mounted(){
             db.collection('clients')
             .onSnapshot((querySnapshot)=>{
               this.clientItems = [];
@@ -487,7 +488,6 @@
               })
             })
          }
-      }
     })
   </script>
 </body>
