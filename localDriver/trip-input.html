@@ -26,7 +26,8 @@
                 
             </div>
 <!-- Autocomplete client -->
-            <v-form>
+            <v-form
+            ref="form">
             <v-row
             align="center"
             class="ml-5"
@@ -354,7 +355,7 @@
         ></v-textarea>
       </v-col>
         </v-row>
-
+<v-row>
                     <!-- button -->
                     <v-col 
                         col="12"
@@ -366,7 +367,7 @@
                         color="indigo"
                         @click="addTrip()"
                     >
-                    Outlined Button
+                    Submit Trip
                     </v-btn>
                     </v-col>
                     
