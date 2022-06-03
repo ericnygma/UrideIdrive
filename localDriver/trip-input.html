@@ -25,7 +25,7 @@
                 </v-toolbar>
                 
             </div>
-            <!-- Autocomplete client -->
+<!-- Autocomplete client -->
             <v-form>
             <v-row
             align="center"
@@ -45,7 +45,7 @@
             </v-col>
             </v-row>
             
-            <!-- Select trip type -->
+<!-- Select trip type -->
             <v-toolbar
                     flat>
                     <v-toolbar-title
@@ -70,7 +70,7 @@
             </v-row>
             
 
-            <!-- Select date -->
+<!-- Select date -->
             <v-toolbar
                     flat>
                     <v-toolbar-title
@@ -112,15 +112,16 @@
         ></v-date-picker>
       </v-menu>
     </v-col>
-    <!-- <v-spacer></v-spacer> -->
+<!-- <v-spacer></v-spacer> -->
   
 
-            <!-- Select time -->
+<!-- Select time -->
            
                 <v-col
                 cols="12"
                 sm="6"
                 md="4"
+                v-if="trip != 'Hourly - Wait & Return'"
                 >
                   <v-menu
                     ref="timeMenu"
@@ -155,10 +156,11 @@
             </v-col>
             </v-row>
 
-            <!-- START TIME & END TIME -->
+<!-- START TIME & END TIME -->
               
             <v-row
-            class="ml-5">
+            class="ml-5"
+            v-if="trip === 'Hourly - Wait & Return'">
             <!-- START -->
               <v-col style="width: 350px; flex: 0 1 auto;">
                 <v-menu
@@ -226,14 +228,16 @@
 
             <!-- Select Airport -->
             <v-toolbar
-                    flat>
+                    flat
+                    v-if="trip === 'Drop off - Airport' || trip === 'Pick up - Airport'">
                     <v-toolbar-title
                     class="text-h5 font-weight-medium">
                         Select the Flight Information
                     </v-toolbar-title>
                 </v-toolbar>
             <v-row
-            class="ml-5">
+            class="ml-5"
+            v-if="trip === 'Drop off - Airport' || trip === 'Pick up - Airport'">
                 <v-col
                 cols="12"
                 sm="6"
@@ -266,7 +270,8 @@
 
             <!-- Input terminal and flight -->
             <v-row
-            class="ml-5">
+            class="ml-5"
+            v-if="trip === 'Drop off - Airport' || trip === 'Pick up - Airport'">
                 <v-col
                 cols="12"
                 sm="6"
@@ -388,12 +393,12 @@
               client:'',
               clientItems:['Eric', 'Wendy', 'Hailey', 'Alisha', 'Maurice', 'Corin'
               ],
-              trip:'',
+              trip: null,
               tripItems: [
                   ' ',
                   'Drop off - Airport',
                   'Pick up - Airport',
-                  'Hourly - Wait & Reurn'
+                  'Hourly - Wait & Return'
               ],  
               airport:'',
               airportItems:[
