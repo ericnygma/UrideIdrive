@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <div id="app">
+    <v-app>
+      <v-main>
+        <v-container>
+            <div>
+                <v-toolbar
+                    flat
+                    class="mb-10">
+                    <v-toolbar-title
+                    class="text-h3 font-weight-medium">
+                        {{ pageTitle }}
+                    </v-toolbar-title>
+                </v-toolbar>
+             </div>
+
+             <div class="greeting container" id="date">
+                <h5>TODAY, {{ today }}</h5>
+            </div>
+            <div>
+                <v-col
+                    class="mx-auto mt-12"
+                    max-width="850"
+                    >
+                <v-system-bar></v-system-bar>
+
+                <v-toolbar
+                    flat
+                    color="transparent"
+                    >
+                    <v-btn icon>
+                        <v-icon>mdi-arrow-left</v-icon>
+                    </v-btn>
+
+                    <v-text-field
+                        v-model="search"
+                        append-icon="mdi-magnify"
+                        label="Search News"
+                        single-line
+                        ></v-text-field>
+                </v-toolbar>
+
+                <v-card-text class="py-0">
+                    <v-chip
+                        v-for="(keyword, i) in keywords"
+                        :key="i"
+                        class="mr-2"
+                        >
+                        {{ keyword }}
+                    </v-chip>
+                </v-card-text>
+
+                <v-list three-line>
+                    <v-list-item
+                        v-for="(item, i) in searching"
+                        :key="i"
+                        ripple
+                        @click="() => {}"
+                        >
+                        <div class="orange"></div>
+                        <!-- <v-img
+                            :src="item.image"
+                            class="mr-4"
+                            max-width="64"
+                            min-width="64"
+                            ></v-img> -->
+
+                        <v-list-item-content>
+                          <div v-text="item.title"></div>  
+                          <v-row>
+                            <v-col>
+                              <span
+                                class="text-uppercase font-weight-regular text-caption"
+                                v-text="item.category"
+                                ></span>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                            <v-col>
+                              <span
+                                class="text-uppercase font-weight-regular text-caption"
+                                v-text="item.time"
+                                ></span>
+                            </v-col>
+                          </v-row>
+                       </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+                </v-col>
+                
+            </div>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="driverbase.js"></script>
+  <script>
+    const d = new Date();
+
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      data(){
+          return{
+              pageTitle:'Trip Inbox',
+
+              today: d.toLocaleDateString(),
+
+              items: [
+                    {
+                    image: 'https://cdn-images-1.medium.com/max/1024/1*BBNtYUieAqHoXKjiJ2mMjQ.png',
+                    title: 'Gardner, Eric',
+                    category: 'Drop off - Airport',
+                    time:'5:30 AM',
+                    keyword: 'Drinks',
+
+                    },
+                    {
+                    image: 'https://cdn-images-1.medium.com/max/1024/1*BBNtYUieAqHoXKjiJ2mMjQ.png',
+                    title: 'PWAs on iOS 12.2 beta: the good, the bad, and the “not sure yet if good”',
+                    category: 'Pick up - Airport',
+                    time:'12:45 PM',
+                    keyword: 'Phones',
+                    },
+                    {
+                    image: 'https://cdn-images-1.medium.com/max/1024/1*rTEtei1UEmNqbq6evRsExw.jpeg',
+                    title: 'How to Get Media Mentions for Your Business',
+                    category: 'Hourly - Wait & Return',
+                    time:'3:00 PM',
+                    keyword: 'Social',
+                    },
+                    {
+                    image: 'https://cdn-images-1.medium.com/max/1024/1*FD2nkJewVeQnGf0ommQfrw.jpeg',
+                    title: 'The Pitfalls Of Outsourcing Self-Awareness To Artificial Intelligence',
+                    category: 'Hourly - Wait & Return',
+                    time:'9:00 AM',
+                    keyword: 'Military',
+                    },
+                    {
+                    image: 'https://cdn-images-1.medium.com/max/1024/1*eogFpsVgNzXQLCVgFzT_-A.jpeg',
+                    title: 'Degrees of Freedom and Sudoko',
+                    category: 'Drop off - Airport',
+                    time:'4:00 PM',
+                    keyword: 'Social',
+                    },
+                ],
+                search: '',
+                }
+            },
+
+    computed: {
+      keywords () {
+        if (!this.search) return []
+
+        const keywords = []
+
+        for (const search of this.searching) {
+          keywords.push(search.keyword)
+        }
+
+        return keywords
+      },
+      searching () {
+        if (!this.search) return this.items
+
+        const search = this.search.toLowerCase()
+
+        return this.items.filter(item => {
+          const text = item.title.toLowerCase()
+
+          return text.indexOf(search) > -1
+        })
+      },
+    },
+
+      mounted(){
+            db.collection('clients')
+            .onSnapshot((querySnapshot)=>{
+              this.clientItems = [];
+              querySnapshot.forEach((doc)=>{
+                this.clientItems.push(
+                  doc.data().first
+                )
+              })
+            })
+         }
+    })
+  </script>
+</body>
+</html>
