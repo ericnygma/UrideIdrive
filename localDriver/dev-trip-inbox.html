@@ -119,6 +119,8 @@
 
               today: d.toLocaleDateString(),
 
+              tripInfo: [],
+
               items: [
                     {
                     image: '#F44336',
@@ -187,14 +189,19 @@
     },
 
       mounted(){
-            db.collection('clients')
+            db.collection('trips')
             .onSnapshot((querySnapshot)=>{
-              this.clientItems = [];
+              this.tripInfo = [];
+              console.log(this.tripInfo)
               querySnapshot.forEach((doc)=>{
-                this.clientItems.push(
-                  doc.data().first
-                )
+                console.log(doc.data().client)
+                this.tripInfo.push({
+                  client: doc.data().client,
+                  trip: doc.data().trip,
+                  date: doc.data().date,
+                  time: doc.data().time,
               })
+             })
             })
          }
     })
