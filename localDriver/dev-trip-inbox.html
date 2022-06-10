@@ -53,17 +53,17 @@
 
                 <v-card-text class="py-0">
                     <v-chip
-                        v-for="(keyword, i) in keywords"
+                        v-for="(trip, i) in keywords"
                         :key="i"
                         class="mr-2"
                         >
-                        {{ keyword }}
+                        {{ trip }}
                     </v-chip>
                 </v-card-text>
 
                 <v-list three-line>
                     <v-list-item
-                        v-for="(item, i) in searching"
+                        v-for="(item, i) in tripInfo"
                         :key="i"
                         ripple
                         @click="() => {}"
@@ -77,20 +77,20 @@
                             ></v-img> -->
 
                         <v-list-item-content color="primary">
-                          <div v-text="item.title"></div>  
+                          <div v-text="item.client">{{ item.client }}</div>  
                           <v-row>
                             <v-col>
                               <span
                                 class="text-uppercase font-weight-regular text-caption"
-                                v-text="item.category"
-                                ></span>
+                                v-text="item.trip"
+                                >{{ item.trip }}</span>
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col>
                               <span
                                 class="text-uppercase font-weight-regular text-caption"
                                 v-text="item.time"
-                                ></span>
+                                >{{ item.time }}</span>
                             </v-col>
                           </v-row>
                        </v-list-item-content>
@@ -170,18 +170,18 @@
         const keywords = []
 
         for (const search of this.searching) {
-          keywords.push(search.keyword)
+          keywords.push(search.trip)
         }
 
         return keywords
       },
       searching () {
-        if (!this.search) return this.items
+        if (!this.search) return this.tripInfo
 
         const search = this.search.toLowerCase()
 
-        return this.items.filter(item => {
-          const text = item.title.toLowerCase()
+        return this.tripInfo.filter(item => {
+          const text = item.client.toLowerCase()
 
           return text.indexOf(search) > -1
         })
