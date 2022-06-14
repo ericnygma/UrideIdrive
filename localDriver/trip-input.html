@@ -32,12 +32,15 @@
             align="center"
             class="ml-5"
           >
-            <v-col cols="12">
+          <v-col
+          cols="12"
+          sm="6"
+          md="4"
+      >
               <v-autocomplete
                 v-model="client"
                 :items="clientItems"
                 outlined
-                dense
                 chips
                 small-chips
                 clearable
@@ -61,11 +64,13 @@
                 class="d-flex"
                 cols="12"
                 sm="6"
+                md="4"
             >
             <v-select
                 v-model="trip"
                 :items="tripItems"
                 label="Select Trip Type"
+                clearable
                 outlined
             ></v-select>
             </v-row>
@@ -163,7 +168,11 @@
             class="ml-5"
             v-if="trip === 'Hourly - Wait & Return'">
             <!-- START -->
-              <v-col style="width: 350px; flex: 0 1 auto;">
+            <v-col
+            cols="12"
+            sm="6"
+            md="4"
+        >
                 <v-menu
                   ref="startMenu"
                   v-model="startMenu"
@@ -196,7 +205,11 @@
                 
 
               <!-- END -->
-              <v-col style="width: 350px; flex: 0 1 auto;">
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+            >
                 <v-menu
                   ref="endMenu"
                   v-model="endMenu"
@@ -359,7 +372,8 @@
                     <!-- button -->
                     <v-col 
                         col="12"
-                        sm="12">
+                        sm="6"
+                        md="8">
                         <v-btn
                         block
                         class="ma-2"
@@ -392,9 +406,8 @@
           return{
               pageTitle:'New Trip',
 
-              client:'',
-              clientItems:['Eric', 'Wendy', 'Hailey', 'Alisha', 'Maurice', 'Corin'
-              ],
+              client:[],
+              clientItems:[],
               trip: null,
               tripItems: [
                   ' ',
@@ -484,9 +497,10 @@
             .onSnapshot((querySnapshot)=>{
               this.clientItems = [];
               querySnapshot.forEach((doc)=>{
+                var fullName = doc.data().last +', '+ doc.data().first;
                 this.clientItems.push(
-                  doc.data().first
-                )
+                  fullName
+              )
               })
             })
          }
