@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <div id="app">
+    <v-app>
+      <v-main>
+        <v-container>
+            <div>
+                <v-row>
+                    <v-col
+                     col="12"
+                     sm="6"
+                     offset-sm="3"
+                     >
+                     <v-toolbar
+                      color="white"
+                      flat
+                      >
+                      <v-btn
+                       icon
+                       light
+                       >
+                       <v-icon color="grey darken-2">
+                        mdi-arrow-left
+                       </v-icon>
+                    </v-btn>
+
+                    <v-toolbar-title class="grey--text text--darken-4">
+                        {{ pageTitle }}
+                    </v-toolbar-title>
+
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                     icon
+                     light
+                     >
+                     <v-icon color="grey darken-2">
+                        mdi-dots-vertical
+                     </v-icon>
+                    </v-btn>
+                    </v-toolbar>
+
+                    <v-row dense>
+                        <v-col cols="12">
+                            <v-card
+                             color="purple"
+                             dark
+                             >
+                             <v-card-title>
+                                <div>
+                                    <div class="text-h5">
+                                        Eric Nygma
+                                    </div>
+                                </div>
+                             </v-card-title>
+
+                             <v-card-subtitle>
+                                <div>
+                                    <div>
+                                        4 Drivers Way
+                                    </div>
+                                    <div>
+                                        Bridgeport, CT 06606
+                                    </div>
+                                </div>
+                             </v-card-subtitle>
+
+                             
+                             <v-card-actions>
+                                <div>
+                                    <div>203-555-1234</div>
+                                    <div>203-555-4321</div>
+                                </div>
+                            </v-card-actions>
+                            </v-card>
+                            
+                            <v-subheader class="text-h6">
+                                Vehicle Info
+                            </v-subheader>
+                            <v-row class="pa-md-4 mx-lg-auto">
+                                <v-col col="12" sm="4">
+                                    <div>Make:</div>
+                                    <div>Honda</div>
+                                    </v-col>
+                                <v-col>
+                                    <div>Model:</div>
+                                    <div>CV-R</div>
+                                </v-col>
+                                <v-col>
+                                    <div>Color:</div>
+                                    <div>Grey</div>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                    </v-col>
+                </v-row>
+            </div>
+                
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="driverbase.js"></script>
+  <script>
+    const d = new Date();
+
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      data(){
+          return{
+              pageTitle:'Trip Sheet',
+
+              today: d.toLocaleDateString(),
+
+              tripInfo: [],
+
+              }
+            },
+            created(){},
+
+            methods:{
+              openTrip(){
+                console.log("Open Trip")
+              }
+            },
+
+            computed: {},
+           
+            mounted(){
+            db.collection('trips')
+            .onSnapshot((querySnapshot)=>{
+              this.tripInfo = [];
+              console.log(this.tripInfo)
+              querySnapshot.forEach((doc)=>{
+                console.log(doc.data().client)
+                this.tripInfo.push({
+                  client: doc.data().client,
+                  trip: doc.data().trip,
+                  date: doc.data().date,
+                  time: doc.data().time,
+              })
+             })
+            })
+         }
+    })
+  </script>
+</body>
+</html>
