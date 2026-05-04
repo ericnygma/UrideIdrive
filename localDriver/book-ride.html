@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STEWARD — Book a Ride</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":                "#b9c7e4",
+            "primary-container":      "#0a192f",
+            "on-surface":             "#e4e2e4",
+            "on-surface-variant":     "#c5c6cd",
+            "on-primary-container":   "#74829d",
+            "surface-container":      "#1f1f21",
+            "surface-container-high": "#2a2a2c",
+            "outline-variant":        "#44474d",
+            "outline":                "#8f9097",
+            "background":             "#131315"
+          },
+          fontFamily: {
+            "body-md":     ["Inter", "sans-serif"],
+            "label-caps":  ["Inter", "sans-serif"],
+            "headline-sm": ["Noto Serif", "serif"],
+            "headline-md": ["Noto Serif", "serif"],
+            "display-lg":  ["Noto Serif", "serif"]
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { visibility: hidden; }
+    body { background-color: #131315; color: #e4e2e4; font-family: 'Inter', sans-serif; }
+    .glass-card {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1rem;
+    }
+    .btn-sheen {
+      background: linear-gradient(135deg, #e4e2e4 0%, #c7c7bb 100%);
+      color: #0a192f;
+    }
+    .field-input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #44474d;
+      border-radius: 0.5rem;
+      color: #e4e2e4;
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .field-input:focus { border-color: #b9c7e4; }
+    .field-input::placeholder { color: #74829d; }
+    /* Date/time native pickers */
+    .field-input::-webkit-calendar-picker-indicator { filter: invert(0.6); }
+
+    .section-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #74829d;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Vehicle radio cards */
+    .vehicle-card { cursor: pointer; }
+    .vehicle-card input[type="radio"] { display: none; }
+    .vehicle-card-inner {
+      border: 1px solid #44474d;
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      transition: border-color 0.2s, background 0.2s;
+      background: rgba(255,255,255,0.02);
+    }
+    .vehicle-card input[type="radio"]:checked + .vehicle-card-inner {
+      border-color: #b9c7e4;
+      background: rgba(185,199,228,0.08);
+    }
+
+    /* Trip type pills */
+    .type-pill {
+      border: 1px solid #44474d;
+      border-radius: 9999px;
+      padding: 0.45rem 1rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+      color: #8f9097;
+      background: transparent;
+    }
+    .type-pill.active {
+      border-color: #b9c7e4;
+      background: rgba(185,199,228,0.12);
+      color: #e4e2e4;
+    }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="min-h-screen pb-10">
+
+  <!-- Nav -->
+  <header class="sticky top-0 z-30 px-5 py-4 flex items-center gap-3" style="background: rgba(19,19,21,0.85); backdrop-filter: blur(16px);">
+    <a href="index.html" class="text-on-surface-variant hover:text-on-surface text-lg leading-none">&larr;</a>
+    <span class="font-headline-sm text-lg text-on-surface">New Booking</span>
+  </header>
+
+  <main class="max-w-lg mx-auto px-5 pt-6 space-y-6">
+
+    <!-- Error banner -->
+    <div id="form-error" class="hidden px-4 py-3 rounded-lg bg-red-900/30 border border-red-700/50 text-red-300 text-sm"></div>
+
+    <!-- Section 1: Select Vehicle -->
+    <div class="glass-card p-5">
+      <p class="section-label">Select Your Vehicle</p>
+      <div id="vehicle-list" class="space-y-2">
+        <p class="text-on-primary-container text-sm">Loading your vehicles…</p>
+      </div>
+      <p id="no-vehicles" class="hidden text-on-primary-container text-sm">
+        No vehicles on file.
+        <a href="index.html" class="text-primary underline">Add one from your dashboard</a>.
+      </p>
+    </div>
+
+    <!-- Section 2: Trip Type -->
+    <div class="glass-card p-5">
+      <p class="section-label">Trip Type</p>
+      <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        <button class="type-pill active" data-type="Point to Point">Point to Point</button>
+        <button class="type-pill" data-type="Airport Drop-off">Airport Drop-off</button>
+        <button class="type-pill" data-type="Airport Pick-up">Airport Pick-up</button>
+        <button class="type-pill" data-type="Hourly - Wait &amp; Return">Hourly</button>
+      </div>
+    </div>
+
+    <!-- Section 3: Pickup -->
+    <div class="glass-card p-5">
+      <p class="section-label">Pickup Location</p>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Street Address</label>
+          <input id="pickup-address" type="text" class="field-input" placeholder="123 Main St">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">City</label>
+            <input id="pickup-city" type="text" class="field-input" placeholder="Greenwich">
+          </div>
+          <div>
+            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">State</label>
+            <input id="pickup-state" type="text" class="field-input" placeholder="CT" maxlength="2">
+          </div>
+        </div>
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">ZIP</label>
+          <input id="pickup-zip" type="text" class="field-input" placeholder="06830" maxlength="5" style="max-width:120px">
+        </div>
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Pickup Notes <span class="normal-case text-on-primary-container">(optional)</span></label>
+          <textarea id="pickup-notes" class="field-input" rows="2" placeholder="Where to find the car, building access code, etc."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Destination (hidden for Hourly) -->
+    <div id="destination-section" class="glass-card p-5">
+      <p class="section-label">Destination</p>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Street Address</label>
+          <input id="dropoff-address" type="text" class="field-input" placeholder="456 Park Ave">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">City</label>
+            <input id="dropoff-city" type="text" class="field-input" placeholder="New York">
+          </div>
+          <div>
+            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">State</label>
+            <input id="dropoff-state" type="text" class="field-input" placeholder="NY" maxlength="2">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4b: Airport fields (shown for airport trip types) -->
+    <div id="airport-section" class="glass-card p-5 hidden">
+      <p class="section-label">Flight Information</p>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Airport</label>
+          <select id="airport" class="field-input">
+            <option value="">Select airport…</option>
+            <option value="(JFK) John F. Kennedy">(JFK) John F. Kennedy</option>
+            <option value="(LGA) LaGuardia">(LGA) LaGuardia</option>
+            <option value="(EWR) Newark Liberty">(EWR) Newark Liberty</option>
+            <option value="(BDL) Bradley International">(BDL) Bradley International</option>
+            <option value="(HPN) Westchester County">(HPN) Westchester County</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Airline</label>
+          <select id="airline" class="field-input">
+            <option value="">Select airline…</option>
+            <option>Delta Air Lines</option>
+            <option>American Airlines</option>
+            <option>United Airlines</option>
+            <option>JetBlue Airways</option>
+            <option>Air Canada</option>
+            <option>Alaska Airlines</option>
+            <option>Air France</option>
+            <option>British Airways</option>
+            <option>KLM</option>
+            <option>Lufthansa</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Flight #</label>
+            <input id="flight-number" type="text" class="field-input" placeholder="DL 405">
+          </div>
+          <div>
+            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Terminal</label>
+            <input id="terminal" type="text" class="field-input" placeholder="4">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Date & Time -->
+    <div class="glass-card p-5">
+      <p class="section-label">Date &amp; Time</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Date</label>
+          <input id="trip-date" type="date" class="field-input">
+        </div>
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Departure Time</label>
+          <input id="trip-time" type="time" class="field-input">
+        </div>
+      </div>
+      <!-- End time — hourly only -->
+      <div id="end-time-row" class="hidden mt-3">
+        <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">End Time</label>
+        <input id="trip-end-time" type="time" class="field-input" style="max-width:160px">
+      </div>
+    </div>
+
+    <!-- Section 6: Instructions -->
+    <div class="glass-card p-5">
+      <p class="section-label">Special Instructions <span class="normal-case text-on-primary-container" style="font-size:0.65rem">(optional)</span></p>
+      <textarea id="instructions" class="field-input" rows="3" placeholder="Any preferences, stops, or special requests for the driver…"></textarea>
+    </div>
+
+    <!-- Submit -->
+    <button id="submit-btn" class="btn-sheen w-full py-4 rounded-xl font-semibold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
+      Schedule Ride
+    </button>
+
+    <div id="submit-loading" class="hidden text-center py-2 text-on-surface-variant text-sm">Saving your booking…</div>
+
+  </main>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    requireAuth().then(function(user) {
+      document.documentElement.style.visibility = '';
+      initPage(user);
+    });
+
+    var currentUser;
+    var selectedVehicleId   = null;
+    var selectedVehicleSnap = null;
+    var currentTripType     = 'Point to Point';
+    var userVehicles        = [];
+
+    function initPage(user) {
+      currentUser = user;
+      setDefaultDate();
+      loadVehicles(user);
+      setupTripTypeToggle();
+      setupSubmit(user);
+    }
+
+    function setDefaultDate() {
+      document.getElementById('trip-date').value = new Date().toISOString().slice(0, 10);
+    }
+
+    function loadVehicles(user) {
+      var list  = document.getElementById('vehicle-list');
+      var noVeh = document.getElementById('no-vehicles');
+
+      db.collection('users').doc(user.uid).collection('vehicles')
+        .orderBy('createdAt', 'asc')
+        .get()
+        .then(function(snap) {
+          list.innerHTML = '';
+          if (snap.empty) {
+            list.classList.add('hidden');
+            noVeh.classList.remove('hidden');
+            return;
+          }
+          snap.forEach(function(doc) {
+            var v = doc.data();
+            userVehicles.push({ id: doc.id, data: v });
+
+            var label = document.createElement('label');
+            label.className = 'vehicle-card block';
+            label.innerHTML =
+              '<input type="radio" name="vehicle" value="' + doc.id + '">' +
+              '<div class="vehicle-card-inner">' +
+                '<p class="text-on-surface text-sm font-medium">' +
+                  (v.year ? v.year + ' ' : '') + v.make + ' ' + v.model +
+                '</p>' +
+                '<p class="text-on-surface-variant text-xs mt-0.5">' +
+                  (v.color || '') + (v.plate ? ' &nbsp;·&nbsp; ' + v.plate : '') +
+                '</p>' +
+              '</div>';
+
+            label.querySelector('input').addEventListener('change', function() {
+              selectedVehicleId   = doc.id;
+              selectedVehicleSnap = { year: v.year, make: v.make, model: v.model, color: v.color, plate: v.plate };
+            });
+            list.appendChild(label);
+          });
+
+          // Auto-select first vehicle
+          var firstRadio = list.querySelector('input[type="radio"]');
+          if (firstRadio) {
+            firstRadio.checked = true;
+            firstRadio.dispatchEvent(new Event('change'));
+          }
+        });
+    }
+
+    function setupTripTypeToggle() {
+      var pills       = document.querySelectorAll('.type-pill');
+      var destSection = document.getElementById('destination-section');
+      var airSection  = document.getElementById('airport-section');
+      var endTimeRow  = document.getElementById('end-time-row');
+
+      pills.forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          pills.forEach(function(p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+          currentTripType = pill.dataset.type;
+
+          var isAirport = currentTripType.includes('Airport');
+          var isHourly  = currentTripType.includes('Hourly');
+
+          destSection.classList.toggle('hidden', isHourly);
+          airSection.classList.toggle('hidden', !isAirport);
+          endTimeRow.classList.toggle('hidden', !isHourly);
+        });
+      });
+    }
+
+    function setupSubmit(user) {
+      var submitBtn = document.getElementById('submit-btn');
+      var loadingEl = document.getElementById('submit-loading');
+      var errorEl   = document.getElementById('form-error');
+
+      submitBtn.addEventListener('click', function() {
+        errorEl.classList.add('hidden');
+
+        var errors = validate();
+        if (errors.length) {
+          errorEl.textContent = errors[0];
+          errorEl.classList.remove('hidden');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        submitBtn.disabled = true;
+        loadingEl.classList.remove('hidden');
+
+        var isAirport = currentTripType.includes('Airport');
+        var isHourly  = currentTripType.includes('Hourly');
+
+        db.collection('trips').add({
+          uid:            user.uid,
+          vehicleId:      selectedVehicleId,
+          vehicleSnap:    selectedVehicleSnap,
+          tripType:       currentTripType,
+          pickupAddress:  val('pickup-address'),
+          pickupCity:     val('pickup-city'),
+          pickupState:    val('pickup-state').toUpperCase(),
+          pickupZip:      val('pickup-zip'),
+          pickupNotes:    val('pickup-notes'),
+          dropoffAddress: isHourly  ? '' : val('dropoff-address'),
+          dropoffCity:    isHourly  ? '' : val('dropoff-city'),
+          dropoffState:   isHourly  ? '' : val('dropoff-state').toUpperCase(),
+          airport:        isAirport ? val('airport')       : '',
+          airline:        isAirport ? val('airline')       : '',
+          flightNumber:   isAirport ? val('flight-number') : '',
+          terminal:       isAirport ? val('terminal')      : '',
+          date:           val('trip-date'),
+          time:           val('trip-time'),
+          endTime:        isHourly  ? val('trip-end-time') : '',
+          instructions:   val('instructions'),
+          status:         'pending',
+          createdAt:      firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt:      firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function() {
+          window.location.replace('trips.html');
+        }).catch(function(err) {
+          submitBtn.disabled = false;
+          loadingEl.classList.add('hidden');
+          errorEl.textContent = 'Error saving booking: ' + err.message;
+          errorEl.classList.remove('hidden');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    }
+
+    function validate() {
+      var errors = [];
+      if (!selectedVehicleId)          errors.push('Please select a vehicle.');
+      if (!val('pickup-address'))       errors.push('Pickup address is required.');
+      if (!val('trip-date'))            errors.push('Date is required.');
+      if (!val('trip-time'))            errors.push('Departure time is required.');
+      return errors;
+    }
+
+    function val(id) {
+      return document.getElementById(id).value.trim();
+    }
+  </script>
+</body>
+</html>
