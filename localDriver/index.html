@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STEWARD — Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":                "#b9c7e4",
+            "primary-container":      "#0a192f",
+            "on-surface":             "#e4e2e4",
+            "on-surface-variant":     "#c5c6cd",
+            "on-primary-container":   "#74829d",
+            "surface-container":      "#1f1f21",
+            "surface-container-high": "#2a2a2c",
+            "outline-variant":        "#44474d",
+            "outline":                "#8f9097",
+            "background":             "#131315"
+          },
+          fontFamily: {
+            "body-md":     ["Inter", "sans-serif"],
+            "label-caps":  ["Inter", "sans-serif"],
+            "headline-sm": ["Noto Serif", "serif"],
+            "headline-md": ["Noto Serif", "serif"],
+            "display-lg":  ["Noto Serif", "serif"]
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { visibility: hidden; }
+    body { background-color: #131315; color: #e4e2e4; font-family: 'Inter', sans-serif; }
+    .glass-card {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1rem;
+    }
+    .btn-sheen {
+      background: linear-gradient(135deg, #e4e2e4 0%, #c7c7bb 100%);
+      color: #0a192f;
+    }
+    .trip-type-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+    }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="min-h-screen pb-24">
+
+  <!-- Nav bar -->
+  <header class="sticky top-0 z-30 px-5 py-4 flex items-center justify-between" style="background: rgba(19,19,21,0.85); backdrop-filter: blur(16px);">
+    <span class="font-headline-md text-xl tracking-widest uppercase text-primary">Steward</span>
+    <div class="flex items-center gap-3">
+      <a href="trips.html" class="text-on-surface-variant text-sm hover:text-on-surface transition-colors">My Trips</a>
+      <button id="sign-out-btn" class="text-on-primary-container text-sm hover:text-on-surface transition-colors">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="max-w-lg mx-auto px-5 pt-6">
+
+    <!-- Greeting -->
+    <div class="mb-8">
+      <p class="text-on-primary-container text-xs font-label-caps uppercase tracking-widest mb-1" id="greeting-time">Good morning</p>
+      <h2 class="font-headline-md text-3xl text-on-surface" id="greeting-name">Welcome</h2>
+    </div>
+
+    <!-- Today's Trips -->
+    <section class="mb-8">
+      <h3 class="text-xs font-label-caps uppercase tracking-widest text-on-primary-container mb-3">Today's Trips</h3>
+      <div id="trips-today" class="space-y-3">
+        <!-- Populated by JS -->
+      </div>
+      <div id="trips-empty" class="hidden glass-card px-5 py-6 text-center text-on-primary-container text-sm">
+        No trips scheduled for today.
+      </div>
+    </section>
+
+    <!-- My Fleet -->
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xs font-label-caps uppercase tracking-widest text-on-primary-container">My Fleet</h3>
+        <button id="add-vehicle-btn" class="text-xs text-primary hover:text-on-surface transition-colors">+ Add Vehicle</button>
+      </div>
+      <div id="fleet-list" class="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+        <!-- Populated by JS -->
+      </div>
+      <div id="fleet-empty" class="hidden glass-card px-5 py-6 text-center text-on-primary-container text-sm">
+        No vehicles registered yet. Add one to get started.
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FAB: Book a Ride -->
+  <div class="fixed bottom-6 left-0 right-0 flex justify-center z-20 px-5">
+    <a href="book-ride.html" class="btn-sheen py-4 px-10 rounded-full font-semibold text-sm tracking-widest uppercase shadow-2xl hover:opacity-90 transition-opacity">
+      Book a Ride
+    </a>
+  </div>
+
+  <!-- Add Vehicle Modal -->
+  <div id="vehicle-modal" class="hidden fixed inset-0 z-50 flex items-end justify-center" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
+    <div class="w-full max-w-lg glass-card rounded-b-none p-6 pb-10 animate-slide-up">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-headline-sm text-lg text-on-surface">Add a Vehicle</h3>
+        <button id="close-modal-btn" class="text-on-primary-container text-2xl leading-none hover:text-on-surface">&times;</button>
+      </div>
+      <div id="vehicle-form-error" class="hidden mb-4 px-4 py-3 rounded-lg bg-red-900/30 border border-red-700/50 text-red-300 text-sm"></div>
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Year</label>
+          <input id="v-year" type="text" maxlength="4" placeholder="2022" class="vehicle-input w-full">
+        </div>
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Make</label>
+          <input id="v-make" type="text" placeholder="Tesla" class="vehicle-input w-full">
+        </div>
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Model</label>
+          <input id="v-model" type="text" placeholder="Model 3" class="vehicle-input w-full">
+        </div>
+        <div>
+          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Color</label>
+          <input id="v-color" type="text" placeholder="Midnight Silver" class="vehicle-input w-full">
+        </div>
+      </div>
+      <div class="mb-5">
+        <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">License Plate</label>
+        <input id="v-plate" type="text" placeholder="ABC-1234" class="vehicle-input w-full uppercase">
+      </div>
+      <div class="mb-5">
+        <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Notes <span class="normal-case text-on-primary-container">(optional)</span></label>
+        <input id="v-notes" type="text" placeholder="e.g. Key in glove box" class="vehicle-input w-full">
+      </div>
+      <button id="save-vehicle-btn" class="btn-sheen w-full py-3 rounded-lg font-semibold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
+        Save Vehicle
+      </button>
+    </div>
+  </div>
+
+  <style>
+    .vehicle-input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #44474d;
+      border-radius: 0.5rem;
+      color: #e4e2e4;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .vehicle-input:focus { border-color: #b9c7e4; }
+    .vehicle-input::placeholder { color: #74829d; }
+  </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    requireAuth().then(function(user) {
+      document.documentElement.style.visibility = '';
+      initPage(user);
+    });
+
+    function initPage(user) {
+      setGreeting(user);
+      loadTodaysTrips(user);
+      loadFleet(user);
+      setupVehicleModal(user);
+
+      document.getElementById('sign-out-btn').addEventListener('click', function() {
+        auth.signOut().then(function() {
+          window.location.replace('login.html');
+        });
+      });
+    }
+
+    function setGreeting(user) {
+      var hours = new Date().getHours();
+      var timeLabel = hours < 12 ? 'Good morning' : hours < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('greeting-time').textContent = timeLabel;
+      var name = user.displayName ? user.displayName.split(' ')[0] : user.email.split('@')[0];
+      document.getElementById('greeting-name').textContent = name;
+    }
+
+    function loadTodaysTrips(user) {
+      var today = new Date().toISOString().slice(0, 10);
+      var container = document.getElementById('trips-today');
+      var emptyEl   = document.getElementById('trips-empty');
+
+      db.collection('trips')
+        .where('uid', '==', user.uid)
+        .where('date', '==', today)
+        .orderBy('time', 'asc')
+        .onSnapshot(function(snap) {
+          container.innerHTML = '';
+          if (snap.empty) {
+            emptyEl.classList.remove('hidden');
+            return;
+          }
+          emptyEl.classList.add('hidden');
+          snap.forEach(function(doc) {
+            var t = doc.data();
+            container.appendChild(makeTripCard(doc.id, t));
+          });
+        }, function(err) {
+          // Composite index not yet created — show a placeholder
+          emptyEl.classList.remove('hidden');
+          emptyEl.textContent = 'Loading trips… (index may be building)';
+          console.error('trips query error:', err);
+        });
+    }
+
+    function makeTripCard(id, t) {
+      var el = document.createElement('div');
+      el.className = 'glass-card px-5 py-4 cursor-pointer hover:border-primary/30 transition-colors';
+      el.style.borderColor = 'rgba(255,255,255,0.1)';
+
+      var badgeColor = tripTypeColor(t.tripType);
+      var vehicle = t.vehicleSnap
+        ? (t.vehicleSnap.year || '') + ' ' + (t.vehicleSnap.make || '') + ' ' + (t.vehicleSnap.model || '')
+        : '—';
+
+      el.innerHTML =
+        '<div class="flex items-start justify-between gap-3">' +
+          '<div class="flex-1 min-w-0">' +
+            '<p class="font-headline-sm text-xl text-on-surface">' + formatTime(t.time) + '</p>' +
+            '<p class="text-on-surface-variant text-xs mt-1 truncate">' + (t.pickupAddress || '—') + '</p>' +
+            '<p class="text-on-primary-container text-xs mt-0.5">' + vehicle.trim() + '</p>' +
+          '</div>' +
+          '<span class="trip-type-badge flex-shrink-0 mt-1" style="background:' + badgeColor.bg + ';color:' + badgeColor.text + '">' + shortType(t.tripType) + '</span>' +
+        '</div>';
+
+      el.addEventListener('click', function() {
+        window.location.href = 'trip-detail.html?id=' + id;
+      });
+      return el;
+    }
+
+    function loadFleet(user) {
+      var container = document.getElementById('fleet-list');
+      var emptyEl   = document.getElementById('fleet-empty');
+
+      db.collection('users').doc(user.uid).collection('vehicles')
+        .orderBy('createdAt', 'asc')
+        .onSnapshot(function(snap) {
+          container.innerHTML = '';
+          if (snap.empty) {
+            emptyEl.classList.remove('hidden');
+            return;
+          }
+          emptyEl.classList.add('hidden');
+          snap.forEach(function(doc) {
+            container.appendChild(makeVehicleCard(doc.id, doc.data(), user));
+          });
+        });
+    }
+
+    function makeVehicleCard(id, v, user) {
+      var el = document.createElement('div');
+      el.className = 'glass-card flex-shrink-0 p-4 w-48';
+      el.innerHTML =
+        '<p class="font-headline-sm text-base text-on-surface leading-tight">' +
+          (v.year ? v.year + ' ' : '') + v.make + ' ' + v.model +
+        '</p>' +
+        '<p class="text-on-surface-variant text-xs mt-1">' + (v.color || '') + '</p>' +
+        '<p class="text-primary text-xs mt-0.5 font-semibold tracking-wider">' + (v.plate || '') + '</p>' +
+        '<button class="remove-btn mt-3 text-xs text-on-primary-container hover:text-red-400 transition-colors" data-id="' + id + '">Remove</button>';
+
+      el.querySelector('.remove-btn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (confirm('Remove ' + v.year + ' ' + v.make + ' ' + v.model + '?')) {
+          db.collection('users').doc(user.uid).collection('vehicles').doc(id).delete();
+        }
+      });
+      return el;
+    }
+
+    function setupVehicleModal(user) {
+      var modal    = document.getElementById('vehicle-modal');
+      var errEl    = document.getElementById('vehicle-form-error');
+
+      document.getElementById('add-vehicle-btn').addEventListener('click', function() {
+        modal.classList.remove('hidden');
+      });
+      document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+      });
+
+      document.getElementById('save-vehicle-btn').addEventListener('click', function() {
+        var year  = document.getElementById('v-year').value.trim();
+        var make  = document.getElementById('v-make').value.trim();
+        var model = document.getElementById('v-model').value.trim();
+        var color = document.getElementById('v-color').value.trim();
+        var plate = document.getElementById('v-plate').value.trim().toUpperCase();
+        var notes = document.getElementById('v-notes').value.trim();
+
+        errEl.classList.add('hidden');
+        if (!make || !model || !plate) {
+          errEl.textContent = 'Make, model, and license plate are required.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        db.collection('users').doc(user.uid).collection('vehicles').add({
+          year:      year,
+          make:      make,
+          model:     model,
+          color:     color,
+          plate:     plate,
+          notes:     notes,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function() {
+          closeModal();
+        }).catch(function(err) {
+          errEl.textContent = 'Error saving vehicle: ' + err.message;
+          errEl.classList.remove('hidden');
+        });
+      });
+
+      function closeModal() {
+        modal.classList.add('hidden');
+        ['v-year','v-make','v-model','v-color','v-plate','v-notes'].forEach(function(id) {
+          document.getElementById(id).value = '';
+        });
+        errEl.classList.add('hidden');
+      }
+    }
+
+    function formatTime(t) {
+      if (!t) return '—';
+      var parts = t.split(':');
+      var h = parseInt(parts[0], 10);
+      var m = parts[1];
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return h + ':' + m + ' ' + ampm;
+    }
+
+    function shortType(type) {
+      if (!type) return '—';
+      if (type.includes('Airport Drop')) return 'Drop-off';
+      if (type.includes('Airport Pick')) return 'Pick-up';
+      if (type.includes('Hourly')) return 'Hourly';
+      return 'Point to Point';
+    }
+
+    function tripTypeColor(type) {
+      if (!type) return { bg: 'rgba(185,199,228,0.15)', text: '#b9c7e4' };
+      if (type.includes('Airport')) return { bg: 'rgba(116,168,209,0.18)', text: '#7da8d1' };
+      if (type.includes('Hourly'))  return { bg: 'rgba(209,169,116,0.18)', text: '#d1a974' };
+      return { bg: 'rgba(185,199,228,0.15)', text: '#b9c7e4' };
+    }
+  </script>
+</body>
+</html>
