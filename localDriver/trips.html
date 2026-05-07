@@ -156,33 +156,24 @@
     }
 
     function loadTrips(user) {
+      // Single-field where clause — no composite index required.
+      // Results are sorted client-side.
       db.collection('trips')
         .where('uid', '==', user.uid)
-        .orderBy('date', 'desc')
-        .orderBy('time', 'desc')
         .onSnapshot(function(snap) {
           allTrips = [];
           snap.forEach(function(doc) {
             allTrips.push({ id: doc.id, data: doc.data() });
           });
+          allTrips.sort(function(a, b) {
+            if (b.data.date !== a.data.date) return b.data.date < a.data.date ? -1 : 1;
+            return (b.data.time || '') < (a.data.time || '') ? -1 : 1;
+          });
           renderTrips();
         }, function(err) {
-          // Fallback: try without orderBy if index is building
-          db.collection('trips')
-            .where('uid', '==', user.uid)
-            .get()
-            .then(function(snap) {
-              allTrips = [];
-              snap.forEach(function(doc) {
-                allTrips.push({ id: doc.id, data: doc.data() });
-              });
-              allTrips.sort(function(a, b) {
-                if (b.data.date !== a.data.date) return b.data.date < a.data.date ? -1 : 1;
-                return (b.data.time || '') < (a.data.time || '') ? -1 : 1;
-              });
-              renderTrips();
-            });
-          console.warn('Composite index not ready, using fallback query:', err.message);
+          document.getElementById('trip-list').innerHTML =
+            '<p class="text-red-400 text-sm px-1">Could not load trips: ' + err.message + '</p>';
+          console.error('trips onSnapshot error:', err);
         });
     }
 

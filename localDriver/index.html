@@ -208,25 +208,32 @@
       var container = document.getElementById('trips-today');
       var emptyEl   = document.getElementById('trips-empty');
 
+      // Single-field where clause — filter by today's date client-side, no composite index required.
       db.collection('trips')
         .where('uid', '==', user.uid)
-        .where('date', '==', today)
-        .orderBy('time', 'asc')
         .onSnapshot(function(snap) {
+          var todayTrips = [];
+          snap.forEach(function(doc) {
+            var t = doc.data();
+            if (t.date === today && t.status !== 'cancelled') {
+              todayTrips.push({ id: doc.id, data: t });
+            }
+          });
+          todayTrips.sort(function(a, b) {
+            return (a.data.time || '') < (b.data.time || '') ? -1 : 1;
+          });
           container.innerHTML = '';
-          if (snap.empty) {
+          if (todayTrips.length === 0) {
             emptyEl.classList.remove('hidden');
             return;
           }
           emptyEl.classList.add('hidden');
-          snap.forEach(function(doc) {
-            var t = doc.data();
-            container.appendChild(makeTripCard(doc.id, t));
+          todayTrips.forEach(function(item) {
+            container.appendChild(makeTripCard(item.id, item.data));
           });
         }, function(err) {
-          // Composite index not yet created — show a placeholder
           emptyEl.classList.remove('hidden');
-          emptyEl.textContent = 'Loading trips… (index may be building)';
+          emptyEl.textContent = 'Could not load trips.';
           console.error('trips query error:', err);
         });
     }
