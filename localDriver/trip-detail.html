@@ -1,249 +1,601 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0E0D0B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Steward">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <title>STEWARD — Trip Detail</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary":                "#b9c7e4",
-            "primary-container":      "#0a192f",
-            "on-surface":             "#e4e2e4",
-            "on-surface-variant":     "#c5c6cd",
-            "on-primary-container":   "#74829d",
-            "surface-container":      "#1f1f21",
-            "surface-container-high": "#2a2a2c",
-            "outline-variant":        "#44474d",
-            "outline":                "#8f9097",
-            "background":             "#131315"
-          },
-          fontFamily: {
-            "body-md":     ["Inter", "sans-serif"],
-            "label-caps":  ["Inter", "sans-serif"],
-            "headline-sm": ["Noto Serif", "serif"],
-            "headline-md": ["Noto Serif", "serif"],
-            "display-lg":  ["Noto Serif", "serif"]
-          }
-        }
-      }
-    }
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    html { visibility: hidden; }
-    body { background-color: #131315; color: #e4e2e4; font-family: 'Inter', sans-serif; }
-    .glass-card {
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 1rem;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .hidden { display: none !important; }
+
+    :root {
+      --ink:     #EDE8DF;
+      --muted:   #9E9590;
+      --faint:   #2C2820;
+      --gold:    #B8923A;
+      --gold-lt: #D4AE62;
+      --bg:      #0E0D0B;
+      --surface: #15130E;
+      --border:  rgba(184,146,58,0.14);
     }
+
+    html, body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 50% at 50% -5%, rgba(184,146,58,0.06) 0%, transparent 100%),
+        radial-gradient(ellipse 40% 30% at 10% 110%, rgba(6,5,3,0.5) 0%, transparent 100%);
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    .stage { position: relative; z-index: 1; padding-bottom: 4rem; }
+
+    /* ── Auth overlay ─── */
+    #auth-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #auth-overlay p { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.08em; }
+
+    /* ── Header ──────── */
+    .site-header {
+      position: sticky; top: 0; z-index: 30;
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(14,13,11,0.9);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(184,146,58,0.08);
+    }
+    .back-link {
+      color: var(--muted); text-decoration: none;
+      font-size: 1.1rem; line-height: 1; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--ink); }
+    .page-title {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300; font-size: 1rem;
+      letter-spacing: 0.2em; color: var(--ink);
+    }
+
+    /* ── Layout ──────── */
+    main { max-width: 480px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* ── States ──────── */
+    #loading-state {
+      text-align: center; padding: 3rem 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 1rem; color: var(--muted);
+    }
+    #error-state {
+      text-align: center; padding: 3rem 0;
+      font-size: 0.85rem; color: #c07070;
+    }
+
+    /* ── Hero: time ──── */
+    .hero { margin-bottom: 0.5rem; }
+    .hero-time {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem; font-weight: 300;
+      color: var(--ink); line-height: 1;
+      letter-spacing: -0.01em;
+    }
+    .hero-date {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300; font-size: 1rem;
+      letter-spacing: 0.12em; color: var(--muted);
+      margin-top: 0.35rem;
+    }
+    .hero-meta {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-top: 0.6rem;
+    }
+
+    /* ── Status badge ─── */
+    .status-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.22rem 0.65rem; border-radius: 9999px;
+    }
+
+    /* ── Gold rule ───── */
+    .gold-rule {
+      border: none; height: 1px;
+      background: linear-gradient(90deg, var(--faint), transparent);
+      margin: 1.75rem 0;
+    }
+
+    /* ── Section ─────── */
+    .detail-section { margin-bottom: 1.75rem; }
     .section-label {
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #74829d;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted);
       margin-bottom: 0.5rem;
     }
     .detail-value {
-      font-size: 1rem;
-      color: #e4e2e4;
-      line-height: 1.5;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; color: var(--ink); line-height: 1.4;
     }
     .detail-sub {
-      font-size: 0.825rem;
-      color: #c5c6cd;
-      line-height: 1.5;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem; color: #9A8E80; line-height: 1.5;
+      margin-top: 0.1rem;
     }
-    .status-pill {
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0.25rem 0.7rem;
-      border-radius: 9999px;
+    .detail-note {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem; font-style: italic;
+      color: var(--muted); line-height: 1.5;
     }
-    .action-btn {
-      border: 1px solid #44474d;
-      border-radius: 0.75rem;
-      padding: 0.75rem;
-      font-size: 0.78rem;
-      text-align: center;
+
+    /* ── Editable ─────── */
+    .editable {
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      color: #c5c6cd;
-      flex: 1;
+      display: inline-flex; align-items: baseline; gap: 0.3rem;
     }
-    .action-btn:hover { border-color: #b9c7e4; color: #e4e2e4; }
-    .action-btn.danger:hover { border-color: #dc5050; color: #dc5050; }
-    .divider { border-color: rgba(255,255,255,0.07); }
+    .editable::after {
+      content: '✎';
+      font-size: 0.65rem; color: var(--faint);
+      line-height: 1; transition: color 0.15s;
+    }
+    .editable:hover::after { color: var(--muted); }
+
+    /* ── Inline edit inputs ─── */
+    .edit-container { margin-top: 0.5rem; }
+    .edit-field-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.3rem; margin-top: 0.75rem; display: block;
+    }
+    .edit-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(184,146,58,0.4);
+      outline: none;
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; font-weight: 300;
+      padding: 0.25rem 0 0.45rem;
+      caret-color: var(--gold);
+      transition: border-color 0.25s;
+    }
+    .edit-input:focus { border-bottom-color: rgba(184,146,58,0.85); }
+    .edit-input::placeholder { color: var(--faint); font-style: italic; }
+    .edit-input::-webkit-calendar-picker-indicator { filter: invert(0.4); }
+    select.edit-input { cursor: pointer; }
+    select.edit-input option { background: #1A1812; }
+    textarea.edit-input { resize: none; line-height: 1.5; }
+    .edit-input-sm { max-width: 160px; }
+
+    .edit-btn-row { display: flex; gap: 0.6rem; margin-top: 0.85rem; }
+    .edit-save-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      background: rgba(184,146,58,0.12);
+      border: 1px solid rgba(184,146,58,0.45);
+      color: var(--gold-lt); border-radius: 0.3rem;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .edit-save-btn:hover { background: rgba(184,146,58,0.2); }
+    .edit-cancel-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      background: transparent;
+      border: 1px solid var(--faint);
+      color: var(--muted); border-radius: 0.3rem;
+      cursor: pointer;
+    }
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .edit-grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.85rem; }
+
+    /* Vehicle radio cards (edit mode) */
+    .vehicle-card { cursor: pointer; }
+    .vehicle-card input[type="radio"] { display: none; }
+    .vehicle-card-inner {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--faint);
+      display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+    .vehicle-card input[type="radio"]:checked + .vehicle-card-inner {
+      border-bottom-color: rgba(184,146,58,0.6);
+    }
+    .vehicle-card input[type="radio"]:checked + .vehicle-card-inner .vc-check { opacity: 1; }
+    .vc-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; color: var(--ink);
+    }
+    .vc-sub { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.04em; }
+    .vc-check { color: var(--gold); font-size: 0.85rem; opacity: 0; transition: opacity 0.2s; }
+
+    /* Trip-type pills (edit mode) */
+    .type-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .type-pill {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid var(--faint); border-radius: 9999px;
+      background: transparent; color: var(--muted);
+      cursor: pointer; white-space: nowrap;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+    .type-pill.active {
+      border-color: rgba(184,146,58,0.55);
+      background: rgba(184,146,58,0.08);
+      color: var(--gold-lt);
+    }
+
+    /* ── Add field btn ── */
+    .add-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); background: none; border: none;
+      cursor: pointer; transition: color 0.2s; padding: 0;
+    }
+    .add-btn:hover { color: var(--gold); }
+
+    /* ── Page-load animations ─── */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .ri1 { opacity: 0; animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.05s forwards; }
+    .ri2 { opacity: 0; animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.18s forwards; }
+    .ri3 { opacity: 0; animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.31s forwards; }
+    .ri4 { opacity: 0; animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.44s forwards; }
+    .ri5 { opacity: 0; animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.57s forwards; }
+
+    /* ── Actions ─────── */
+    #actions-row {
+      display: flex; align-items: center; gap: 1.75rem;
+    }
+    .confirm-trigger {
+      display: flex; align-items: center; gap: 0.6rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #64c88c;
+      background: none; border: none; padding: 0;
+      transition: color 0.2s;
+    }
+    .confirm-trigger:hover { color: #8edda8; }
+    .complete-trigger {
+      display: flex; align-items: center; gap: 0.6rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(184,146,58,0.5);
+      background: none; border: none; padding: 0;
+      transition: color 0.2s;
+    }
+    .complete-trigger:hover { color: var(--gold-lt); }
+    .cancel-trigger {
+      display: flex; align-items: center; gap: 0.6rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--faint);
+      background: none; border: none; padding: 0;
+      transition: color 0.2s;
+    }
+    .cancel-trigger:hover { color: #c07070; }
+    .restore-trigger {
+      display: flex; align-items: center; gap: 0.6rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted);
+      background: none; border: none; padding: 0;
+      transition: color 0.2s;
+    }
+    .restore-trigger:hover { color: var(--ink); }
+
+    .cancel-confirm {
+      padding: 1.25rem;
+      border: 1px solid var(--faint);
+      border-radius: 0.5rem;
+    }
+    .cancel-confirm p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; color: var(--ink);
+      margin-bottom: 1rem; text-align: center;
+    }
+    .confirm-row { display: flex; gap: 0.75rem; justify-content: center; }
+    .confirm-yes-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.5rem 1.25rem; border-radius: 0.3rem;
+      background: rgba(220,80,80,0.15);
+      border: 1px solid rgba(220,80,80,0.35);
+      color: #c07070; cursor: pointer;
+    }
+    .confirm-no-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.5rem 1.25rem; border-radius: 0.3rem;
+      background: transparent; border: 1px solid var(--faint);
+      color: var(--muted); cursor: pointer;
+    }
+
+    /* ── Toast ───────── */
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%) translateY(0.5rem);
+      background: rgba(21,19,14,0.95);
+      border: 1px solid rgba(100,200,140,0.3);
+      color: #64c88c;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.5rem 1.1rem; border-radius: 9999px;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 1000; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .duplicate-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(184,146,58,0.45);
+      background: none; border: none; cursor: pointer; padding: 0;
+      text-decoration: none;
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+    .duplicate-btn:hover { color: var(--gold-lt); }
+
+    /* ── Driver phone link ── */
+    .driver-phone-link a {
+      color: var(--gold-lt);
+      text-decoration: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    .driver-phone-link a:hover { color: var(--ink); }
+
+    /* ── Utility ─────────── */
+    .type-pill-muted { border: 1px solid var(--faint); color: var(--muted); }
+    .mt-notes        { margin-top: 1rem; }
+    .mt-notes-add    { margin-top: 0.85rem; }
+    .mt-flight       { margin-top: 0.35rem; }
+    .mt-confirm      { margin-top: 1rem; }
+    .edit-error      { color: #c07070; font-size: 0.78rem; margin-top: 0.5rem; font-family: 'Inter', sans-serif; }
   </style>
 </head>
-<body class="min-h-screen pb-10">
+<body>
 
-  <!-- Nav -->
-  <header class="sticky top-0 z-30 px-5 py-4 flex items-center justify-between" style="background: rgba(19,19,21,0.85); backdrop-filter: blur(16px);">
-    <a href="trips.html" class="text-on-surface-variant hover:text-on-surface text-lg leading-none">&larr; Trips</a>
-    <span class="font-label-caps text-xs uppercase tracking-widest text-on-primary-container">Trip Detail</span>
-    <div style="width:60px"></div>
-  </header>
+  <div id="auth-overlay"><p>Loading…</p></div>
+  <div id="toast">Saved</div>
 
-  <!-- Loading / error -->
-  <div id="loading-state" class="max-w-lg mx-auto px-5 pt-10 text-center text-on-primary-container text-sm">Loading…</div>
-  <div id="error-state" class="hidden max-w-lg mx-auto px-5 pt-10 text-center text-red-400 text-sm"></div>
+  <div class="stage">
+    <header class="site-header">
+      <a href="trips.html" class="back-link">&larr;</a>
+      <span class="page-title">Trip Detail</span>
+      <a id="duplicate-btn" href="#" class="duplicate-btn">Duplicate</a>
+    </header>
 
-  <!-- Main content (hidden until loaded) -->
-  <main id="content" class="hidden max-w-lg mx-auto px-5 pt-6 space-y-4 pb-6">
+    <main>
+      <div id="loading-state">Loading…</div>
+      <div id="error-state" class="hidden"></div>
 
-    <!-- Hero: date, time, type -->
-    <div class="glass-card p-6">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <p id="trip-date" class="font-display-lg text-4xl text-on-surface leading-tight"></p>
-          <p id="trip-time-display" class="font-headline-sm text-2xl text-on-surface mt-1"></p>
-          <p id="trip-type-display" class="text-on-primary-container text-sm mt-1"></p>
+      <div id="content" class="hidden">
+
+        <!-- Hero -->
+        <div class="hero ri1">
+          <p class="hero-date" id="trip-date-display"></p>
+          <div id="time-wrap">
+            <span id="trip-time-display" class="editable hero-time"></span>
+          </div>
+          <div class="hero-meta">
+            <div id="type-wrap">
+              <span id="trip-type-display" class="editable status-badge type-pill-muted"></span>
+            </div>
+            <span id="status-badge" class="status-badge"></span>
+          </div>
         </div>
-        <span id="status-badge" class="status-pill flex-shrink-0 mt-1"></span>
-      </div>
-    </div>
 
-    <!-- Vehicle -->
-    <div class="glass-card p-5">
-      <p class="section-label">The Vehicle</p>
-      <p id="vehicle-name" class="font-headline-sm text-xl text-on-surface"></p>
-      <p id="vehicle-sub" class="detail-sub mt-1"></p>
-    </div>
+        <hr class="gold-rule ri2">
 
-    <!-- Pickup -->
-    <div class="glass-card p-5">
-      <p class="section-label">Pickup Location</p>
-      <p id="pickup-line1" class="detail-value"></p>
-      <p id="pickup-line2" class="detail-sub"></p>
-      <div id="pickup-notes-row" class="hidden mt-3 pt-3 border-t divider">
-        <p class="section-label">Driver Notes</p>
-        <p id="pickup-notes" class="detail-sub italic"></p>
-      </div>
-    </div>
+        <!-- Vehicle -->
+        <div class="detail-section ri2">
+          <p class="section-label">The Vehicle</p>
+          <div id="vehicle-wrap">
+            <span id="vehicle-name" class="editable detail-value"></span>
+            <p id="vehicle-sub" class="detail-sub"></p>
+          </div>
+        </div>
 
-    <!-- Destination (hidden for Hourly) -->
-    <div id="destination-card" class="glass-card p-5">
-      <p class="section-label">Destination</p>
-      <p id="dest-line1" class="detail-value"></p>
-      <p id="dest-line2" class="detail-sub"></p>
-    </div>
+        <hr class="gold-rule ri3">
 
-    <!-- Airport info (shown for Airport trips) -->
-    <div id="airport-card" class="hidden glass-card p-5">
-      <p class="section-label">Flight Information</p>
-      <p id="airport-name" class="detail-value"></p>
-      <div id="flight-row" class="hidden mt-2">
-        <p id="airline-name" class="detail-sub"></p>
-        <p id="flight-info" class="detail-sub"></p>
-      </div>
-    </div>
+        <!-- Pickup -->
+        <div class="detail-section ri3">
+          <p class="section-label">Pickup Location</p>
+          <div id="pickup-wrap">
+            <span id="pickup-line1" class="editable detail-value"></span>
+            <p id="pickup-line2" class="detail-sub"></p>
+          </div>
+          <div id="pickup-notes-row" class="hidden mt-notes">
+            <p class="section-label">Driver Notes</p>
+            <div id="notes-wrap">
+              <span id="pickup-notes-display" class="editable detail-note"></span>
+            </div>
+          </div>
+          <div id="add-notes-row" class="hidden mt-notes-add">
+            <button type="button" id="add-notes-btn" class="add-btn">+ Add pickup notes</button>
+          </div>
+        </div>
 
-    <!-- Hourly end time (shown for Hourly) -->
-    <div id="hourly-card" class="hidden glass-card p-5">
-      <p class="section-label">Return Time</p>
-      <p id="end-time-display" class="detail-value"></p>
-    </div>
+        <hr class="gold-rule ri4">
 
-    <!-- Special Instructions -->
-    <div id="instructions-card" class="hidden glass-card p-5">
-      <p class="section-label">Special Instructions</p>
-      <p id="instructions-text" class="detail-sub italic leading-relaxed"></p>
-    </div>
+        <!-- Destination (P2P) -->
+        <div id="destination-card" class="detail-section ri4">
+          <p class="section-label">Destination</p>
+          <div id="dest-wrap">
+            <span id="dest-line1" class="editable detail-value"></span>
+            <p id="dest-line2" class="detail-sub"></p>
+          </div>
+        </div>
 
-    <!-- Actions -->
-    <div class="flex gap-3 pt-2">
-      <div id="cancel-btn" class="action-btn danger">
-        <p class="text-xs mb-0.5">&#x2715;</p>
-        <p>Cancel Trip</p>
-      </div>
-    </div>
+        <!-- Airport -->
+        <div id="airport-card" class="hidden detail-section ri4">
+          <p class="section-label">Flight Information</p>
+          <div id="airport-wrap">
+            <span id="airport-name" class="editable detail-value"></span>
+            <div id="flight-row" class="hidden mt-flight">
+              <p id="airline-name" class="detail-sub"></p>
+              <p id="flight-info" class="detail-sub"></p>
+            </div>
+          </div>
+        </div>
 
-    <!-- Cancel confirmation (hidden) -->
-    <div id="cancel-confirm" class="hidden glass-card p-5 text-center">
-      <p class="text-on-surface text-sm mb-4">Cancel this trip? This cannot be undone.</p>
-      <div class="flex gap-3 justify-center">
-        <button id="cancel-yes" class="px-5 py-2 rounded-lg text-sm font-medium" style="background:rgba(220,80,80,0.2);border:1px solid rgba(220,80,80,0.4);color:#dc5050;">Yes, Cancel</button>
-        <button id="cancel-no"  class="px-5 py-2 rounded-lg text-sm font-medium" style="background:rgba(255,255,255,0.05);border:1px solid #44474d;color:#c5c6cd;">Keep Trip</button>
-      </div>
-    </div>
+        <!-- Hourly end time -->
+        <div id="hourly-card" class="hidden detail-section ri4">
+          <p class="section-label">Return Time</p>
+          <div id="endtime-wrap">
+            <span id="end-time-display" class="editable detail-value"></span>
+          </div>
+        </div>
 
-  </main>
+        <hr class="gold-rule ri5">
 
-  <!-- Firebase -->
+        <!-- Instructions -->
+        <div class="detail-section ri5">
+          <p class="section-label">Special Instructions</p>
+          <div id="instructions-wrap">
+            <span id="instructions-display" class="editable detail-note"></span>
+          </div>
+          <div id="add-instructions-row" class="hidden">
+            <button type="button" id="add-instructions-btn" class="add-btn">+ Add instructions</button>
+          </div>
+        </div>
+
+        <hr class="gold-rule ri5">
+
+        <!-- Driver -->
+        <div class="detail-section ri5">
+          <p class="section-label">Driver</p>
+          <div id="driver-assigned" class="hidden">
+            <span id="driver-name-display" class="editable detail-value"></span>
+            <p id="driver-phone-display" class="detail-sub driver-phone-link"></p>
+          </div>
+          <div id="driver-empty">
+            <button type="button" id="assign-driver-btn" class="add-btn">+ Assign a driver</button>
+          </div>
+        </div>
+
+        <hr class="gold-rule">
+
+        <!-- Actions -->
+        <div id="actions-row" class="ri5">
+          <button type="button" id="confirm-btn" class="confirm-trigger hidden">&#x25CE; Confirm Trip</button>
+          <button type="button" id="complete-btn" class="complete-trigger">&#x2713; Mark Complete</button>
+          <button type="button" id="cancel-btn" class="cancel-trigger">&#x2715; Cancel This Trip</button>
+          <button type="button" id="restore-btn" class="restore-trigger hidden">&#x21A9; Restore Trip</button>
+        </div>
+
+        <div id="cancel-confirm" class="cancel-confirm hidden mt-confirm">
+          <p>Cancel this trip? This cannot be undone.</p>
+          <div class="confirm-row">
+            <button type="button" id="cancel-yes" class="confirm-yes-btn">Yes, Cancel</button>
+            <button type="button" id="cancel-no"  class="confirm-no-btn">Keep Trip</button>
+          </div>
+        </div>
+
+      </div><!-- #content -->
+    </main>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="firebase-config.js"></script>
   <script>
     requireAuth().then(function(user) {
-      document.documentElement.style.visibility = '';
+      document.getElementById('auth-overlay').style.display = 'none';
       initPage(user);
     });
 
+    var tripId      = null;
+    var currentTrip = {};
+    var currentUser = null;
+    var activeEdit  = null;
+
+    // ─── Toast ───────────────────────────────────────────────────────────────
+    var toastTimer = null;
+    function showToast(msg) {
+      var el = document.getElementById('toast');
+      el.textContent = msg || 'Saved';
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2000);
+    }
+
+    // ─── Init ────────────────────────────────────────────────────────────────
     function initPage(user) {
-      var tripId = new URLSearchParams(window.location.search).get('id');
-      if (!tripId) {
-        window.location.replace('trips.html');
-        return;
-      }
+      currentUser = user;
+      tripId = new URLSearchParams(window.location.search).get('id');
+      if (!tripId) { window.location.replace('trips.html'); return; }
+
+      document.getElementById('duplicate-btn').href = 'book-ride.html?copy=' + tripId;
 
       db.collection('trips').doc(tripId).get()
         .then(function(doc) {
           document.getElementById('loading-state').classList.add('hidden');
-
-          if (!doc.exists) {
-            showError('Trip not found.');
-            return;
-          }
+          if (!doc.exists)            { showError('Trip not found.'); return; }
           var t = doc.data();
-          if (t.uid !== user.uid) {
-            showError('You do not have permission to view this trip.');
-            return;
-          }
-          renderTrip(doc.id, t, user);
+          if (t.uid !== user.uid)     { showError('Permission denied.'); return; }
+          currentTrip = t;
+          renderAll();
+          setupCancel();
         })
-        .catch(function(err) {
-          showError('Error loading trip: ' + err.message);
-        });
+        .catch(function(err) { showError('Error loading trip: ' + err.message); });
     }
 
-    function showError(msg) {
-      document.getElementById('loading-state').classList.add('hidden');
-      var errEl = document.getElementById('error-state');
-      errEl.textContent = msg;
-      errEl.classList.remove('hidden');
-    }
-
-    function renderTrip(id, t, user) {
-      var content = document.getElementById('content');
-      content.classList.remove('hidden');
+    // ─── Render ──────────────────────────────────────────────────────────────
+    function renderAll() {
+      var t = currentTrip;
+      document.getElementById('content').classList.remove('hidden');
 
       var isAirport = t.tripType && t.tripType.includes('Airport');
       var isHourly  = t.tripType && t.tripType.includes('Hourly');
 
       // Hero
-      document.getElementById('trip-date').textContent       = formatFullDate(t.date);
+      document.getElementById('trip-date-display').textContent = formatFullDate(t.date);
       document.getElementById('trip-time-display').textContent = formatTime(t.time);
-      document.getElementById('trip-type-display').textContent  = t.tripType || '—';
+      document.getElementById('trip-type-display').textContent = t.tripType || 'Point to Point';
 
       var badge = document.getElementById('status-badge');
       var bs    = statusBadgeStyle(t.status);
-      badge.textContent = t.status || 'pending';
+      badge.textContent   = t.status || 'pending';
       badge.style.background = bs.bg;
-      badge.style.color       = bs.text;
+      badge.style.color      = bs.text;
 
       // Vehicle
       var v = t.vehicleSnap || {};
@@ -256,19 +608,27 @@
       document.getElementById('pickup-line1').textContent = t.pickupAddress || '—';
       document.getElementById('pickup-line2').textContent =
         [t.pickupCity, t.pickupState, t.pickupZip].filter(Boolean).join(', ');
+
       if (t.pickupNotes) {
-        document.getElementById('pickup-notes').textContent = t.pickupNotes;
+        document.getElementById('pickup-notes-display').textContent = t.pickupNotes;
         document.getElementById('pickup-notes-row').classList.remove('hidden');
+        document.getElementById('add-notes-row').classList.add('hidden');
+      } else {
+        document.getElementById('pickup-notes-row').classList.add('hidden');
+        document.getElementById('add-notes-row').classList.remove('hidden');
       }
 
-      // Destination / Airport
-      if (isHourly) {
-        document.getElementById('destination-card').classList.add('hidden');
-      } else if (isAirport) {
-        // Airport card
-        document.getElementById('destination-card').classList.add('hidden');
-        var airCard = document.getElementById('airport-card');
-        airCard.classList.remove('hidden');
+      // Conditional cards
+      document.getElementById('destination-card').classList.toggle('hidden', isHourly || isAirport);
+      document.getElementById('airport-card').classList.toggle('hidden', !isAirport);
+      document.getElementById('hourly-card').classList.toggle('hidden', !isHourly);
+
+      if (!isHourly && !isAirport) {
+        document.getElementById('dest-line1').textContent = t.dropoffAddress || '—';
+        document.getElementById('dest-line2').textContent =
+          [t.dropoffCity, t.dropoffState].filter(Boolean).join(', ');
+      }
+      if (isAirport) {
         document.getElementById('airport-name').textContent = t.airport || '—';
         if (t.airline || t.flightNumber || t.terminal) {
           document.getElementById('flight-row').classList.remove('hidden');
@@ -277,83 +637,580 @@
             [t.flightNumber ? 'Flight ' + t.flightNumber : '', t.terminal ? 'Terminal ' + t.terminal : '']
               .filter(Boolean).join('  ·  ');
         }
-      } else {
-        document.getElementById('dest-line1').textContent = t.dropoffAddress || '—';
-        document.getElementById('dest-line2').textContent =
-          [t.dropoffCity, t.dropoffState].filter(Boolean).join(', ');
       }
-
-      // Hourly end time
-      if (isHourly && t.endTime) {
-        document.getElementById('hourly-card').classList.remove('hidden');
-        document.getElementById('end-time-display').textContent = formatTime(t.endTime);
+      if (isHourly) {
+        document.getElementById('end-time-display').textContent = formatTime(t.endTime) || '—';
       }
 
       // Instructions
       if (t.instructions) {
-        document.getElementById('instructions-text').textContent = t.instructions;
-        document.getElementById('instructions-card').classList.remove('hidden');
+        document.getElementById('instructions-display').textContent = t.instructions;
+        document.getElementById('instructions-wrap').classList.remove('hidden');
+        document.getElementById('add-instructions-row').classList.add('hidden');
+      } else {
+        document.getElementById('instructions-wrap').classList.add('hidden');
+        document.getElementById('add-instructions-row').classList.remove('hidden');
       }
 
-      // Cancel action
-      setupCancel(id, t, user);
+      // Driver
+      renderDriver(t);
+
+      if (t.status !== 'cancelled' && t.status !== 'completed') {
+        setupEditing();
+      } else {
+        document.querySelectorAll('.editable').forEach(function(el) {
+          el.classList.remove('editable');
+        });
+      }
     }
 
-    function setupCancel(id, t, user) {
-      var cancelBtn     = document.getElementById('cancel-btn');
-      var cancelConfirm = document.getElementById('cancel-confirm');
-      var cancelYes     = document.getElementById('cancel-yes');
-      var cancelNo      = document.getElementById('cancel-no');
+    // ─── Inline edit engine ──────────────────────────────────────────────────
+    function editField(opts) {
+      if (activeEdit) activeEdit.cancel();
 
-      if (t.status === 'cancelled' || t.status === 'completed') {
-        cancelBtn.style.display = 'none';
+      var displayEl = opts.displayEl;
+      var container = document.createElement('div');
+      container.className = 'edit-container';
+      opts.buildEdit(container);
+
+      var btnRow = document.createElement('div');
+      btnRow.className = 'edit-btn-row';
+      btnRow.innerHTML =
+        '<button type="button" class="edit-save-btn">Save</button>' +
+        '<button type="button" class="edit-cancel-btn">Cancel</button>';
+      container.appendChild(btnRow);
+
+      displayEl.classList.add('hidden');
+      displayEl.parentNode.insertBefore(container, displayEl.nextSibling);
+
+      var first = container.querySelector('input,textarea,select');
+      if (first) { first.focus(); if (first.select) first.select(); }
+
+      function cancel() {
+        container.remove();
+        displayEl.classList.remove('hidden');
+        activeEdit = null;
+      }
+
+      function save() {
+        var update = opts.getUpdate();
+        if (!update) return;
+        update.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+
+        var saveBtn = container.querySelector('.edit-save-btn');
+        saveBtn.textContent = '…';
+        saveBtn.disabled = true;
+
+        db.collection('trips').doc(tripId).update(update)
+          .then(function() {
+            Object.assign(currentTrip, update);
+            opts.afterSave(update);
+            cancel();
+            showToast('Saved');
+          })
+          .catch(function(err) {
+            saveBtn.textContent = 'Save';
+            saveBtn.disabled = false;
+            var errP = document.createElement('p');
+            errP.className = 'edit-error';
+            errP.textContent = err.message;
+            container.appendChild(errP);
+          });
+      }
+
+      container.querySelector('.edit-save-btn').addEventListener('click', save);
+      container.querySelector('.edit-cancel-btn').addEventListener('click', cancel);
+      activeEdit = { cancel: cancel };
+    }
+
+    // Build a labelled input inside an edit container
+    function addInput(container, label, id, type, value, opts) {
+      opts = opts || {};
+      var wrap = document.createElement('div');
+
+      var el;
+      if (type === 'textarea') {
+        el = document.createElement('textarea');
+        el.rows = opts.rows || 2;
+        el.textContent = value;
+      } else if (type === 'select') {
+        el = document.createElement('select');
+        (opts.options || []).forEach(function(o) {
+          var opt = document.createElement('option');
+          opt.value = o.value || o;
+          opt.textContent = o.label || o;
+          if (opt.value === value) opt.selected = true;
+          el.appendChild(opt);
+        });
+      } else {
+        el = document.createElement('input');
+        el.type  = type;
+        el.value = value;
+        if (opts.maxLength)  el.maxLength  = opts.maxLength;
+        if (opts.placeholder) el.placeholder = opts.placeholder;
+        if (opts.small) el.classList.add('edit-input-sm');
+      }
+      el.id        = id;
+      el.className = 'edit-input' + (type === 'textarea' ? '' : '');
+
+      if (label) {
+        var lbl = document.createElement('span');
+        lbl.className = 'edit-field-label';
+        lbl.textContent = label;
+        wrap.appendChild(lbl);
+      }
+      wrap.appendChild(el);
+      container.appendChild(wrap);
+      return el;
+    }
+
+    function gv(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+    function on(id, fn) { var el = document.getElementById(id); if (el) el.addEventListener('click', fn.bind(el)); }
+
+    // ─── Per-field edit setup ────────────────────────────────────────────────
+    function setupEditing() {
+      var t = currentTrip;
+
+      // DATE — display only (clicking the date label shows the date inline edit elsewhere)
+      on('trip-date-display', function() {});  // date is shown as text, editable via time field area
+
+      // TIME
+      on('trip-time-display', function() {
+        editField({
+          displayEl: this,
+          buildEdit: function(c) {
+            var row = document.createElement('div');
+            row.className = 'edit-grid';
+            var dw = document.createElement('div'); addInput(dw, 'Date', 'ei-date', 'date', t.date, { small: true });
+            var tw = document.createElement('div'); addInput(tw, 'Time', 'ei-time', 'time', t.time, { small: true });
+            row.appendChild(dw); row.appendChild(tw); c.appendChild(row);
+          },
+          getUpdate: function() { return { date: gv('ei-date') || t.date, time: gv('ei-time') || t.time }; },
+          afterSave: function(u) {
+            document.getElementById('trip-time-display').textContent = formatTime(u.time);
+            document.getElementById('trip-date-display').textContent = formatFullDate(u.date);
+          }
+        });
+      });
+
+      // TRIP TYPE
+      on('trip-type-display', function() {
+        var chosen = currentTrip.tripType || 'Point to Point';
+        editField({
+          displayEl: this,
+          buildEdit: function(c) {
+            var pillWrap = document.createElement('div');
+            pillWrap.className = 'type-pills';
+            var types = ['Point to Point','Airport Drop-off','Airport Pick-up','Hourly - Wait & Return'];
+            types.forEach(function(tp) {
+              var btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'type-pill' + (tp === chosen ? ' active' : '');
+              btn.textContent = tp.includes('Hourly') ? 'Hourly' : tp;
+              btn.addEventListener('click', function() {
+                pillWrap.querySelectorAll('.type-pill').forEach(function(p) { p.classList.remove('active'); });
+                btn.classList.add('active');
+                chosen = tp;
+              });
+              pillWrap.appendChild(btn);
+            });
+            c.appendChild(pillWrap);
+          },
+          getUpdate: function() { return { tripType: chosen }; },
+          afterSave: function(u) {
+            document.getElementById('trip-type-display').textContent = u.tripType;
+            var isA = u.tripType.includes('Airport');
+            var isH = u.tripType.includes('Hourly');
+            document.getElementById('destination-card').classList.toggle('hidden', isH || isA);
+            document.getElementById('airport-card').classList.toggle('hidden', !isA);
+            document.getElementById('hourly-card').classList.toggle('hidden', !isH);
+          }
+        });
+      });
+
+      // VEHICLE
+      on('vehicle-name', function() {
+        var chosen = { id: currentTrip.vehicleId, snap: currentTrip.vehicleSnap };
+        editField({
+          displayEl: this,
+          buildEdit: function(c) {
+            var list = document.createElement('div');
+            list.style.marginTop = '0.5rem';
+            list.textContent = 'Loading…';
+            c.appendChild(list);
+            db.collection('users').doc(currentUser.uid).collection('vehicles').get()
+              .then(function(snap) {
+                list.textContent = '';
+                if (snap.empty) { list.textContent = 'No vehicles on file.'; return; }
+                snap.forEach(function(doc) {
+                  var v = doc.data();
+                  var lbl = document.createElement('label');
+                  lbl.className = 'vehicle-card';
+                  lbl.innerHTML =
+                    '<input type="radio" name="ev" value="' + doc.id + '"' + (doc.id === chosen.id ? ' checked' : '') + '>' +
+                    '<div class="vehicle-card-inner">' +
+                      '<div>' +
+                        '<p class="vc-name">' + (v.year ? v.year + ' ' : '') + (v.make||'') + ' ' + (v.model||'') + '</p>' +
+                        '<p class="vc-sub">' + (v.color||'') + (v.plate ? ' · ' + v.plate : '') + '</p>' +
+                      '</div>' +
+                      '<span class="vc-check">&#10003;</span>' +
+                    '</div>';
+                  lbl.querySelector('input').addEventListener('change', function() {
+                    chosen = { id: doc.id, snap: { year: v.year, make: v.make, model: v.model, color: v.color, plate: v.plate } };
+                  });
+                  list.appendChild(lbl);
+                });
+              });
+          },
+          getUpdate: function() {
+            if (!chosen.id) return null;
+            return { vehicleId: chosen.id, vehicleSnap: chosen.snap };
+          },
+          afterSave: function(u) {
+            var v = u.vehicleSnap || {};
+            document.getElementById('vehicle-name').textContent =
+              ((v.year ? v.year + ' ' : '') + (v.make||'') + ' ' + (v.model||'')).trim();
+            document.getElementById('vehicle-sub').textContent =
+              [v.color, v.plate].filter(Boolean).join('  ·  ');
+          }
+        });
+      });
+
+      // PICKUP ADDRESS
+      on('pickup-line1', function() {
+        editField({
+          displayEl: this,
+          buildEdit: function(c) {
+            addInput(c, 'Street', 'ei-pa', 'text', t.pickupAddress || '', { placeholder: '123 Main St' });
+            var g = document.createElement('div'); g.className = 'edit-grid'; c.appendChild(g);
+            var cw = document.createElement('div'); addInput(cw, 'City',  'ei-pc', 'text', t.pickupCity  || '', { placeholder: 'Greenwich' });
+            var sw = document.createElement('div'); addInput(sw, 'State', 'ei-ps', 'text', t.pickupState || '', { placeholder: 'CT', maxLength: 2 });
+            g.appendChild(cw); g.appendChild(sw);
+            addInput(c, 'ZIP', 'ei-pz', 'text', t.pickupZip || '', { placeholder: '06830', maxLength: 5, small: true });
+          },
+          getUpdate: function() {
+            return { pickupAddress: gv('ei-pa'), pickupCity: gv('ei-pc'), pickupState: gv('ei-ps').toUpperCase(), pickupZip: gv('ei-pz') };
+          },
+          afterSave: function(u) {
+            document.getElementById('pickup-line1').textContent = u.pickupAddress || '—';
+            document.getElementById('pickup-line2').textContent =
+              [u.pickupCity, u.pickupState, u.pickupZip].filter(Boolean).join(', ');
+          }
+        });
+      });
+
+      // PICKUP NOTES
+      on('pickup-notes-display', function() {
+        editField({
+          displayEl: this,
+          buildEdit: function(c) { addInput(c, null, 'ei-pn', 'textarea', t.pickupNotes || '', { rows: 2 }); },
+          getUpdate: function()  { return { pickupNotes: gv('ei-pn') }; },
+          afterSave: function(u) {
+            document.getElementById('pickup-notes-display').textContent = u.pickupNotes;
+            if (!u.pickupNotes) {
+              document.getElementById('pickup-notes-row').classList.add('hidden');
+              document.getElementById('add-notes-row').classList.remove('hidden');
+            }
+          }
+        });
+      });
+
+      var addNotesBtn = document.getElementById('add-notes-btn');
+      if (addNotesBtn) {
+        addNotesBtn.addEventListener('click', function() {
+          document.getElementById('add-notes-row').classList.add('hidden');
+          document.getElementById('pickup-notes-row').classList.remove('hidden');
+          document.getElementById('pickup-notes-display').textContent = '';
+          document.getElementById('pickup-notes-display').click();
+        });
+      }
+
+      // DESTINATION
+      on('dest-line1', function() {
+        editField({
+          displayEl: this,
+          buildEdit: function(c) {
+            addInput(c, 'Street', 'ei-da', 'text', t.dropoffAddress || '', { placeholder: '456 Park Ave' });
+            var g = document.createElement('div'); g.className = 'edit-grid'; c.appendChild(g);
+            var cw = document.createElement('div'); addInput(cw, 'City',  'ei-dc', 'text', t.dropoffCity  || '', { placeholder: 'New York' });
+            var sw = document.createElement('div'); addInput(sw, 'State', 'ei-ds', 'text', t.dropoffState || '', { placeholder: 'NY', maxLength: 2 });
+            g.appendChild(cw); g.appendChild(sw);
+          },
+          getUpdate: function() {
+            return { dropoffAddress: gv('ei-da'), dropoffCity: gv('ei-dc'), dropoffState: gv('ei-ds').toUpperCase() };
+          },
+          afterSave: function(u) {
+            document.getElementById('dest-line1').textContent = u.dropoffAddress || '—';
+            document.getElementById('dest-line2').textContent = [u.dropoffCity, u.dropoffState].filter(Boolean).join(', ');
+          }
+        });
+      });
+
+      // AIRPORT
+      on('airport-name', function() {
+        var airportOpts = [
+          { value: '', label: 'Select airport…' },
+          { value: '(JFK) John F. Kennedy', label: '(JFK) John F. Kennedy' },
+          { value: '(LGA) LaGuardia', label: '(LGA) LaGuardia' },
+          { value: '(EWR) Newark Liberty', label: '(EWR) Newark Liberty' },
+          { value: '(BDL) Bradley International', label: '(BDL) Bradley International' },
+          { value: '(HPN) Westchester County', label: '(HPN) Westchester County' }
+        ];
+        var airlineOpts = [{ value: '', label: 'Select airline…' },
+          'Delta Air Lines','American Airlines','United Airlines',
+          'JetBlue Airways','Air Canada','Alaska Airlines',
+          'Air France','British Airways','KLM','Lufthansa'
+        ].map(function(o) { return typeof o === 'string' ? { value: o, label: o } : o; });
+
+        editField({
+          displayEl: this,
+          buildEdit: function(c) {
+            addInput(c, 'Airport', 'ei-ap', 'select', t.airport  || '', { options: airportOpts });
+            addInput(c, 'Airline', 'ei-al', 'select', t.airline  || '', { options: airlineOpts });
+            var g = document.createElement('div'); g.className = 'edit-grid'; c.appendChild(g);
+            var fw = document.createElement('div'); addInput(fw, 'Flight #',  'ei-fn', 'text', t.flightNumber || '', { placeholder: 'DL 405' });
+            var tw = document.createElement('div'); addInput(tw, 'Terminal',  'ei-tm', 'text', t.terminal     || '', { placeholder: '4' });
+            g.appendChild(fw); g.appendChild(tw);
+          },
+          getUpdate: function() {
+            return { airport: gv('ei-ap'), airline: gv('ei-al'), flightNumber: gv('ei-fn'), terminal: gv('ei-tm') };
+          },
+          afterSave: function(u) {
+            document.getElementById('airport-name').textContent = u.airport || '—';
+            var fr = document.getElementById('flight-row');
+            if (u.airline || u.flightNumber || u.terminal) {
+              fr.classList.remove('hidden');
+              document.getElementById('airline-name').textContent = u.airline || '';
+              document.getElementById('flight-info').textContent =
+                [u.flightNumber ? 'Flight ' + u.flightNumber : '', u.terminal ? 'Terminal ' + u.terminal : '']
+                  .filter(Boolean).join('  ·  ');
+            } else { fr.classList.add('hidden'); }
+          }
+        });
+      });
+
+      // HOURLY END TIME
+      on('end-time-display', function() {
+        editField({
+          displayEl: this,
+          buildEdit: function(c) { addInput(c, 'End Time', 'ei-et', 'time', t.endTime || '', { small: true }); },
+          getUpdate: function()  { return { endTime: gv('ei-et') }; },
+          afterSave: function(u) { document.getElementById('end-time-display').textContent = formatTime(u.endTime) || '—'; }
+        });
+      });
+
+      // INSTRUCTIONS
+      on('instructions-display', function() {
+        editField({
+          displayEl: this,
+          buildEdit: function(c) { addInput(c, null, 'ei-ins', 'textarea', t.instructions || '', { rows: 3 }); },
+          getUpdate: function()  { return { instructions: gv('ei-ins') }; },
+          afterSave: function(u) {
+            document.getElementById('instructions-display').textContent = u.instructions;
+            if (!u.instructions) {
+              document.getElementById('instructions-wrap').classList.add('hidden');
+              document.getElementById('add-instructions-row').classList.remove('hidden');
+            }
+          }
+        });
+      });
+
+      var addInsBtn = document.getElementById('add-instructions-btn');
+      if (addInsBtn) {
+        addInsBtn.addEventListener('click', function() {
+          document.getElementById('add-instructions-row').classList.add('hidden');
+          document.getElementById('instructions-wrap').classList.remove('hidden');
+          document.getElementById('instructions-display').textContent = '';
+          document.getElementById('instructions-display').click();
+        });
+      }
+
+      setupDriverEdit();
+    }
+
+    // ─── Driver ──────────────────────────────────────────────────────────────
+    function renderDriver(t) {
+      var assignedEl = document.getElementById('driver-assigned');
+      var emptyEl    = document.getElementById('driver-empty');
+      var nameEl     = document.getElementById('driver-name-display');
+      var phoneEl    = document.getElementById('driver-phone-display');
+
+      if (t.driverName) {
+        nameEl.textContent = t.driverName;
+        phoneEl.innerHTML  = t.driverPhone
+          ? '<a href="tel:' + t.driverPhone + '">' + t.driverPhone + '</a>'
+          : '';
+        assignedEl.classList.remove('hidden');
+        emptyEl.classList.add('hidden');
+      } else {
+        assignedEl.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+      }
+    }
+
+    function setupDriverEdit() {
+      var t = currentTrip;
+
+      on('driver-name-display', function() {
+        editField({
+          displayEl: this,
+          buildEdit: function(c) {
+            addInput(c, 'Driver name', 'ei-dn', 'text', t.driverName || '', { placeholder: 'James, Maria…' });
+            addInput(c, 'Phone number', 'ei-dp', 'text', t.driverPhone || '', { placeholder: '+1 555 000 0000' });
+          },
+          getUpdate: function() {
+            return { driverName: gv('ei-dn'), driverPhone: gv('ei-dp') };
+          },
+          afterSave: function(u) {
+            renderDriver(Object.assign({}, currentTrip, u));
+          }
+        });
+      });
+
+      var assignBtn = document.getElementById('assign-driver-btn');
+      if (assignBtn) {
+        assignBtn.addEventListener('click', function() {
+          document.getElementById('driver-empty').classList.add('hidden');
+          document.getElementById('driver-assigned').classList.remove('hidden');
+          document.getElementById('driver-name-display').textContent = '';
+          document.getElementById('driver-name-display').click();
+        });
+      }
+    }
+
+    // ─── Actions ─────────────────────────────────────────────────────────────
+    function setupCancel() {
+      var t           = currentTrip;
+      var actionsRow  = document.getElementById('actions-row');
+      var confirmBtn  = document.getElementById('confirm-btn');
+      var completeBtn = document.getElementById('complete-btn');
+      var cancelBtn   = document.getElementById('cancel-btn');
+      var restoreBtn  = document.getElementById('restore-btn');
+      var cancelPanel = document.getElementById('cancel-confirm');
+      var yesBtn      = document.getElementById('cancel-yes');
+      var noBtn       = document.getElementById('cancel-no');
+
+      if (t.status === 'completed') {
+        actionsRow.style.display = 'none';
         return;
       }
 
-      cancelBtn.addEventListener('click', function() {
-        cancelConfirm.classList.remove('hidden');
-        cancelBtn.style.display = 'none';
-      });
-      cancelNo.addEventListener('click', function() {
-        cancelConfirm.classList.add('hidden');
-        cancelBtn.style.display = '';
-      });
-      cancelYes.addEventListener('click', function() {
-        db.collection('trips').doc(id).update({
-          status:    'cancelled',
+      if (t.status === 'cancelled') {
+        confirmBtn.classList.add('hidden');
+        completeBtn.classList.add('hidden');
+        cancelBtn.classList.add('hidden');
+        restoreBtn.classList.remove('hidden');
+        restoreBtn.addEventListener('click', function() {
+          restoreBtn.disabled = true;
+          db.collection('trips').doc(tripId).update({
+            status: 'pending',
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(function() {
+            currentTrip.status = 'pending';
+            updateStatusBadge('pending');
+            restoreBtn.classList.add('hidden');
+            confirmBtn.classList.remove('hidden');
+            cancelBtn.classList.remove('hidden');
+            restoreBtn.disabled = false;
+            showToast('Trip restored.');
+          });
+        });
+        return;
+      }
+
+      // pending: show Confirm + Cancel; confirmed: show Complete + Cancel
+      if (t.status === 'pending') {
+        confirmBtn.classList.remove('hidden');
+        completeBtn.classList.add('hidden');
+      }
+
+      confirmBtn.addEventListener('click', function() {
+        if (activeEdit) activeEdit.cancel();
+        confirmBtn.disabled = true;
+        db.collection('trips').doc(tripId).update({
+          status: 'confirmed',
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(function() {
-          window.location.replace('trips.html');
+          currentTrip.status = 'confirmed';
+          updateStatusBadge('confirmed');
+          confirmBtn.classList.add('hidden');
+          completeBtn.classList.remove('hidden');
+          confirmBtn.disabled = false;
+          showToast('Trip confirmed.');
         });
+      });
+
+      completeBtn.addEventListener('click', function() {
+        if (activeEdit) activeEdit.cancel();
+        completeBtn.disabled = true;
+        db.collection('trips').doc(tripId).update({
+          status: 'completed',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function() { window.location.replace('trips.html'); });
+      });
+
+      cancelBtn.addEventListener('click', function() {
+        if (activeEdit) activeEdit.cancel();
+        cancelPanel.classList.remove('hidden');
+        actionsRow.classList.add('hidden');
+      });
+      noBtn.addEventListener('click', function() {
+        cancelPanel.classList.add('hidden');
+        actionsRow.classList.remove('hidden');
+      });
+      yesBtn.addEventListener('click', function() {
+        db.collection('trips').doc(tripId).update({
+          status: 'cancelled',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function() { window.location.replace('trips.html'); });
       });
     }
 
+    function updateStatusBadge(status) {
+      var badge = document.getElementById('status-badge');
+      var bs = statusBadgeStyle(status);
+      badge.textContent      = status;
+      badge.style.background = bs.bg;
+      badge.style.color      = bs.text;
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────
     function formatFullDate(d) {
       if (!d) return '—';
-      var parts  = d.split('-');
-      var dt     = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-      var days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      return days[dt.getDay()] + ', ' + months[dt.getMonth()] + ' ' + dt.getDate();
+      var p  = d.split('-');
+      var dt = new Date(+p[0], +p[1]-1, +p[2]);
+      var DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      var MONS  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      return DAYS[dt.getDay()] + ', ' + MONS[dt.getMonth()] + ' ' + dt.getDate();
     }
 
     function formatTime(t) {
       if (!t) return '—';
-      var parts = t.split(':');
-      var h = parseInt(parts[0], 10);
-      var m = parts[1];
-      var ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-      return h + ':' + m + ' ' + ampm;
+      var p = t.split(':'), h = +p[0], m = p[1];
+      return (h % 12 || 12) + ':' + m + (h >= 12 ? ' PM' : ' AM');
     }
 
     function statusBadgeStyle(status) {
       switch (status) {
-        case 'confirmed':  return { bg: 'rgba(100,200,140,0.15)', text: '#64c88c' };
-        case 'completed':  return { bg: 'rgba(150,150,150,0.15)', text: '#999' };
-        case 'cancelled':  return { bg: 'rgba(220,80,80,0.15)',   text: '#dc5050' };
-        default:           return { bg: 'rgba(185,199,228,0.15)', text: '#b9c7e4' };
+        case 'confirmed': return { bg: 'rgba(100,200,140,0.12)', text: '#64c88c' };
+        case 'completed': return { bg: 'rgba(158,149,144,0.15)',  text: '#9E9590' };
+        case 'cancelled': return { bg: 'rgba(220,80,80,0.12)',   text: '#c07070' };
+        default:          return { bg: 'rgba(184,146,58,0.12)',  text: '#B8923A' };
       }
+    }
+
+    function showError(msg) {
+      document.getElementById('loading-state').classList.add('hidden');
+      var el = document.getElementById('error-state');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js');
+      });
     }
   </script>
 </body>

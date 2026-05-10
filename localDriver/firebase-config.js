@@ -24,7 +24,20 @@ const db   = firebase.firestore();
 function requireAuth(redirectTo) {
   redirectTo = redirectTo || 'login.html';
   return new Promise(function(resolve) {
+    var settled = false;
+
+    // Failsafe: if Firebase never fires onAuthStateChanged within 8 s, redirect.
+    var timeout = setTimeout(function() {
+      if (!settled) {
+        settled = true;
+        window.location.replace(redirectTo);
+      }
+    }, 8000);
+
     var unsubscribe = auth.onAuthStateChanged(function(user) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
       unsubscribe();
       if (user) {
         resolve(user);

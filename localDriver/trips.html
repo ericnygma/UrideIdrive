@@ -1,144 +1,359 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0E0D0B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Steward">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <title>STEWARD — My Trips</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary":                "#b9c7e4",
-            "primary-container":      "#0a192f",
-            "on-surface":             "#e4e2e4",
-            "on-surface-variant":     "#c5c6cd",
-            "on-primary-container":   "#74829d",
-            "surface-container":      "#1f1f21",
-            "surface-container-high": "#2a2a2c",
-            "outline-variant":        "#44474d",
-            "outline":                "#8f9097",
-            "background":             "#131315"
-          },
-          fontFamily: {
-            "body-md":     ["Inter", "sans-serif"],
-            "label-caps":  ["Inter", "sans-serif"],
-            "headline-sm": ["Noto Serif", "serif"],
-            "headline-md": ["Noto Serif", "serif"],
-            "display-lg":  ["Noto Serif", "serif"]
-          }
-        }
-      }
-    }
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    html { visibility: hidden; }
-    body { background-color: #131315; color: #e4e2e4; font-family: 'Inter', sans-serif; }
-    .glass-card {
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 1rem;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .hidden { display: none !important; }
+
+    :root {
+      --ink:     #EDE8DF;
+      --muted:   #9E9590;
+      --faint:   #2C2820;
+      --gold:    #B8923A;
+      --gold-lt: #D4AE62;
+      --bg:      #0E0D0B;
+      --surface: #15130E;
+      --border:  rgba(184,146,58,0.14);
     }
-    .btn-sheen {
-      background: linear-gradient(135deg, #e4e2e4 0%, #c7c7bb 100%);
-      color: #0a192f;
+
+    html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 50% at 50% -5%, rgba(184,146,58,0.06) 0%, transparent 100%),
+        radial-gradient(ellipse 50% 30% at 85% 100%, rgba(6,5,3,0.5) 0%, transparent 100%);
     }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    .stage { position: relative; z-index: 1; min-height: 100vh; padding-bottom: 7rem; }
+
+    /* ── Auth overlay ────────── */
+    #auth-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #auth-overlay p { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.08em; }
+
+    /* ── Header ──────────────── */
+    .site-header {
+      position: sticky; top: 0; z-index: 30;
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(14,13,11,0.9);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(184,146,58,0.08);
+    }
+    .header-left { display: flex; align-items: center; gap: 1rem; }
+    .back-link {
+      color: var(--muted); text-decoration: none;
+      font-size: 1.1rem; line-height: 1;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--ink); }
+    .page-title {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300;
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      color: var(--ink);
+    }
+    .nav-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: none; border: none; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .nav-btn:hover { color: var(--ink); }
+
+    /* ── Main ────────────────── */
+    main { max-width: 480px; margin: 0 auto; padding: 1.75rem 1.5rem; }
+
+    /* ── Filter pills ────────── */
+    .filter-row { display: flex; gap: 0.5rem; margin-bottom: 1.75rem; }
     .filter-pill {
-      border: 1px solid #44474d;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--faint);
       border-radius: 9999px;
-      padding: 0.35rem 1rem;
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, color 0.2s;
-      color: #8f9097;
       background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
     }
     .filter-pill.active {
-      border-color: #b9c7e4;
-      background: rgba(185,199,228,0.12);
-      color: #e4e2e4;
+      border-color: rgba(184,146,58,0.55);
+      background: rgba(184,146,58,0.08);
+      color: var(--gold-lt);
     }
-    .trip-row {
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-    .trip-row:hover { border-color: rgba(185,199,228,0.3) !important; }
-    .status-pill {
-      font-size: 0.6rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+
+    /* ── Group header ────────── */
+    .group-header {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      padding: 0.18rem 0.55rem;
-      border-radius: 9999px;
+      color: var(--faint);
+      padding: 1.25rem 0 0.6rem;
     }
+    .group-header:first-child { padding-top: 0; }
+
+    /* ── Trip row ────────────── */
+    .trip-row {
+      display: flex;
+      align-items: stretch;
+      gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid rgba(184,146,58,0.3);
+      border-radius: 0.5rem;
+      padding: 1rem 1rem 1rem 0.9rem;
+      cursor: pointer;
+      transition: border-left-color 0.2s, background 0.2s;
+      margin-bottom: 0.6rem;
+    }
+    .trip-row:last-child { margin-bottom: 0; }
+    .trip-row:hover { background: #1A1810; border-left-color: rgba(184,146,58,0.85); }
+
+    .trip-date {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: flex-start;
+      min-width: 2.25rem;
+      padding-top: 0.1rem;
+      border-right: 1px solid var(--faint);
+      padding-right: 0.85rem;
+    }
+    .trip-day {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .trip-month {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .trip-body { flex: 1; min-width: 0; }
+    .trip-time-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+    .trip-time {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--ink);
+    }
+    .trip-dest {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.875rem;
+      color: #9A8E80;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .trip-vehicle {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    .trip-arrow {
+      color: var(--faint);
+      font-size: 1.2rem;
+      align-self: center;
+      flex-shrink: 0;
+      padding-left: 0.25rem;
+    }
+
+    /* ── Badge ───────────────── */
+    .badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.16rem 0.5rem;
+      border-radius: 9999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Empty state ─────────── */
+    #empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      border: 1px solid var(--faint);
+      border-radius: 0.5rem;
+    }
+    .empty-title {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .empty-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    /* ── Skeleton ───────────── */
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(250%); }
+    }
+    .skel-row {
+      display: flex; align-items: stretch; gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--faint);
+      border-radius: 0.5rem;
+      padding: 1rem 1rem 1rem 0.9rem;
+      margin-bottom: 0.6rem;
+    }
+    .skel-date {
+      display: flex; flex-direction: column; align-items: center;
+      min-width: 2.25rem; padding-right: 0.85rem;
+      border-right: 1px solid var(--faint);
+      gap: 0.45rem; padding-top: 0.1rem;
+    }
+    .skel-body { flex: 1; display: flex; flex-direction: column; gap: 0.55rem; padding-top: 0.2rem; }
+    .skel {
+      border-radius: 2px;
+      background: var(--faint);
+      position: relative; overflow: hidden;
+    }
+    .skel::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+      will-change: transform;
+      animation: shimmer 1.6s ease infinite;
+    }
+    .skel-day   { width: 22px; height: 26px; }
+    .skel-mon   { width: 16px; height: 8px; }
+    .skel-lg    { height: 16px; width: 65%; }
+    .skel-md    { height: 11px; width: 48%; }
+    .skel-sm    { height: 9px;  width: 32%; margin-top: 0.1rem; }
+
+    /* ── FAB ─────────────────── */
+    .fab-wrap { position: fixed; bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; display: flex; justify-content: center; z-index: 20; }
+    .fab {
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      color: var(--bg);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 1rem 2.5rem;
+      border-radius: 9999px;
+      transition: opacity 0.2s;
+      box-shadow: 0 8px 28px rgba(184,146,58,0.22);
+    }
+    .fab:hover { opacity: 0.88; }
+
+    /* ── Highlight new trip ──── */
+    @keyframes tripPulse {
+      0%   { opacity: 0.4; }
+      50%  { opacity: 1; }
+      100% { opacity: 1; }
+    }
+    .trip-highlight { animation: tripPulse 1.2s ease forwards; }
   </style>
 </head>
-<body class="min-h-screen pb-28">
+<body>
 
-  <!-- Nav -->
-  <header class="sticky top-0 z-30 px-5 py-4 flex items-center justify-between" style="background: rgba(19,19,21,0.85); backdrop-filter: blur(16px);">
-    <div class="flex items-center gap-3">
-      <a href="index.html" class="text-on-surface-variant hover:text-on-surface text-lg leading-none">&larr;</a>
-      <span class="font-headline-sm text-lg text-on-surface">My Trips</span>
-    </div>
-    <button id="sign-out-btn" class="text-on-primary-container text-sm hover:text-on-surface transition-colors">Sign Out</button>
-  </header>
+  <div id="auth-overlay"><p>Loading…</p></div>
 
-  <main class="max-w-lg mx-auto px-5 pt-6">
+  <div class="stage">
+    <header class="site-header">
+      <div class="header-left">
+        <a href="index.html" class="back-link">&larr;</a>
+        <span class="page-title">My Trips</span>
+      </div>
+      <button type="button" id="sign-out-btn" class="nav-btn">Sign Out</button>
+    </header>
 
-    <!-- Filter pills -->
-    <div class="flex gap-2 mb-6">
-      <button class="filter-pill active" data-filter="upcoming">Upcoming</button>
-      <button class="filter-pill" data-filter="past">Past</button>
-      <button class="filter-pill" data-filter="all">All</button>
-    </div>
+    <main>
+      <div class="filter-row">
+        <button type="button" class="filter-pill active" data-filter="upcoming">Upcoming</button>
+        <button type="button" class="filter-pill" data-filter="past">Past</button>
+        <button type="button" class="filter-pill" data-filter="all">All</button>
+      </div>
 
-    <!-- Trip list -->
-    <div id="trip-list" class="space-y-3">
-      <p class="text-on-primary-container text-sm">Loading trips…</p>
-    </div>
+      <div id="skeleton">
+        <div class="skel-row"><div class="skel-date"><div class="skel skel-day"></div><div class="skel skel-mon"></div></div><div class="skel-body"><div class="skel skel-lg"></div><div class="skel skel-md"></div><div class="skel skel-sm"></div></div></div>
+        <div class="skel-row"><div class="skel-date"><div class="skel skel-day"></div><div class="skel skel-mon"></div></div><div class="skel-body"><div class="skel skel-lg"></div><div class="skel skel-md"></div><div class="skel skel-sm"></div></div></div>
+        <div class="skel-row"><div class="skel-date"><div class="skel skel-day"></div><div class="skel skel-mon"></div></div><div class="skel-body"><div class="skel skel-lg"></div><div class="skel skel-md"></div><div class="skel skel-sm"></div></div></div>
+      </div>
 
-    <!-- Empty state -->
-    <div id="empty-state" class="hidden glass-card px-5 py-8 text-center">
-      <p class="text-on-surface text-base font-headline-sm mb-1">No trips yet</p>
-      <p class="text-on-primary-container text-sm">Book your first ride to get started.</p>
-    </div>
+      <div id="trip-list"></div>
 
-  </main>
-
-  <!-- FAB: Book a Ride -->
-  <div class="fixed bottom-6 left-0 right-0 flex justify-center z-20 px-5">
-    <a href="book-ride.html" class="btn-sheen py-4 px-10 rounded-full font-semibold text-sm tracking-widest uppercase shadow-2xl hover:opacity-90 transition-opacity">
-      Book a Ride
-    </a>
+      <div id="empty-state" class="hidden">
+        <p class="empty-title" id="empty-title">No trips</p>
+        <p class="empty-sub" id="empty-sub">Book your first ride to get started.</p>
+      </div>
+    </main>
   </div>
 
-  <!-- Firebase -->
+  <div class="fab-wrap">
+    <a href="book-ride.html" class="fab">Book a Ride</a>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="firebase-config.js"></script>
   <script>
     requireAuth().then(function(user) {
-      document.documentElement.style.visibility = '';
+      document.getElementById('auth-overlay').style.display = 'none';
       initPage(user);
     });
 
-    var currentFilter = 'upcoming';
+    var currentFilter = sessionStorage.getItem('steward_trips_filter') || 'upcoming';
     var allTrips = [];
+    var scrollRestored = false;
 
     function initPage(user) {
       document.getElementById('sign-out-btn').addEventListener('click', function() {
         auth.signOut().then(function() { window.location.replace('login.html'); });
       });
-
       setupFilters();
       loadTrips(user);
     }
@@ -146,90 +361,162 @@
     function setupFilters() {
       var pills = document.querySelectorAll('.filter-pill');
       pills.forEach(function(pill) {
+        if (pill.dataset.filter === currentFilter) {
+          pills.forEach(function(p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+        }
         pill.addEventListener('click', function() {
           pills.forEach(function(p) { p.classList.remove('active'); });
           pill.classList.add('active');
           currentFilter = pill.dataset.filter;
+          sessionStorage.setItem('steward_trips_filter', currentFilter);
           renderTrips();
         });
       });
     }
 
+    function localToday() {
+      var now = new Date();
+      return now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0');
+    }
+
+    function dateGroupLabel(dateStr, today) {
+      if (!dateStr) return 'Other';
+      var tp = today.split('-'), dp = dateStr.split('-');
+      var todayDate = new Date(+tp[0], +tp[1]-1, +tp[2]);
+      var d         = new Date(+dp[0], +dp[1]-1, +dp[2]);
+      var diff = Math.round((d - todayDate) / 86400000);
+      if (diff === 0)               return 'Today';
+      if (diff === 1)               return 'Tomorrow';
+      if (diff === -1)              return 'Yesterday';
+      if (diff > 1  && diff <= 7)  return 'This Week';
+      if (diff < -1 && diff >= -7) return 'This Week';
+      if (diff > 7)                return 'Later';
+      return 'Earlier';
+    }
+
     function loadTrips(user) {
-      // Single-field where clause — no composite index required.
-      // Results are sorted client-side.
-      db.collection('trips')
-        .where('uid', '==', user.uid)
+      db.collection('trips').where('uid', '==', user.uid)
         .onSnapshot(function(snap) {
           allTrips = [];
           snap.forEach(function(doc) {
             allTrips.push({ id: doc.id, data: doc.data() });
           });
-          allTrips.sort(function(a, b) {
-            if (b.data.date !== a.data.date) return b.data.date < a.data.date ? -1 : 1;
-            return (b.data.time || '') < (a.data.time || '') ? -1 : 1;
-          });
           renderTrips();
         }, function(err) {
           document.getElementById('trip-list').innerHTML =
-            '<p class="text-red-400 text-sm px-1">Could not load trips: ' + err.message + '</p>';
+            '<p style="color:#c07070;font-size:0.85rem;padding:1rem 0;">Could not load trips: ' + err.message + '</p>';
           console.error('trips onSnapshot error:', err);
         });
     }
 
     function renderTrips() {
-      var today = new Date().toISOString().slice(0, 10);
+      var today = localToday();
       var list  = document.getElementById('trip-list');
       var empty = document.getElementById('empty-state');
+      document.getElementById('skeleton').classList.add('hidden');
 
       var filtered = allTrips.filter(function(t) {
         if (currentFilter === 'upcoming') return t.data.date >= today && t.data.status !== 'cancelled';
         if (currentFilter === 'past')     return t.data.date < today  || t.data.status === 'completed';
-        return true; // 'all'
+        return true;
+      });
+
+      var asc = currentFilter === 'upcoming';
+      filtered.sort(function(a, b) {
+        var ad = a.data.date || '', bd = b.data.date || '';
+        var at = a.data.time || '', bt = b.data.time || '';
+        if (ad !== bd) return asc ? (ad < bd ? -1 : 1) : (ad > bd ? -1 : 1);
+        return asc ? (at < bt ? -1 : 1) : (at > bt ? -1 : 1);
       });
 
       list.innerHTML = '';
 
       if (filtered.length === 0) {
+        var messages = {
+          upcoming: { title: 'Nothing upcoming',    sub: 'All clear ahead — book a ride when you\'re ready.' },
+          past:     { title: 'No history yet',      sub: 'Completed trips will appear here.' },
+          all:      { title: 'No trips',            sub: 'Book your first ride to get started.' }
+        };
+        var m = messages[currentFilter] || messages.all;
+        document.getElementById('empty-title').textContent = m.title;
+        document.getElementById('empty-sub').textContent   = m.sub;
         empty.classList.remove('hidden');
         return;
       }
       empty.classList.add('hidden');
 
+      if (!scrollRestored) {
+        scrollRestored = true;
+        var savedScroll = sessionStorage.getItem('steward_trips_scroll');
+        if (savedScroll) {
+          sessionStorage.removeItem('steward_trips_scroll');
+          requestAnimationFrame(function() { window.scrollTo(0, parseInt(savedScroll)); });
+        }
+      }
+
+      var lastGroup = null;
       filtered.forEach(function(t) {
+        var group = (currentFilter !== 'all') ? dateGroupLabel(t.data.date, today) : null;
+        if (group && group !== lastGroup) {
+          var hdr = document.createElement('p');
+          hdr.className = 'group-header';
+          hdr.textContent = group;
+          list.appendChild(hdr);
+          lastGroup = group;
+        }
         list.appendChild(makeTripRow(t.id, t.data));
       });
+
+      highlightNewTrip();
+    }
+
+    var newTripId = new URLSearchParams(window.location.search).get('new');
+
+    function highlightNewTrip() {
+      if (!newTripId) return;
+      var card = document.querySelector('[data-trip-id="' + newTripId + '"]');
+      if (!card) return;
+      card.classList.add('trip-highlight');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      newTripId = null;
     }
 
     function makeTripRow(id, t) {
       var el = document.createElement('div');
-      el.className = 'glass-card trip-row px-5 py-4';
+      el.className = 'trip-row';
+      el.dataset.tripId = id;
 
-      var dateStr   = formatDate(t.date);
-      var timeStr   = formatTime(t.time);
-      var vehicle   = t.vehicleSnap ? (t.vehicleSnap.make + ' ' + t.vehicleSnap.model) : '—';
-      var dest      = t.tripType && t.tripType.includes('Airport') ? (t.airport || 'Airport') :
-                      (t.dropoffAddress ? t.dropoffAddress + (t.dropoffCity ? ', ' + t.dropoffCity : '') : 'Point to Point');
-      var badgeStyle = statusBadgeStyle(t.status);
+      var ds  = formatDate(t.date);
+      var ss  = statusBadgeStyle(t.status);
+      var vehicle = t.vehicleSnap
+        ? ((t.vehicleSnap.make || '') + ' ' + (t.vehicleSnap.model || '')).trim()
+        : '—';
+      var dest = t.tripType && t.tripType.includes('Airport')
+        ? (t.airport || 'Airport')
+        : (t.dropoffAddress
+            ? t.dropoffAddress + (t.dropoffCity ? ', ' + t.dropoffCity : '')
+            : t.tripType || 'Point to Point');
 
       el.innerHTML =
-        '<div class="flex items-start gap-4">' +
-          '<div class="flex-shrink-0 text-center w-10">' +
-            '<p class="font-headline-sm text-2xl text-on-surface leading-none">' + dateStr.day + '</p>' +
-            '<p class="text-on-primary-container text-xs uppercase tracking-wide">' + dateStr.month + '</p>' +
+        '<div class="trip-date">' +
+          '<span class="trip-day">'   + ds.day   + '</span>' +
+          '<span class="trip-month">' + ds.month + '</span>' +
+        '</div>' +
+        '<div class="trip-body">' +
+          '<div class="trip-time-row">' +
+            '<span class="trip-time">' + formatTime(t.time) + '</span>' +
+            '<span class="badge" style="background:' + ss.bg + ';color:' + ss.text + '">' + (t.status || 'pending') + '</span>' +
           '</div>' +
-          '<div class="flex-1 min-w-0">' +
-            '<div class="flex items-center gap-2 mb-1">' +
-              '<p class="text-on-surface text-sm font-medium">' + timeStr + '</p>' +
-              '<span class="status-pill" style="background:' + badgeStyle.bg + ';color:' + badgeStyle.text + '">' + (t.status || 'pending') + '</span>' +
-            '</div>' +
-            '<p class="text-on-surface-variant text-xs truncate">' + dest + '</p>' +
-            '<p class="text-on-primary-container text-xs mt-0.5">' + vehicle + '</p>' +
-          '</div>' +
-          '<span class="text-on-primary-container text-lg self-center">&rsaquo;</span>' +
-        '</div>';
+          '<p class="trip-dest">' + dest + '</p>' +
+          '<p class="trip-vehicle">' + vehicle + '</p>' +
+        '</div>' +
+        '<span class="trip-arrow">&rsaquo;</span>';
 
       el.addEventListener('click', function() {
+        sessionStorage.setItem('steward_trips_scroll', window.scrollY);
         window.location.href = 'trip-detail.html?id=' + id;
       });
       return el;
@@ -237,29 +524,32 @@
 
     function formatDate(d) {
       if (!d) return { day: '—', month: '—' };
-      var parts  = d.split('-');
-      var dt     = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      return { day: dt.getDate(), month: months[dt.getMonth()] };
+      var p  = d.split('-');
+      var dt = new Date(+p[0], +p[1]-1, +p[2]);
+      var MONS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return { day: dt.getDate(), month: MONS[dt.getMonth()] };
     }
 
     function formatTime(t) {
       if (!t) return '—';
-      var parts = t.split(':');
-      var h = parseInt(parts[0], 10);
-      var m = parts[1];
-      var ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-      return h + ':' + m + ' ' + ampm;
+      var p = t.split(':'), h = +p[0], m = p[1];
+      return (h % 12 || 12) + ':' + m + (h >= 12 ? ' PM' : ' AM');
     }
 
     function statusBadgeStyle(status) {
       switch (status) {
-        case 'confirmed':  return { bg: 'rgba(100,200,140,0.15)', text: '#64c88c' };
-        case 'completed':  return { bg: 'rgba(150,150,150,0.15)', text: '#999' };
-        case 'cancelled':  return { bg: 'rgba(220,80,80,0.15)',   text: '#dc5050' };
-        default:           return { bg: 'rgba(185,199,228,0.15)', text: '#b9c7e4' };
+        case 'confirmed': return { bg: 'rgba(100,200,140,0.12)', text: '#64c88c' };
+        case 'completed': return { bg: 'rgba(107,99,88,0.2)',    text: '#6B6358' };
+        case 'cancelled': return { bg: 'rgba(220,80,80,0.12)',   text: '#c07070' };
+        default:          return { bg: 'rgba(184,146,58,0.12)',  text: '#B8923A' };
       }
+    }
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js');
+      });
     }
   </script>
 </body>

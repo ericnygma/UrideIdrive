@@ -1,220 +1,976 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STEWARD — Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0E0D0B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Steward">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <title>STEWARD</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary":                "#b9c7e4",
-            "primary-container":      "#0a192f",
-            "on-surface":             "#e4e2e4",
-            "on-surface-variant":     "#c5c6cd",
-            "on-primary-container":   "#74829d",
-            "surface-container":      "#1f1f21",
-            "surface-container-high": "#2a2a2c",
-            "outline-variant":        "#44474d",
-            "outline":                "#8f9097",
-            "background":             "#131315"
-          },
-          fontFamily: {
-            "body-md":     ["Inter", "sans-serif"],
-            "label-caps":  ["Inter", "sans-serif"],
-            "headline-sm": ["Noto Serif", "serif"],
-            "headline-md": ["Noto Serif", "serif"],
-            "display-lg":  ["Noto Serif", "serif"]
-          }
-        }
-      }
-    }
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    html { visibility: hidden; }
-    body { background-color: #131315; color: #e4e2e4; font-family: 'Inter', sans-serif; }
-    .glass-card {
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 1rem;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .hidden { display: none !important; }
+
+    :root {
+      --ink:      #EDE8DF;
+      --muted:   #9E9590;
+      --faint:    #2C2820;
+      --gold:     #B8923A;
+      --gold-lt:  #D4AE62;
+      --bg:       #0E0D0B;
+      --surface:  #15130E;
+      --surface2: #1C1914;
+      --border:   rgba(184,146,58,0.14);
     }
-    .btn-sheen {
-      background: linear-gradient(135deg, #e4e2e4 0%, #c7c7bb 100%);
-      color: #0a192f;
+
+    html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
+
+    /* ── Atmosphere ─────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 55% at 50% -8%, rgba(184,146,58,0.07) 0%, transparent 100%),
+        radial-gradient(ellipse 50% 35% at 15% 105%, rgba(6,5,3,0.6) 0%, transparent 100%);
     }
-    .trip-type-badge {
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────── */
+    .stage { position: relative; z-index: 1; }
+    main { max-width: 480px; margin: 0 auto; padding: 2.5rem 1.5rem 7rem; }
+
+    /* ── Auth overlay ────────────────────────────────────────── */
+    #auth-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #auth-overlay p { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.08em; }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    .site-header {
+      position: sticky; top: 0; z-index: 30;
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(14,13,11,0.88);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(184,146,58,0.08);
+    }
+    .wordmark {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300;
+      font-size: 0.88rem;
+      letter-spacing: 0.44em;
+      text-indent: 0.44em;
+      color: var(--gold);
+    }
+    .nav-link {
       font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      padding: 0.2rem 0.6rem;
-      border-radius: 9999px;
+      color: var(--muted);
+      text-decoration: none;
+      background: none; border: none; cursor: pointer;
+      transition: color 0.2s;
+      font-family: 'Inter', sans-serif;
     }
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    .nav-link:hover { color: var(--ink); }
+
+    /* ── Menu trigger ────────────────────────────────────────── */
+    .menu-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 0.35rem 0.2rem;
+      display: flex; flex-direction: column; gap: 5px;
+      align-items: flex-end;
+    }
+    .menu-btn span {
+      display: block; height: 1px;
+      background: var(--muted);
+      transition: background 0.2s,
+                  transform 0.35s cubic-bezier(0.16,1,0.3,1),
+                  width 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .menu-btn span:nth-child(1) { width: 20px; }
+    .menu-btn span:nth-child(2) { width: 13px; }
+    .menu-btn:hover span { background: var(--gold-lt); }
+    .menu-btn.is-open span:nth-child(1) { width: 18px; transform: translateY(3px) rotate(45deg); }
+    .menu-btn.is-open span:nth-child(2) { width: 18px; transform: translateY(-3px) rotate(-45deg); }
+
+    /* ── Drawer overlay ──────────────────────────────────────── */
+    .drawer-overlay {
+      position: fixed; inset: 0; z-index: 40;
+      background: rgba(0,0,0,0);
+      pointer-events: none;
+      transition: background 0.4s;
+    }
+    .drawer-overlay.open {
+      background: rgba(0,0,0,0.55);
+      pointer-events: all;
+    }
+
+    /* ── Drawer panel ────────────────────────────────────────── */
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      z-index: 50;
+      width: min(280px, 82vw);
+      background: #13110D;
+      border-left: 1px solid rgba(184,146,58,0.14);
+      transform: translateX(100%);
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; flex-direction: column;
+      padding: 1.5rem 1.75rem 2.5rem;
+      overflow-y: auto;
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .drawer-brand {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300; font-size: 0.65rem;
+      letter-spacing: 0.44em; text-indent: 0.44em;
+      color: var(--faint);
+    }
+    .drawer-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 1.4rem; line-height: 1;
+      transition: color 0.2s; padding: 0;
+    }
+    .drawer-close:hover { color: var(--ink); }
+
+    .drawer-rule {
+      border: none; height: 1px;
+      background: linear-gradient(90deg, rgba(184,146,58,0.18), transparent);
+      margin: 0;
+    }
+
+    .drawer-nav {
+      flex: 1;
+      display: flex; flex-direction: column;
+      padding-top: 2.5rem;
+    }
+    .drawer-link {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300; font-size: 1.55rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-decoration: none;
+      background: none; border: none; cursor: pointer;
+      display: flex; align-items: baseline; gap: 0.85rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--faint);
+      text-align: left; width: 100%;
+      opacity: 0; transform: translateX(16px);
+      transition: color 0.2s,
+                  opacity 0.45s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.45s cubic-bezier(0.16,1,0.3,1);
+    }
+    .drawer.open .drawer-link:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.10s; }
+    .drawer.open .drawer-link:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.17s; }
+    .drawer.open .drawer-link:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.24s; }
+    .drawer.open .drawer-footer .drawer-link { opacity: 1; transform: translateX(0); transition-delay: 0.31s; }
+    .drawer-link:hover { color: var(--ink); }
+    .drawer-link:last-child { border-bottom: none; }
+
+    .drawer-num {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem; font-weight: 400;
+      letter-spacing: 0.08em; color: var(--faint);
+      flex-shrink: 0;
+    }
+
+    .drawer-footer { margin-top: auto; padding-top: 2rem; }
+
+    /* ── Greeting ────────────────────────────────────────────── */
+    .greeting-time {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .greeting-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.05;
+    }
+
+    /* ── Section heading ─────────────────────────────────────── */
+    .section-title {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300;
+      font-size: 2rem;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .section-cap {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Gold rule ───────────────────────────────────────────── */
+    .gold-rule {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent);
+      opacity: 0.2;
+      margin: 2.5rem 0;
+    }
+
+    /* ── Appointment card ────────────────────────────────────── */
+    .appt-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid rgba(184,146,58,0.38);
+      border-radius: 0.5rem;
+      padding: 1.1rem 1.1rem 1rem 1rem;
+      cursor: pointer;
+      transition: border-left-color 0.25s, background 0.2s;
+      margin-bottom: 0.75rem;
+    }
+    .appt-card:last-child { margin-bottom: 0; }
+    .appt-card:hover { background: var(--surface2); border-left-color: rgba(184,146,58,0.9); }
+
+    .appt-time {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.05;
+    }
+    .appt-pickup {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      color: #9A8E80;
+      margin-top: 0.3rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .appt-dest {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .appt-vehicle {
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-top: 0.55rem;
+    }
+
+    /* ── Next-trip card (dimmer, dashed border) ──────────────── */
+    .next-card {
+      background: transparent;
+      border: 1px solid var(--faint);
+      border-left: 2px solid var(--faint);
+      border-radius: 0.5rem;
+      padding: 1.1rem 1.1rem 1rem 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .next-card:hover { border-color: rgba(184,146,58,0.3); }
+
+    /* ── Badge ───────────────────────────────────────────────── */
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.55rem;
+      border-radius: 9999px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    /* ── Empty state ─────────────────────────────────────────── */
+    .empty-note {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--muted);
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    /* ── Fleet cards (horizontal scroll) ────────────────────── */
+    .fleet-scroll {
+      display: flex;
+      gap: 0.75rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scrollbar-width: none;
+    }
+    .fleet-scroll::-webkit-scrollbar { display: none; }
+
+    .fleet-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.45rem;
+      padding: 0.85rem 1rem;
+      min-width: 148px;
+      flex-shrink: 0;
+      transition: border-color 0.2s;
+    }
+    .fleet-card:hover { border-color: rgba(184,146,58,0.3); }
+
+    .fleet-car {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+    .fleet-color {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+    .fleet-plate {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--gold-lt);
+      margin-top: 0.4rem;
+    }
+    .fleet-actions {
+      display: flex; gap: 0.85rem;
+      margin-top: 0.75rem;
+    }
+    .fleet-edit, .fleet-remove {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: none; border: none; cursor: pointer;
+      transition: color 0.2s;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    .fleet-edit  { color: rgba(184,146,58,0.45); }
+    .fleet-edit:hover  { color: var(--gold-lt); }
+    .fleet-remove { color: var(--faint); }
+    .fleet-remove:hover { color: #c07070; }
+
+    .fleet-confirm {
+      margin-top: 0.75rem;
+      font-size: 0.65rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.08em;
+      color: #c07070;
+      display: flex; align-items: center; gap: 0.65rem;
+    }
+    .fleet-confirm span { opacity: 0.7; }
+    .fleet-confirm-yes, .fleet-confirm-no {
+      background: none; border: none; cursor: pointer;
+      font-size: 0.65rem; font-family: 'Inter', sans-serif;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: color 0.2s; padding: 0;
+    }
+    .fleet-confirm-yes { color: #c07070; }
+    .fleet-confirm-yes:hover { color: #e08080; }
+    .fleet-confirm-no  { color: var(--muted); }
+    .fleet-confirm-no:hover  { color: var(--ink); }
+
+    /* ── FAB ─────────────────────────────────────────────────── */
+    .fab-wrap { position: fixed; bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; display: flex; justify-content: center; z-index: 20; }
+    .fab {
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      color: var(--bg);
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 1rem 2.5rem;
+      border-radius: 9999px;
+      transition: opacity 0.2s;
+      box-shadow: 0 8px 28px rgba(184,146,58,0.22);
+    }
+    .fab:hover { opacity: 0.88; }
+
+    /* ── Modal ───────────────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(0,0,0,0.72);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .modal-sheet {
+      width: 100%; max-width: 480px;
+      background: #16140F;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 1rem 1rem 0 0;
+      padding: 1.75rem 1.5rem 3rem;
+    }
+    .modal-title {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+    }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 1.5rem; line-height: 1;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--ink); }
+    .modal-error {
+      display: none;
+      margin-bottom: 1rem;
+      padding: 0.6rem 0;
+      border-left: 2px solid #8B3A3A;
+      padding-left: 0.75rem;
+      font-size: 0.78rem;
+      color: #C07070;
+    }
+    .modal-error.visible { display: block; }
+
+    .modal-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.4rem;
+      margin-top: 0.85rem;
+    }
+    .modal-input {
+      background: rgba(255,255,255,0.03);
+      border: none;
+      border-bottom: 1px solid var(--faint);
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 300;
+      padding: 0.3rem 0 0.5rem;
+      width: 100%;
+      outline: none;
+      caret-color: var(--gold);
+      transition: border-color 0.25s;
+    }
+    .modal-input:focus { border-bottom-color: rgba(184,146,58,0.6); }
+    .modal-input::placeholder { color: var(--faint); font-style: italic; }
+
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+    .modal-save {
+      width: 100%;
+      margin-top: 2rem;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+      color: var(--bg);
+      border: none;
+      border-radius: 0.4rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .modal-save:hover { opacity: 0.88; }
+
+    /* ── Layout helpers ─────────────────────────────────────── */
+    .greeting-wrap   { margin-bottom: 2.75rem; }
+    .today-section   { margin-bottom: 0; }
+    .today-head      { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1.4rem; }
+    .section-cap-mb  { margin-bottom: 1rem; }
+    .fleet-head      { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .modal-head      { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    #add-vehicle-btn { color: rgba(184,146,58,0.65); }
+    #v-plate         { text-transform: uppercase; }
+    .label-note      { font-style: italic; text-transform: none; color: var(--muted); }
+
+    /* ── Toast ───────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%) translateY(0.5rem);
+      background: rgba(21,19,14,0.95);
+      border: 1px solid rgba(100,200,140,0.3);
+      color: #64c88c;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.5rem 1.1rem; border-radius: 9999px;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 1000; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Page-load animations ────────────────────────────────── */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .a1 { opacity: 0; animation: riseIn 1s cubic-bezier(0.16,1,0.3,1) 0.05s forwards; }
+    .a2 { opacity: 0; animation: riseIn 1s cubic-bezier(0.16,1,0.3,1) 0.2s  forwards; }
+    .a3 { opacity: 0; animation: riseIn 1s cubic-bezier(0.16,1,0.3,1) 0.35s forwards; }
+    .a4 { opacity: 0; animation: riseIn 1s cubic-bezier(0.16,1,0.3,1) 0.5s  forwards; }
+
+    /* ── First-run panel ────────────────────────────────────────── */
+    #first-run {
+      opacity: 0;
+      animation: riseIn 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s forwards;
+    }
+    .fr-intro {
+      margin-bottom: 2.25rem;
+    }
+    .fr-intro-head {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(1.9rem, 7vw, 2.4rem);
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+    .fr-intro-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .fr-steps { display: flex; flex-direction: column; gap: 0; }
+    .fr-step {
+      padding: 1.4rem 1.25rem 1.4rem 1.1rem;
+      border: 1px solid var(--faint);
+      border-top: none;
+      position: relative;
+    }
+    .fr-step:first-child { border-top: 1px solid var(--faint); }
+    .fr-step::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--faint);
+      transition: background 0.3s;
+    }
+    .fr-step.ready::before { background: var(--gold); }
+    .fr-num {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
+    }
+    .fr-step.ready .fr-num { color: var(--gold-lt); }
+    .fr-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 1.2rem;
+      color: var(--ink);
+      margin-bottom: 0.35rem;
+      line-height: 1.2;
+    }
+    .fr-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 1rem;
+    }
+    .fr-cta {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: none; border: none;
+      padding: 0; cursor: pointer;
+      text-decoration: none;
+      transition: color 0.2s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .fr-cta:hover { color: var(--gold-lt); }
+    .fr-step.ready .fr-cta { color: var(--gold-lt); }
+    .fr-step.ready .fr-cta:hover { color: #E4C97A; }
+    .fr-step.done .fr-title { color: var(--muted); text-decoration: line-through; }
+    .fr-step.done .fr-cta  { display: none; }
+    .fr-step.done::before  { background: rgba(100,200,140,0.4); }
+    .fr-step.done .fr-num  { color: #64c88c; }
+
+    /* ── Onboarding reminder ─────────────────────────────────────── */
+    .setup-reminder {
+      margin-bottom: 1.75rem;
+      padding: 0.85rem 1rem 0.85rem 1.1rem;
+      border-left: 2px solid rgba(184,146,58,0.3);
+      background: rgba(184,146,58,0.04);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      opacity: 0;
+      animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+    }
+    .setup-reminder-body { flex: 1; min-width: 0; }
+    .setup-reminder p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 0.35rem;
+    }
+    .setup-reminder-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .setup-reminder-link:hover { color: var(--ink); }
+    .setup-reminder-dismiss {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #3A3630;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 0;
+      margin-top: 0.1rem;
+      transition: color 0.2s;
+    }
+    .setup-reminder-dismiss:hover { color: var(--muted); }
   </style>
 </head>
-<body class="min-h-screen pb-24">
+<body>
 
-  <!-- Nav bar -->
-  <header class="sticky top-0 z-30 px-5 py-4 flex items-center justify-between" style="background: rgba(19,19,21,0.85); backdrop-filter: blur(16px);">
-    <span class="font-headline-md text-xl tracking-widest uppercase text-primary">Steward</span>
-    <div class="flex items-center gap-3">
-      <a href="trips.html" class="text-on-surface-variant text-sm hover:text-on-surface transition-colors">My Trips</a>
-      <button id="sign-out-btn" class="text-on-primary-container text-sm hover:text-on-surface transition-colors">Sign Out</button>
+  <div id="auth-overlay"><p>Loading…</p></div>
+  <div id="toast"></div>
+
+  <div class="stage">
+
+    <header class="site-header">
+      <span class="wordmark">Steward</span>
+      <button type="button" id="menu-btn" class="menu-btn" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <main>
+
+      <!-- Greeting -->
+      <!-- Onboarding reminder — shown only if user skipped setup -->
+      <div id="setup-reminder" class="setup-reminder hidden">
+        <div class="setup-reminder-body">
+          <p>Your driver profile isn't set up yet.</p>
+          <a href="onboarding.html" class="setup-reminder-link">Complete your preferences →</a>
+        </div>
+        <button type="button" class="setup-reminder-dismiss" id="dismiss-reminder" aria-label="Dismiss">×</button>
+      </div>
+
+      <div class="a1 greeting-wrap">
+        <p id="greeting-time" class="greeting-time"></p>
+        <h2 id="greeting-name" class="greeting-name"></h2>
+      </div>
+
+      <!-- First-run panel (hidden until both data snapshots confirm empty) -->
+      <div id="first-run" class="hidden">
+        <div class="fr-intro">
+          <h3 class="fr-intro-head">Two steps to your first ride.</h3>
+          <p class="fr-intro-sub">Everything Steward needs to dispatch your driver with confidence.</p>
+        </div>
+        <div class="fr-steps">
+          <div class="fr-step ready" id="fr-step-1">
+            <span class="fr-num">01</span>
+            <h4 class="fr-title">Register Your Vehicle</h4>
+            <p class="fr-desc">Make, model, color, and plate — everything your driver needs to identify the car.</p>
+            <button type="button" class="fr-cta" id="fr-add-vehicle">+ Add a vehicle</button>
+          </div>
+          <div class="fr-step" id="fr-step-2">
+            <span class="fr-num">02</span>
+            <h4 class="fr-title">Schedule Your First Ride</h4>
+            <p class="fr-desc">Date, time, and pickup address. Ready in under a minute.</p>
+            <a href="book-ride.html" class="fr-cta">Schedule a ride →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Trips -->
+      <section class="a2 today-section" id="today-section">
+        <div class="today-head">
+          <h3 class="section-title">Today</h3>
+          <span id="today-date-label" class="section-cap"></span>
+        </div>
+
+        <div id="trips-today"></div>
+
+        <div id="trips-empty" class="hidden">
+          <p class="section-cap section-cap-mb">No trips today &mdash; Next Up</p>
+          <div id="next-trip-card"></div>
+          <p id="no-upcoming" class="hidden empty-note">Nothing scheduled. Ready when you are.</p>
+        </div>
+      </section>
+
+      <hr class="gold-rule a3" id="mid-rule">
+
+      <!-- Fleet -->
+      <section class="a4" id="fleet-section">
+        <div class="fleet-head">
+          <h3 class="section-cap">My Fleet</h3>
+          <button type="button" id="add-vehicle-btn" class="nav-link">+ Add Vehicle</button>
+        </div>
+        <div id="fleet-list" class="fleet-scroll"></div>
+        <p id="fleet-empty" class="hidden empty-note">No vehicles registered yet.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Drawer overlay -->
+  <div id="drawer-overlay" class="drawer-overlay"></div>
+
+  <!-- Side drawer -->
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-top">
+      <span class="drawer-brand">Steward</span>
+      <button type="button" id="drawer-close" class="drawer-close" aria-label="Close menu">&times;</button>
     </div>
-  </header>
-
-  <!-- Main content -->
-  <main class="max-w-lg mx-auto px-5 pt-6">
-
-    <!-- Greeting -->
-    <div class="mb-8">
-      <p class="text-on-primary-container text-xs font-label-caps uppercase tracking-widest mb-1" id="greeting-time">Good morning</p>
-      <h2 class="font-headline-md text-3xl text-on-surface" id="greeting-name">Welcome</h2>
+    <hr class="drawer-rule">
+    <nav class="drawer-nav">
+      <a href="trips.html" class="drawer-link">
+        <span class="drawer-num">01</span>My Trips
+      </a>
+      <a href="settings.html" class="drawer-link">
+        <span class="drawer-num">02</span>Settings
+      </a>
+      <a href="settings.html#account-section" class="drawer-link">
+        <span class="drawer-num">03</span>Account
+      </a>
+    </nav>
+    <div class="drawer-footer">
+      <hr class="drawer-rule">
+      <button type="button" id="drawer-sign-out" class="drawer-link">
+        <span class="drawer-num">—</span>Sign Out
+      </button>
     </div>
+  </aside>
 
-    <!-- Today's Trips -->
-    <section class="mb-8">
-      <h3 class="text-xs font-label-caps uppercase tracking-widest text-on-primary-container mb-3">Today's Trips</h3>
-      <div id="trips-today" class="space-y-3">
-        <!-- Populated by JS -->
-      </div>
-      <div id="trips-empty" class="hidden glass-card px-5 py-6 text-center text-on-primary-container text-sm">
-        No trips scheduled for today.
-      </div>
-    </section>
-
-    <!-- My Fleet -->
-    <section class="mb-8">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xs font-label-caps uppercase tracking-widest text-on-primary-container">My Fleet</h3>
-        <button id="add-vehicle-btn" class="text-xs text-primary hover:text-on-surface transition-colors">+ Add Vehicle</button>
-      </div>
-      <div id="fleet-list" class="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-        <!-- Populated by JS -->
-      </div>
-      <div id="fleet-empty" class="hidden glass-card px-5 py-6 text-center text-on-primary-container text-sm">
-        No vehicles registered yet. Add one to get started.
-      </div>
-    </section>
-
-  </main>
-
-  <!-- FAB: Book a Ride -->
-  <div class="fixed bottom-6 left-0 right-0 flex justify-center z-20 px-5">
-    <a href="book-ride.html" class="btn-sheen py-4 px-10 rounded-full font-semibold text-sm tracking-widest uppercase shadow-2xl hover:opacity-90 transition-opacity">
-      Book a Ride
-    </a>
+  <!-- FAB -->
+  <div class="fab-wrap">
+    <a href="book-ride.html" class="fab">Book a Ride</a>
   </div>
 
   <!-- Add Vehicle Modal -->
-  <div id="vehicle-modal" class="hidden fixed inset-0 z-50 flex items-end justify-center" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
-    <div class="w-full max-w-lg glass-card rounded-b-none p-6 pb-10 animate-slide-up">
-      <div class="flex items-center justify-between mb-5">
-        <h3 class="font-headline-sm text-lg text-on-surface">Add a Vehicle</h3>
-        <button id="close-modal-btn" class="text-on-primary-container text-2xl leading-none hover:text-on-surface">&times;</button>
+  <div id="vehicle-modal" class="modal-backdrop hidden">
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <h3 class="modal-title" id="vehicle-modal-title">Add a Vehicle</h3>
+        <button type="button" id="close-modal-btn" class="modal-close">&times;</button>
       </div>
-      <div id="vehicle-form-error" class="hidden mb-4 px-4 py-3 rounded-lg bg-red-900/30 border border-red-700/50 text-red-300 text-sm"></div>
-      <div class="grid grid-cols-2 gap-3 mb-3">
+
+      <div id="vehicle-form-error" class="modal-error"></div>
+
+      <div class="modal-grid">
         <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Year</label>
-          <input id="v-year" type="text" maxlength="4" placeholder="2022" class="vehicle-input w-full">
+          <label class="modal-label" for="v-year">Year</label>
+          <input id="v-year" type="text" maxlength="4" placeholder="2022" class="modal-input">
         </div>
         <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Make</label>
-          <input id="v-make" type="text" placeholder="Tesla" class="vehicle-input w-full">
+          <label class="modal-label" for="v-make">Make</label>
+          <input id="v-make" type="text" placeholder="Tesla" class="modal-input">
         </div>
         <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Model</label>
-          <input id="v-model" type="text" placeholder="Model 3" class="vehicle-input w-full">
+          <label class="modal-label" for="v-model">Model</label>
+          <input id="v-model" type="text" placeholder="Model 3" class="modal-input">
         </div>
         <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Color</label>
-          <input id="v-color" type="text" placeholder="Midnight Silver" class="vehicle-input w-full">
+          <label class="modal-label" for="v-color">Color</label>
+          <input id="v-color" type="text" placeholder="Midnight Silver" class="modal-input">
         </div>
       </div>
-      <div class="mb-5">
-        <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">License Plate</label>
-        <input id="v-plate" type="text" placeholder="ABC-1234" class="vehicle-input w-full uppercase">
-      </div>
-      <div class="mb-5">
-        <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Notes <span class="normal-case text-on-primary-container">(optional)</span></label>
-        <input id="v-notes" type="text" placeholder="e.g. Key in glove box" class="vehicle-input w-full">
-      </div>
-      <button id="save-vehicle-btn" class="btn-sheen w-full py-3 rounded-lg font-semibold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
-        Save Vehicle
-      </button>
+
+      <label class="modal-label" for="v-plate">License Plate</label>
+      <input id="v-plate" type="text" placeholder="ABC-1234" class="modal-input">
+
+      <label class="modal-label" for="v-notes">Notes <span class="label-note">(optional)</span></label>
+      <input id="v-notes" type="text" placeholder="Key in glove box" class="modal-input">
+
+      <button type="button" id="save-vehicle-btn" class="modal-save">Save Vehicle</button>
+      <input type="hidden" id="v-edit-id" value="">
     </div>
   </div>
 
-  <style>
-    .vehicle-input {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid #44474d;
-      border-radius: 0.5rem;
-      color: #e4e2e4;
-      padding: 0.65rem 0.85rem;
-      font-size: 0.875rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .vehicle-input:focus { border-color: #b9c7e4; }
-    .vehicle-input::placeholder { color: #74829d; }
-  </style>
-
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="firebase-config.js"></script>
   <script>
+    var toastTimer = null;
+    function showToast(msg) {
+      var el = document.getElementById('toast');
+      el.textContent = msg || 'Saved';
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2000);
+    }
+
     requireAuth().then(function(user) {
-      document.documentElement.style.visibility = '';
+      document.getElementById('auth-overlay').style.display = 'none';
       initPage(user);
     });
 
+    // ── First-run coordination ────────────────────────────────────
+    var frNoTrips    = true;
+    var frNoVehicles = true;
+    var frResolved   = false;
+
+    function checkFirstRun() {
+      if (frResolved) return;
+      if (frNoTrips && frNoVehicles) {
+        frResolved = true;
+        document.getElementById('first-run').classList.remove('hidden');
+        document.getElementById('today-section').classList.add('hidden');
+        document.getElementById('mid-rule').classList.add('hidden');
+        document.getElementById('fleet-section').classList.add('hidden');
+      }
+    }
+
+    function exitFirstRun() {
+      if (!document.getElementById('first-run').classList.contains('hidden')) {
+        document.getElementById('first-run').classList.add('hidden');
+        document.getElementById('today-section').classList.remove('hidden');
+        document.getElementById('mid-rule').classList.remove('hidden');
+        document.getElementById('fleet-section').classList.remove('hidden');
+      }
+      frResolved = true;
+    }
+
     function initPage(user) {
-      setGreeting(user);
+      // Single Firestore read — shared between greeting and reminder check
+      db.collection('users').doc(user.uid).get().then(function(doc) {
+        var profile = doc.exists ? doc.data() : {};
+        setGreeting(user, profile.name);
+        checkOnboardingReminder(profile);
+      });
+
       loadTodaysTrips(user);
       loadFleet(user);
       setupVehicleModal(user);
+      setupDrawer();
 
-      document.getElementById('sign-out-btn').addEventListener('click', function() {
-        auth.signOut().then(function() {
-          window.location.replace('login.html');
-        });
+      document.getElementById('fr-add-vehicle').addEventListener('click', function() {
+        openVehicleModal(null, null);
       });
     }
 
-    function setGreeting(user) {
-      var hours = new Date().getHours();
-      var timeLabel = hours < 12 ? 'Good morning' : hours < 17 ? 'Good afternoon' : 'Good evening';
-      document.getElementById('greeting-time').textContent = timeLabel;
-      var name = user.displayName ? user.displayName.split(' ')[0] : user.email.split('@')[0];
-      document.getElementById('greeting-name').textContent = name;
+    function checkOnboardingReminder(profile) {
+      if (profile.onboardingSkipped && !profile.onboardingComplete) {
+        var banner = document.getElementById('setup-reminder');
+        banner.classList.remove('hidden');
+        document.getElementById('dismiss-reminder').addEventListener('click', function() {
+          banner.style.transition = 'opacity 0.3s';
+          banner.style.opacity = '0';
+          setTimeout(function() { banner.remove(); }, 320);
+        });
+      }
+    }
+
+    function setupDrawer() {
+      var btn     = document.getElementById('menu-btn');
+      var drawer  = document.getElementById('drawer');
+      var overlay = document.getElementById('drawer-overlay');
+      var closeBtn = document.getElementById('drawer-close');
+      var signOut = document.getElementById('drawer-sign-out');
+
+      function openDrawer() {
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+        btn.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+        drawer.setAttribute('aria-hidden', 'false');
+      }
+      function closeDrawer() {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+        btn.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+        drawer.setAttribute('aria-hidden', 'true');
+      }
+
+      btn.addEventListener('click', openDrawer);
+      closeBtn.addEventListener('click', closeDrawer);
+      overlay.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDrawer();
+      });
+
+      signOut.addEventListener('click', function() {
+        auth.signOut().then(function() { window.location.replace('login.html'); });
+      });
+    }
+
+    function setGreeting(user, storedName) {
+      var h = new Date().getHours();
+      document.getElementById('greeting-time').textContent =
+        h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      var raw  = storedName || user.displayName || user.email.split('@')[0];
+      document.getElementById('greeting-name').textContent = raw.split(' ')[0];
+    }
+
+    function localToday() {
+      var now = new Date();
+      return now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0');
     }
 
     function loadTodaysTrips(user) {
-      var today = new Date().toISOString().slice(0, 10);
-      var container = document.getElementById('trips-today');
-      var emptyEl   = document.getElementById('trips-empty');
+      var today = localToday();
+      var tp    = today.split('-');
+      var DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      var MONS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var dt    = new Date(+tp[0], +tp[1]-1, +tp[2]);
+      document.getElementById('today-date-label').textContent =
+        DAYS[dt.getDay()] + ' · ' + MONS[dt.getMonth()] + ' ' + dt.getDate();
 
-      // Single-field where clause — filter by today's date client-side, no composite index required.
-      db.collection('trips')
-        .where('uid', '==', user.uid)
+      var container  = document.getElementById('trips-today');
+      var emptyEl    = document.getElementById('trips-empty');
+
+      db.collection('trips').where('uid', '==', user.uid)
         .onSnapshot(function(snap) {
-          var todayTrips = [];
+          frNoTrips = snap.empty;
+          if (!snap.empty) exitFirstRun(); else checkFirstRun();
+
+          var todayTrips = [], allTrips = [];
           snap.forEach(function(doc) {
             var t = doc.data();
+            allTrips.push({ id: doc.id, data: t });
             if (t.date === today && t.status !== 'cancelled') {
               todayTrips.push({ id: doc.id, data: t });
             }
@@ -222,40 +978,74 @@
           todayTrips.sort(function(a, b) {
             return (a.data.time || '') < (b.data.time || '') ? -1 : 1;
           });
+
           container.innerHTML = '';
+
           if (todayTrips.length === 0) {
             emptyEl.classList.remove('hidden');
+            var upcoming = allTrips.filter(function(t) {
+              return t.data.date > today && t.data.status !== 'cancelled';
+            }).sort(function(a, b) {
+              var ak = (a.data.date || '') + (a.data.time || '');
+              var bk = (b.data.date || '') + (b.data.time || '');
+              return ak < bk ? -1 : 1;
+            });
+            var nextCard   = document.getElementById('next-trip-card');
+            var noUpcoming = document.getElementById('no-upcoming');
+            nextCard.innerHTML = '';
+            if (upcoming.length > 0) {
+              nextCard.appendChild(makeTripCard(upcoming[0].id, upcoming[0].data, true));
+              noUpcoming.classList.add('hidden');
+            } else {
+              noUpcoming.classList.remove('hidden');
+            }
             return;
           }
+
           emptyEl.classList.add('hidden');
           todayTrips.forEach(function(item) {
-            container.appendChild(makeTripCard(item.id, item.data));
+            container.appendChild(makeTripCard(item.id, item.data, false));
           });
         }, function(err) {
           emptyEl.classList.remove('hidden');
-          emptyEl.textContent = 'Could not load trips.';
           console.error('trips query error:', err);
         });
     }
 
-    function makeTripCard(id, t) {
+    function makeTripCard(id, t, showDate) {
       var el = document.createElement('div');
-      el.className = 'glass-card px-5 py-4 cursor-pointer hover:border-primary/30 transition-colors';
-      el.style.borderColor = 'rgba(255,255,255,0.1)';
+      el.className = showDate ? 'next-card' : 'appt-card';
 
-      var badgeColor = tripTypeColor(t.tripType);
       var vehicle = t.vehicleSnap
-        ? (t.vehicleSnap.year || '') + ' ' + (t.vehicleSnap.make || '') + ' ' + (t.vehicleSnap.model || '')
+        ? ((t.vehicleSnap.year ? t.vehicleSnap.year + ' ' : '') +
+           (t.vehicleSnap.make || '') + ' ' + (t.vehicleSnap.model || '')).trim()
         : '—';
+      var dest = t.tripType && t.tripType.includes('Airport')
+        ? (t.airport || 'Airport')
+        : (t.dropoffAddress
+            ? t.dropoffAddress + (t.dropoffCity ? ', ' + t.dropoffCity : '')
+            : '');
+      var ss = statusBadgeStyle(t.status);
+      var ts = tripTypeColor(t.tripType);
+
+      var dateRow = showDate
+        ? '<p style="font-family:\'Inter\',sans-serif;font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;color:#9E9590;margin-bottom:0.65rem;">' +
+          formatCardDate(t.date) + '</p>'
+        : '';
 
       el.innerHTML =
-        '<div class="flex items-start justify-between gap-3">' +
-          '<div class="flex-1 min-w-0">' +
-            '<p class="font-headline-sm text-xl text-on-surface">' + formatTime(t.time) + '</p>' +
-            '<p class="text-on-surface-variant text-xs mt-1 truncate">' + (t.pickupAddress || '—') + '</p>' +
-            '<p class="text-on-primary-container text-xs mt-0.5">' + vehicle.trim() + '</p>' +
+        dateRow +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;">' +
+          '<div style="flex:1;min-width:0;">' +
+            '<p class="appt-time">' + formatTime(t.time) + '</p>' +
+            '<p class="appt-pickup">' + (t.pickupAddress || '—') + '</p>' +
+            (dest ? '<p class="appt-dest">&rarr;&thinsp;' + dest + '</p>' : '') +
+            '<p class="appt-vehicle">' + vehicle + '</p>' +
           '</div>' +
-          '<span class="trip-type-badge flex-shrink-0 mt-1" style="background:' + badgeColor.bg + ';color:' + badgeColor.text + '">' + shortType(t.tripType) + '</span>' +
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;flex-shrink:0;padding-top:0.2rem;">' +
+            '<span class="badge" style="background:' + ts.bg + ';color:' + ts.text + '">' + shortType(t.tripType) + '</span>' +
+            '<span class="badge" style="background:' + ss.bg + ';color:' + ss.text + '">' + (t.status || 'pending') + '</span>' +
+          '</div>' +
         '</div>';
 
       el.addEventListener('click', function() {
@@ -269,51 +1059,114 @@
       var emptyEl   = document.getElementById('fleet-empty');
 
       db.collection('users').doc(user.uid).collection('vehicles')
-        .orderBy('createdAt', 'asc')
         .onSnapshot(function(snap) {
-          container.innerHTML = '';
-          if (snap.empty) {
-            emptyEl.classList.remove('hidden');
-            return;
+          frNoVehicles = snap.empty;
+          if (!snap.empty) {
+            exitFirstRun();
+            // Mark step 1 done if first-run panel is still visible
+            document.getElementById('fr-step-1').classList.add('done');
+            document.getElementById('fr-step-2').classList.add('ready');
+          } else {
+            checkFirstRun();
           }
-          emptyEl.classList.add('hidden');
-          snap.forEach(function(doc) {
-            container.appendChild(makeVehicleCard(doc.id, doc.data(), user));
+
+          var vehicles = [];
+          snap.forEach(function(doc) { vehicles.push({ id: doc.id, data: doc.data() }); });
+          vehicles.sort(function(a, b) {
+            var ta = a.data.createdAt ? a.data.createdAt.toMillis() : 0;
+            var tb = b.data.createdAt ? b.data.createdAt.toMillis() : 0;
+            return ta - tb;
           });
+          container.innerHTML = '';
+          if (vehicles.length === 0) { emptyEl.classList.remove('hidden'); return; }
+          emptyEl.classList.add('hidden');
+          vehicles.forEach(function(v) {
+            container.appendChild(makeVehicleCard(v.id, v.data, user));
+          });
+        }, function(err) {
+          emptyEl.classList.remove('hidden');
+          console.error('fleet onSnapshot error:', err);
         });
     }
 
     function makeVehicleCard(id, v, user) {
       var el = document.createElement('div');
-      el.className = 'glass-card flex-shrink-0 p-4 w-48';
+      el.className = 'fleet-card';
       el.innerHTML =
-        '<p class="font-headline-sm text-base text-on-surface leading-tight">' +
-          (v.year ? v.year + ' ' : '') + v.make + ' ' + v.model +
-        '</p>' +
-        '<p class="text-on-surface-variant text-xs mt-1">' + (v.color || '') + '</p>' +
-        '<p class="text-primary text-xs mt-0.5 font-semibold tracking-wider">' + (v.plate || '') + '</p>' +
-        '<button class="remove-btn mt-3 text-xs text-on-primary-container hover:text-red-400 transition-colors" data-id="' + id + '">Remove</button>';
+        '<p class="fleet-car">' + (v.year ? v.year + ' ' : '') + v.make + ' ' + v.model + '</p>' +
+        '<p class="fleet-color">' + (v.color || '') + '</p>' +
+        '<p class="fleet-plate">' + (v.plate || '') + '</p>' +
+        '<div class="fleet-actions">' +
+          '<button type="button" class="fleet-edit">Edit</button>' +
+          '<button type="button" class="fleet-remove">Remove</button>' +
+        '</div>' +
+        '<div class="fleet-confirm hidden">' +
+          '<span>Remove this vehicle?</span>' +
+          '<button type="button" class="fleet-confirm-yes">Yes</button>' +
+          '<button type="button" class="fleet-confirm-no">Cancel</button>' +
+        '</div>';
 
-      el.querySelector('.remove-btn').addEventListener('click', function(e) {
+      el.querySelector('.fleet-edit').addEventListener('click', function(e) {
         e.stopPropagation();
-        if (confirm('Remove ' + v.year + ' ' + v.make + ' ' + v.model + '?')) {
-          db.collection('users').doc(user.uid).collection('vehicles').doc(id).delete();
-        }
+        openVehicleModal(id, v);
       });
+
+      var actionsRow = el.querySelector('.fleet-actions');
+      var confirmRow = el.querySelector('.fleet-confirm');
+
+      el.querySelector('.fleet-remove').addEventListener('click', function(e) {
+        e.stopPropagation();
+        actionsRow.classList.add('hidden');
+        confirmRow.classList.remove('hidden');
+      });
+      el.querySelector('.fleet-confirm-no').addEventListener('click', function(e) {
+        e.stopPropagation();
+        confirmRow.classList.add('hidden');
+        actionsRow.classList.remove('hidden');
+      });
+      el.querySelector('.fleet-confirm-yes').addEventListener('click', function(e) {
+        e.stopPropagation();
+        db.collection('users').doc(user.uid).collection('vehicles').doc(id).delete();
+      });
+
       return el;
     }
 
+    function openVehicleModal(editId, v) {
+      var modal     = document.getElementById('vehicle-modal');
+      var titleEl   = document.getElementById('vehicle-modal-title');
+      var saveBtnEl = document.getElementById('save-vehicle-btn');
+      var editIdEl  = document.getElementById('v-edit-id');
+
+      if (editId) {
+        titleEl.textContent   = 'Edit Vehicle';
+        saveBtnEl.textContent = 'Save Changes';
+        editIdEl.value        = editId;
+        document.getElementById('v-year').value  = v.year  || '';
+        document.getElementById('v-make').value  = v.make  || '';
+        document.getElementById('v-model').value = v.model || '';
+        document.getElementById('v-color').value = v.color || '';
+        document.getElementById('v-plate').value = v.plate || '';
+        document.getElementById('v-notes').value = v.notes || '';
+      } else {
+        titleEl.textContent   = 'Add a Vehicle';
+        saveBtnEl.textContent = 'Save Vehicle';
+        editIdEl.value        = '';
+      }
+
+      document.getElementById('vehicle-form-error').classList.remove('visible');
+      modal.classList.remove('hidden');
+    }
+
     function setupVehicleModal(user) {
-      var modal    = document.getElementById('vehicle-modal');
-      var errEl    = document.getElementById('vehicle-form-error');
+      var modal = document.getElementById('vehicle-modal');
+      var errEl = document.getElementById('vehicle-form-error');
 
       document.getElementById('add-vehicle-btn').addEventListener('click', function() {
-        modal.classList.remove('hidden');
+        openVehicleModal(null, null);
       });
       document.getElementById('close-modal-btn').addEventListener('click', closeModal);
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) closeModal();
-      });
+      modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
       document.getElementById('save-vehicle-btn').addEventListener('click', function() {
         var year  = document.getElementById('v-year').value.trim();
@@ -322,27 +1175,27 @@
         var color = document.getElementById('v-color').value.trim();
         var plate = document.getElementById('v-plate').value.trim().toUpperCase();
         var notes = document.getElementById('v-notes').value.trim();
+        var editId = document.getElementById('v-edit-id').value;
 
-        errEl.classList.add('hidden');
+        errEl.classList.remove('visible');
         if (!make || !model || !plate) {
           errEl.textContent = 'Make, model, and license plate are required.';
-          errEl.classList.remove('hidden');
+          errEl.classList.add('visible');
           return;
         }
 
-        db.collection('users').doc(user.uid).collection('vehicles').add({
-          year:      year,
-          make:      make,
-          model:     model,
-          color:     color,
-          plate:     plate,
-          notes:     notes,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(function() {
+        var data = { year: year, make: make, model: model, color: color, plate: plate, notes: notes };
+        var ref  = db.collection('users').doc(user.uid).collection('vehicles');
+        var op   = editId
+          ? ref.doc(editId).update(data)
+          : ref.add(Object.assign(data, { createdAt: firebase.firestore.FieldValue.serverTimestamp() }));
+
+        op.then(function() {
           closeModal();
+          showToast(editId ? 'Vehicle updated' : 'Vehicle added');
         }).catch(function(err) {
-          errEl.textContent = 'Error saving vehicle: ' + err.message;
-          errEl.classList.remove('hidden');
+          errEl.textContent = 'Error: ' + err.message;
+          errEl.classList.add('visible');
         });
       });
 
@@ -351,33 +1204,54 @@
         ['v-year','v-make','v-model','v-color','v-plate','v-notes'].forEach(function(id) {
           document.getElementById(id).value = '';
         });
-        errEl.classList.add('hidden');
+        document.getElementById('v-edit-id').value = '';
+        errEl.classList.remove('visible');
       }
     }
 
     function formatTime(t) {
       if (!t) return '—';
-      var parts = t.split(':');
-      var h = parseInt(parts[0], 10);
-      var m = parts[1];
-      var ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-      return h + ':' + m + ' ' + ampm;
+      var p = t.split(':'), h = +p[0], m = p[1];
+      return (h % 12 || 12) + ':' + m + (h >= 12 ? ' PM' : ' AM');
+    }
+
+    function formatCardDate(d) {
+      if (!d) return '';
+      var tp = d.split('-');
+      var dt = new Date(+tp[0], +tp[1]-1, +tp[2]);
+      var DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      var MONS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return DAYS[dt.getDay()] + ' · ' + MONS[dt.getMonth()] + ' ' + dt.getDate();
     }
 
     function shortType(type) {
-      if (!type) return '—';
+      if (!type) return 'P2P';
       if (type.includes('Airport Drop')) return 'Drop-off';
       if (type.includes('Airport Pick')) return 'Pick-up';
       if (type.includes('Hourly')) return 'Hourly';
-      return 'Point to Point';
+      return 'P2P';
     }
 
     function tripTypeColor(type) {
-      if (!type) return { bg: 'rgba(185,199,228,0.15)', text: '#b9c7e4' };
-      if (type.includes('Airport')) return { bg: 'rgba(116,168,209,0.18)', text: '#7da8d1' };
-      if (type.includes('Hourly'))  return { bg: 'rgba(209,169,116,0.18)', text: '#d1a974' };
-      return { bg: 'rgba(185,199,228,0.15)', text: '#b9c7e4' };
+      if (type && type.includes('Airport')) return { bg: 'rgba(90,130,160,0.14)', text: '#7aa0b8' };
+      if (type && type.includes('Hourly'))  return { bg: 'rgba(140,110,80,0.14)',  text: '#9A8060' };
+      return { bg: 'rgba(184,146,58,0.12)', text: '#9A7E42' };
+    }
+
+    function statusBadgeStyle(status) {
+      switch (status) {
+        case 'confirmed': return { bg: 'rgba(100,200,140,0.12)', text: '#64c88c' };
+        case 'completed': return { bg: 'rgba(107,99,88,0.2)',    text: '#9E9590' };
+        case 'cancelled': return { bg: 'rgba(220,80,80,0.12)',   text: '#c07070' };
+        default:          return { bg: 'rgba(184,146,58,0.12)',  text: '#B8923A' };
+      }
+    }
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js');
+      });
     }
   </script>
 </body>

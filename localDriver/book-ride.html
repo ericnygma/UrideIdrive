@@ -1,209 +1,562 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STEWARD — Book a Ride</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0E0D0B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Steward">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <title>STEWARD — New Booking</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary":                "#b9c7e4",
-            "primary-container":      "#0a192f",
-            "on-surface":             "#e4e2e4",
-            "on-surface-variant":     "#c5c6cd",
-            "on-primary-container":   "#74829d",
-            "surface-container":      "#1f1f21",
-            "surface-container-high": "#2a2a2c",
-            "outline-variant":        "#44474d",
-            "outline":                "#8f9097",
-            "background":             "#131315"
-          },
-          fontFamily: {
-            "body-md":     ["Inter", "sans-serif"],
-            "label-caps":  ["Inter", "sans-serif"],
-            "headline-sm": ["Noto Serif", "serif"],
-            "headline-md": ["Noto Serif", "serif"],
-            "display-lg":  ["Noto Serif", "serif"]
-          }
-        }
-      }
-    }
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    html { visibility: hidden; }
-    body { background-color: #131315; color: #e4e2e4; font-family: 'Inter', sans-serif; }
-    .glass-card {
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 1rem;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .hidden { display: none !important; }
+
+    :root {
+      --ink:     #EDE8DF;
+      --muted:   #9E9590;
+      --faint:   #2C2820;
+      --gold:    #B8923A;
+      --gold-lt: #D4AE62;
+      --bg:      #0E0D0B;
+      --surface: #15130E;
+      --border:  rgba(184,146,58,0.14);
     }
-    .btn-sheen {
-      background: linear-gradient(135deg, #e4e2e4 0%, #c7c7bb 100%);
-      color: #0a192f;
+
+    html, body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 50% at 50% -5%, rgba(184,146,58,0.06) 0%, transparent 100%),
+        radial-gradient(ellipse 40% 30% at 90% 110%, rgba(6,5,3,0.4) 0%, transparent 100%);
     }
-    .field-input {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid #44474d;
-      border-radius: 0.5rem;
-      color: #e4e2e4;
-      width: 100%;
-      padding: 0.7rem 0.9rem;
-      font-size: 0.875rem;
-      outline: none;
-      transition: border-color 0.2s;
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    .stage { position: relative; z-index: 1; padding-bottom: 5rem; }
+
+    /* ── Auth overlay ─── */
+    #auth-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #auth-overlay p { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.08em; }
+
+    /* ── Header ──────── */
+    .site-header {
+      position: sticky; top: 0; z-index: 30;
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 1rem;
+      display: flex; align-items: center; gap: 1rem;
+      background: rgba(14,13,11,0.9);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(184,146,58,0.08);
+    }
+    .back-link {
+      color: var(--muted); text-decoration: none;
+      font-size: 1.1rem; line-height: 1; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--ink); }
+    .page-title {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300; font-size: 1rem;
+      letter-spacing: 0.2em; color: var(--ink);
+    }
+
+    /* ── Layout ──────── */
+    main { max-width: 480px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* ── Error banner ── */
+    #form-error {
+      display: none;
+      margin-bottom: 2rem;
+      padding: 0.65rem 0 0.65rem 0.85rem;
+      border-left: 2px solid #8B3A3A;
       font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      color: #C07070;
+      line-height: 1.5;
     }
-    .field-input:focus { border-color: #b9c7e4; }
-    .field-input::placeholder { color: #74829d; }
-    /* Date/time native pickers */
-    .field-input::-webkit-calendar-picker-indicator { filter: invert(0.6); }
+    #form-error.visible { display: block; }
 
-    .section-label {
+    /* ── Section ─────── */
+    .form-section { margin-bottom: 2.5rem; }
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-family: 'Cormorant SC', serif;
+      font-weight: 300; font-size: 1.1rem;
+      letter-spacing: 0.12em; color: var(--ink);
+    }
+    .section-rule {
+      border: none; height: 1px;
+      background: linear-gradient(90deg, var(--faint), transparent);
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── Field ───────── */
+    .field { margin-bottom: 1.5rem; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      display: block;
       font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: #74829d;
-      margin-bottom: 0.75rem;
+      color: var(--gold-lt);
+      margin-bottom: 0.5rem;
+      font-weight: 400;
     }
+    .field-label-muted { color: var(--muted); }
+    .field-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--faint);
+      outline: none;
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 300;
+      padding: 0.25rem 0 0.5rem;
+      caret-color: var(--gold);
+      transition: border-color 0.3s;
+      letter-spacing: 0.02em;
+    }
+    .field-input:focus { border-bottom-color: rgba(184,146,58,0.7); }
+    .field-input::placeholder { color: var(--faint); font-style: italic; }
+    .field-input::-webkit-calendar-picker-indicator { filter: invert(0.4); }
 
-    /* Vehicle radio cards */
+    select.field-input { cursor: pointer; }
+    select.field-input option { background: #1A1812; }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .field-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.25rem; }
+
+    /* ── Vehicle cards ── */
+    .vehicle-list { display: flex; flex-direction: column; gap: 0.6rem; }
     .vehicle-card { cursor: pointer; }
     .vehicle-card input[type="radio"] { display: none; }
     .vehicle-card-inner {
-      border: 1px solid #44474d;
-      border-radius: 0.75rem;
-      padding: 0.85rem 1rem;
-      transition: border-color 0.2s, background 0.2s;
-      background: rgba(255,255,255,0.02);
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--faint);
+      display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.2s;
     }
     .vehicle-card input[type="radio"]:checked + .vehicle-card-inner {
-      border-color: #b9c7e4;
-      background: rgba(185,199,228,0.08);
+      border-bottom-color: rgba(184,146,58,0.6);
+    }
+    .vehicle-card input[type="radio"]:checked + .vehicle-card-inner .vehicle-name {
+      color: var(--ink);
+    }
+    .vehicle-card input[type="radio"]:checked + .vehicle-card-inner .vehicle-check {
+      opacity: 1;
+    }
+    .vehicle-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem; color: #9A8E80;
+      transition: color 0.2s;
+    }
+    .vehicle-sub {
+      font-size: 0.65rem; letter-spacing: 0.06em;
+      color: var(--muted); margin-top: 0.15rem;
+    }
+    .vehicle-check {
+      color: var(--gold); font-size: 0.85rem;
+      opacity: 0; transition: opacity 0.2s;
     }
 
-    /* Trip type pills */
+    #no-vehicles {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 1rem; color: var(--muted);
+    }
+    #no-vehicles a { color: var(--gold); text-decoration: none; }
+    #no-vehicles a:hover { text-decoration: underline; }
+
+    /* ── Trip type pills ── */
+    .type-pills {
+      display: flex; gap: 0.5rem;
+      overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: none;
+    }
+    .type-pills::-webkit-scrollbar { display: none; }
     .type-pill {
-      border: 1px solid #44474d;
-      border-radius: 9999px;
-      padding: 0.45rem 1rem;
-      font-size: 0.8rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: border-color 0.2s, background 0.2s, color 0.2s;
-      color: #8f9097;
-      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--faint); border-radius: 9999px;
+      background: transparent; color: var(--muted);
+      cursor: pointer; white-space: nowrap;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
     }
     .type-pill.active {
-      border-color: #b9c7e4;
-      background: rgba(185,199,228,0.12);
-      color: #e4e2e4;
+      border-color: rgba(184,146,58,0.55);
+      background: rgba(184,146,58,0.08);
+      color: var(--gold-lt);
     }
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ── Submit ────────── */
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      color: var(--bg);
+      border: none; border-radius: 0.4rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .submit-btn:hover:not(:disabled) { opacity: 0.88; }
+    .submit-btn:disabled { opacity: 0.45; cursor: default; }
+
+    .btn-text, .btn-loading { transition: opacity 0.2s; }
+    .btn-loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+    }
+    .btn-loading::after {
+      content: '';
+      width: 14px; height: 14px;
+      border: 1px solid rgba(14,13,11,0.3);
+      border-top-color: var(--bg);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .is-loading .btn-text   { opacity: 0; }
+    .is-loading .btn-loading { opacity: 1; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Utilities ── */
+    .label-opt  { text-transform: none; }
+    .section-optional {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 0.85rem; color: var(--muted);
+    }
+    textarea.field-input { resize: none; line-height: 1.55; }
+    #end-time-row { max-width: 180px; }
+
+    /* ── Success panel ── */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #success-panel {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    .success-check {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 1px solid rgba(100,200,140,0.35);
+      background: rgba(100,200,140,0.07);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.75rem;
+      opacity: 0;
+      animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.05s forwards;
+    }
+    .success-check svg { width: 22px; height: 22px; stroke: #64c88c; fill: none; stroke-width: 1.5; }
+
+    .success-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.4rem, 10vw, 3.2rem);
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      line-height: 1.05;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.15s forwards;
+    }
+
+    .success-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.25s forwards;
+    }
+
+    .success-summary {
+      border-top: 1px solid var(--faint);
+      padding-top: 1.75rem;
+      margin-bottom: 2.5rem;
+      display: flex; flex-direction: column; gap: 1.1rem;
+      opacity: 0;
+      animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.35s forwards;
+    }
+
+    .summary-row {
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .summary-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      min-width: 4.5rem;
+      padding-top: 0.2rem;
+      flex-shrink: 0;
+    }
+    .summary-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .success-actions {
+      display: flex; flex-direction: column; gap: 0.75rem;
+      opacity: 0;
+      animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.45s forwards;
+    }
+
+    .action-primary {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      color: var(--bg);
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      text-align: center; text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .action-primary:hover { opacity: 0.88; }
+
+    .action-secondary {
+      display: block;
+      width: 100%;
+      padding: 0.85rem;
+      border: 1px solid var(--faint);
+      background: none;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 400;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      text-align: center; text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .action-secondary:hover { border-color: rgba(184,146,58,0.3); color: var(--ink); }
+
+    .action-calendar {
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      width: 100%;
+      padding: 0.85rem;
+      border: 1px solid rgba(184,146,58,0.2);
+      background: rgba(184,146,58,0.04);
+      color: var(--gold-lt);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 400;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      text-align: center; text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.25s, color 0.25s;
+    }
+    .action-calendar:hover {
+      border-color: rgba(184,146,58,0.45);
+      background: rgba(184,146,58,0.09);
+      color: #E4C97A;
+    }
+    .action-calendar svg {
+      width: 13px; height: 13px;
+      stroke: currentColor; fill: none; stroke-width: 1.5;
+      flex-shrink: 0;
+    }
   </style>
 </head>
-<body class="min-h-screen pb-10">
+<body>
 
-  <!-- Nav -->
-  <header class="sticky top-0 z-30 px-5 py-4 flex items-center gap-3" style="background: rgba(19,19,21,0.85); backdrop-filter: blur(16px);">
-    <a href="index.html" class="text-on-surface-variant hover:text-on-surface text-lg leading-none">&larr;</a>
-    <span class="font-headline-sm text-lg text-on-surface">New Booking</span>
-  </header>
+  <div id="auth-overlay"><p>Loading…</p></div>
 
-  <main class="max-w-lg mx-auto px-5 pt-6 space-y-6">
+  <div class="stage">
+    <header class="site-header">
+      <a href="index.html" class="back-link" id="header-back">&larr;</a>
+      <span class="page-title" id="header-title">New Booking</span>
+    </header>
 
-    <!-- Error banner -->
-    <div id="form-error" class="hidden px-4 py-3 rounded-lg bg-red-900/30 border border-red-700/50 text-red-300 text-sm"></div>
-
-    <!-- Section 1: Select Vehicle -->
-    <div class="glass-card p-5">
-      <p class="section-label">Select Your Vehicle</p>
-      <div id="vehicle-list" class="space-y-2">
-        <p class="text-on-primary-container text-sm">Loading your vehicles…</p>
+    <!-- ── Success panel (hidden until booking saved) ── -->
+    <div id="success-panel" class="hidden">
+      <div class="success-check">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <p id="no-vehicles" class="hidden text-on-primary-container text-sm">
-        No vehicles on file.
-        <a href="index.html" class="text-primary underline">Add one from your dashboard</a>.
-      </p>
+      <h1 class="success-heading">Scheduled.</h1>
+      <p class="success-sub">Your ride has been added to your itinerary.</p>
+      <div class="success-summary">
+        <div class="summary-row">
+          <span class="summary-label">When</span>
+          <span class="summary-value" id="sc-when"></span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Pickup</span>
+          <span class="summary-value" id="sc-pickup"></span>
+        </div>
+        <div class="summary-row" id="sc-dest-row">
+          <span class="summary-label">To</span>
+          <span class="summary-value" id="sc-dest"></span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Vehicle</span>
+          <span class="summary-value" id="sc-vehicle"></span>
+        </div>
+      </div>
+      <div class="success-actions">
+        <a id="sc-view-btn" href="#" class="action-primary">View Trip Details</a>
+        <button type="button" id="sc-cal-btn" class="action-calendar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Add to Calendar
+        </button>
+        <a href="index.html" class="action-secondary">Return to Dashboard</a>
+      </div>
     </div>
 
-    <!-- Section 2: Trip Type -->
-    <div class="glass-card p-5">
-      <p class="section-label">Trip Type</p>
-      <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-        <button class="type-pill active" data-type="Point to Point">Point to Point</button>
-        <button class="type-pill" data-type="Airport Drop-off">Airport Drop-off</button>
-        <button class="type-pill" data-type="Airport Pick-up">Airport Pick-up</button>
-        <button class="type-pill" data-type="Hourly - Wait &amp; Return">Hourly</button>
-      </div>
-    </div>
+    <main id="booking-form">
 
-    <!-- Section 3: Pickup -->
-    <div class="glass-card p-5">
-      <p class="section-label">Pickup Location</p>
-      <div class="space-y-3">
-        <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Street Address</label>
+      <div id="form-error"></div>
+
+      <!-- Vehicle -->
+      <div class="form-section">
+        <div class="section-head">
+          <h3 class="section-title">Vehicle</h3>
+        </div>
+        <hr class="section-rule">
+        <div id="vehicle-list" class="vehicle-list"></div>
+        <p id="no-vehicles" class="hidden">
+          No vehicles on file. <a href="index.html">Add one from your dashboard</a>.
+        </p>
+      </div>
+
+      <!-- Trip Type -->
+      <div class="form-section">
+        <div class="section-head">
+          <h3 class="section-title">Trip Type</h3>
+        </div>
+        <hr class="section-rule">
+        <div class="type-pills">
+          <button type="button" class="type-pill active" data-type="Point to Point">Point to Point</button>
+          <button type="button" class="type-pill" data-type="Airport Drop-off">Airport Drop-off</button>
+          <button type="button" class="type-pill" data-type="Airport Pick-up">Airport Pick-up</button>
+          <button type="button" class="type-pill" data-type="Hourly - Wait &amp; Return">Hourly</button>
+        </div>
+      </div>
+
+      <!-- Date & Time -->
+      <div class="form-section">
+        <div class="section-head">
+          <h3 class="section-title">Date &amp; Time</h3>
+        </div>
+        <hr class="section-rule">
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="trip-date">Date</label>
+            <input id="trip-date" type="date" class="field-input">
+          </div>
+          <div class="field">
+            <label class="field-label" for="trip-time">Departure</label>
+            <select id="trip-time" class="field-input"><option value="">— select time —</option></select>
+          </div>
+        </div>
+        <div id="end-time-row" class="field hidden">
+          <label class="field-label" for="trip-end-time">End Time</label>
+          <select id="trip-end-time" class="field-input"><option value="">— select time —</option></select>
+        </div>
+      </div>
+
+      <!-- Pickup -->
+      <div class="form-section">
+        <div class="section-head">
+          <h3 class="section-title">Pickup</h3>
+        </div>
+        <hr class="section-rule">
+        <div class="field">
+          <label class="field-label" for="pickup-address">Street Address</label>
           <input id="pickup-address" type="text" class="field-input" placeholder="123 Main St">
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">City</label>
+        <div class="field-row-3">
+          <div class="field">
+            <label class="field-label" for="pickup-city">City</label>
             <input id="pickup-city" type="text" class="field-input" placeholder="Greenwich">
           </div>
-          <div>
-            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">State</label>
+          <div class="field">
+            <label class="field-label" for="pickup-state">State</label>
             <input id="pickup-state" type="text" class="field-input" placeholder="CT" maxlength="2">
           </div>
+          <div class="field">
+            <label class="field-label" for="pickup-zip">ZIP</label>
+            <input id="pickup-zip" type="text" class="field-input" placeholder="06830" maxlength="5">
+          </div>
         </div>
-        <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">ZIP</label>
-          <input id="pickup-zip" type="text" class="field-input" placeholder="06830" maxlength="5" style="max-width:120px">
-        </div>
-        <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Pickup Notes <span class="normal-case text-on-primary-container">(optional)</span></label>
-          <textarea id="pickup-notes" class="field-input" rows="2" placeholder="Where to find the car, building access code, etc."></textarea>
+        <div class="field">
+          <label class="field-label field-label-muted" for="pickup-notes">Pickup Notes <span class="label-opt">(optional)</span></label>
+          <textarea id="pickup-notes" class="field-input" rows="2" placeholder="Gate code, building entry, where to wait…"></textarea>
         </div>
       </div>
-    </div>
 
-    <!-- Section 4: Destination (hidden for Hourly) -->
-    <div id="destination-section" class="glass-card p-5">
-      <p class="section-label">Destination</p>
-      <div class="space-y-3">
-        <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Street Address</label>
+      <!-- Destination (P2P) -->
+      <div id="destination-section" class="form-section">
+        <div class="section-head">
+          <h3 class="section-title">Destination</h3>
+        </div>
+        <hr class="section-rule">
+        <div class="field">
+          <label class="field-label" for="dropoff-address">Street Address</label>
           <input id="dropoff-address" type="text" class="field-input" placeholder="456 Park Ave">
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">City</label>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="dropoff-city">City</label>
             <input id="dropoff-city" type="text" class="field-input" placeholder="New York">
           </div>
-          <div>
-            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">State</label>
+          <div class="field">
+            <label class="field-label" for="dropoff-state">State</label>
             <input id="dropoff-state" type="text" class="field-input" placeholder="NY" maxlength="2">
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Section 4b: Airport fields (shown for airport trip types) -->
-    <div id="airport-section" class="glass-card p-5 hidden">
-      <p class="section-label">Flight Information</p>
-      <div class="space-y-3">
-        <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Airport</label>
+      <!-- Airport -->
+      <div id="airport-section" class="form-section hidden">
+        <div class="section-head">
+          <h3 class="section-title">Flight Information</h3>
+        </div>
+        <hr class="section-rule">
+        <div class="field">
+          <label class="field-label" for="airport">Airport</label>
           <select id="airport" class="field-input">
             <option value="">Select airport…</option>
             <option value="(JFK) John F. Kennedy">(JFK) John F. Kennedy</option>
@@ -213,8 +566,8 @@
             <option value="(HPN) Westchester County">(HPN) Westchester County</option>
           </select>
         </div>
-        <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Airline</label>
+        <div class="field">
+          <label class="field-label field-label-muted" for="airline">Airline <span class="label-opt">(optional)</span></label>
           <select id="airline" class="field-input">
             <option value="">Select airline…</option>
             <option>Delta Air Lines</option>
@@ -229,62 +582,46 @@
             <option>Lufthansa</option>
           </select>
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Flight #</label>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label field-label-muted" for="flight-number">Flight # <span class="label-opt">(optional)</span></label>
             <input id="flight-number" type="text" class="field-input" placeholder="DL 405">
           </div>
-          <div>
-            <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Terminal</label>
+          <div class="field">
+            <label class="field-label field-label-muted" for="terminal">Terminal <span class="label-opt">(optional)</span></label>
             <input id="terminal" type="text" class="field-input" placeholder="4">
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Section 5: Date & Time -->
-    <div class="glass-card p-5">
-      <p class="section-label">Date &amp; Time</p>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Date</label>
-          <input id="trip-date" type="date" class="field-input">
+      <!-- Instructions -->
+      <div class="form-section">
+        <div class="section-head">
+          <h3 class="section-title">Special Instructions</h3>
+          <span class="section-optional">optional</span>
         </div>
-        <div>
-          <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">Departure Time</label>
-          <input id="trip-time" type="time" class="field-input">
+        <hr class="section-rule">
+        <div class="field">
+          <textarea id="instructions" class="field-input" rows="3" placeholder="Preferences, stops, or anything the driver should know…"></textarea>
         </div>
       </div>
-      <!-- End time — hourly only -->
-      <div id="end-time-row" class="hidden mt-3">
-        <label class="block text-on-surface-variant text-xs uppercase tracking-wider mb-1">End Time</label>
-        <input id="trip-end-time" type="time" class="field-input" style="max-width:160px">
-      </div>
-    </div>
 
-    <!-- Section 6: Instructions -->
-    <div class="glass-card p-5">
-      <p class="section-label">Special Instructions <span class="normal-case text-on-primary-container" style="font-size:0.65rem">(optional)</span></p>
-      <textarea id="instructions" class="field-input" rows="3" placeholder="Any preferences, stops, or special requests for the driver…"></textarea>
-    </div>
+      <!-- Submit -->
+      <button type="button" id="submit-btn" class="submit-btn">
+        <span class="btn-text">Schedule Ride</span>
+        <span class="btn-loading" aria-hidden="true"></span>
+      </button>
 
-    <!-- Submit -->
-    <button id="submit-btn" class="btn-sheen w-full py-4 rounded-xl font-semibold text-sm tracking-widest uppercase hover:opacity-90 transition-opacity">
-      Schedule Ride
-    </button>
+    </main>
+  </div>
 
-    <div id="submit-loading" class="hidden text-center py-2 text-on-surface-variant text-sm">Saving your booking…</div>
-
-  </main>
-
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="firebase-config.js"></script>
   <script>
     requireAuth().then(function(user) {
-      document.documentElement.style.visibility = '';
+      document.getElementById('auth-overlay').style.display = 'none';
       initPage(user);
     });
 
@@ -292,27 +629,103 @@
     var selectedVehicleId   = null;
     var selectedVehicleSnap = null;
     var currentTripType     = 'Point to Point';
-    var userVehicles        = [];
+    var vehiclesReady;
+    var resolveVehiclesReady;
+    vehiclesReady = new Promise(function(res) { resolveVehiclesReady = res; });
 
     function initPage(user) {
       currentUser = user;
+      populateTimeSelects();
       setDefaultDate();
       loadVehicles(user);
       setupTripTypeToggle();
       setupSubmit(user);
+
+      var copyId = new URLSearchParams(window.location.search).get('copy');
+      if (copyId) {
+        db.collection('trips').doc(copyId).get().then(function(doc) {
+          if (doc.exists && doc.data().uid === user.uid) {
+            // vehicles may still be loading — wait for them then pre-fill
+            vehiclesReady.then(function() { preFillFromTrip(doc.data()); });
+          }
+        });
+      }
+    }
+
+    function preFillFromTrip(t) {
+      document.querySelector('.page-title').textContent = 'Duplicate Booking';
+
+      // Trip type — click the matching pill to trigger section visibility
+      var pills = document.querySelectorAll('.type-pill');
+      pills.forEach(function(pill) {
+        if (pill.dataset.type === t.tripType) pill.click();
+      });
+
+      // Pickup
+      var set = function(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; };
+      set('pickup-address', t.pickupAddress);
+      set('pickup-city',    t.pickupCity);
+      set('pickup-state',   t.pickupState);
+      set('pickup-zip',     t.pickupZip);
+      set('pickup-notes',   t.pickupNotes);
+
+      // Destination (P2P)
+      set('dropoff-address', t.dropoffAddress);
+      set('dropoff-city',    t.dropoffCity);
+      set('dropoff-state',   t.dropoffState);
+
+      // Airport
+      set('airport',        t.airport);
+      set('airline',        t.airline);
+      set('flight-number',  t.flightNumber);
+      set('terminal',       t.terminal);
+
+      // Instructions
+      set('instructions', t.instructions);
+
+      // Vehicle — select matching radio if it still exists
+      if (t.vehicleId) {
+        var radio = document.querySelector('input[name="vehicle"][value="' + t.vehicleId + '"]');
+        if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
+      }
+
+      // Clear time so the user picks fresh; keep date as today
+      set('trip-time', '');
+    }
+
+    function populateTimeSelects() {
+      var ids = ['trip-time', 'trip-end-time'];
+      var html = '<option value="">— select time —</option>';
+      for (var h = 0; h < 24; h++) {
+        for (var m = 0; m < 60; m += 15) {
+          var hh = String(h).padStart(2, '0');
+          var mm = String(m).padStart(2, '0');
+          var displayH = h % 12 || 12;
+          var ampm = h < 12 ? 'AM' : 'PM';
+          html += '<option value="' + hh + ':' + mm + '">' + displayH + ':' + mm + ' ' + ampm + '</option>';
+        }
+      }
+      ids.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+      });
     }
 
     function setDefaultDate() {
-      document.getElementById('trip-date').value = new Date().toISOString().slice(0, 10);
+      var now   = new Date();
+      var today = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0');
+      var dateInput = document.getElementById('trip-date');
+      dateInput.min   = today;
+      dateInput.value = today;
     }
 
     function loadVehicles(user) {
       var list  = document.getElementById('vehicle-list');
       var noVeh = document.getElementById('no-vehicles');
 
-      db.collection('users').doc(user.uid).collection('vehicles')
-        .orderBy('createdAt', 'asc')
-        .get()
+      db.collection('users').doc(user.uid).collection('vehicles').get()
         .then(function(snap) {
           list.innerHTML = '';
           if (snap.empty) {
@@ -322,19 +735,21 @@
           }
           snap.forEach(function(doc) {
             var v = doc.data();
-            userVehicles.push({ id: doc.id, data: v });
 
             var label = document.createElement('label');
-            label.className = 'vehicle-card block';
+            label.className = 'vehicle-card';
             label.innerHTML =
               '<input type="radio" name="vehicle" value="' + doc.id + '">' +
               '<div class="vehicle-card-inner">' +
-                '<p class="text-on-surface text-sm font-medium">' +
-                  (v.year ? v.year + ' ' : '') + v.make + ' ' + v.model +
-                '</p>' +
-                '<p class="text-on-surface-variant text-xs mt-0.5">' +
-                  (v.color || '') + (v.plate ? ' &nbsp;·&nbsp; ' + v.plate : '') +
-                '</p>' +
+                '<div>' +
+                  '<p class="vehicle-name">' +
+                    (v.year ? v.year + ' ' : '') + (v.make || '') + ' ' + (v.model || '') +
+                  '</p>' +
+                  '<p class="vehicle-sub">' +
+                    (v.color || '') + (v.plate ? ' &nbsp;·&nbsp; ' + v.plate : '') +
+                  '</p>' +
+                '</div>' +
+                '<span class="vehicle-check">&#10003;</span>' +
               '</div>';
 
             label.querySelector('input').addEventListener('change', function() {
@@ -344,12 +759,12 @@
             list.appendChild(label);
           });
 
-          // Auto-select first vehicle
           var firstRadio = list.querySelector('input[type="radio"]');
           if (firstRadio) {
             firstRadio.checked = true;
             firstRadio.dispatchEvent(new Event('change'));
           }
+          resolveVehiclesReady();
         });
     }
 
@@ -364,11 +779,9 @@
           pills.forEach(function(p) { p.classList.remove('active'); });
           pill.classList.add('active');
           currentTripType = pill.dataset.type;
-
           var isAirport = currentTripType.includes('Airport');
           var isHourly  = currentTripType.includes('Hourly');
-
-          destSection.classList.toggle('hidden', isHourly);
+          destSection.classList.toggle('hidden', isHourly || isAirport);
           airSection.classList.toggle('hidden', !isAirport);
           endTimeRow.classList.toggle('hidden', !isHourly);
         });
@@ -377,22 +790,21 @@
 
     function setupSubmit(user) {
       var submitBtn = document.getElementById('submit-btn');
-      var loadingEl = document.getElementById('submit-loading');
       var errorEl   = document.getElementById('form-error');
 
       submitBtn.addEventListener('click', function() {
-        errorEl.classList.add('hidden');
+        errorEl.classList.remove('visible');
 
         var errors = validate();
         if (errors.length) {
           errorEl.textContent = errors[0];
-          errorEl.classList.remove('hidden');
+          errorEl.classList.add('visible');
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }
 
         submitBtn.disabled = true;
-        loadingEl.classList.remove('hidden');
+        submitBtn.classList.add('is-loading');
 
         var isAirport = currentTripType.includes('Airport');
         var isHourly  = currentTripType.includes('Hourly');
@@ -421,13 +833,23 @@
           status:         'pending',
           createdAt:      firebase.firestore.FieldValue.serverTimestamp(),
           updatedAt:      firebase.firestore.FieldValue.serverTimestamp()
-        }).then(function() {
-          window.location.replace('trips.html');
+        }).then(function(docRef) {
+          showSuccess(docRef.id, {
+            date:           val('trip-date'),
+            time:           val('trip-time'),
+            pickupAddress:  val('pickup-address'),
+            pickupCity:     val('pickup-city'),
+            dropoffAddress: isHourly  ? '' : val('dropoff-address'),
+            dropoffCity:    isHourly  ? '' : val('dropoff-city'),
+            airport:        isAirport ? val('airport') : '',
+            tripType:       currentTripType,
+            vehicleSnap:    selectedVehicleSnap
+          });
         }).catch(function(err) {
           submitBtn.disabled = false;
-          loadingEl.classList.add('hidden');
+          submitBtn.classList.remove('is-loading');
           errorEl.textContent = 'Error saving booking: ' + err.message;
-          errorEl.classList.remove('hidden');
+          errorEl.classList.add('visible');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       });
@@ -435,15 +857,160 @@
 
     function validate() {
       var errors = [];
-      if (!selectedVehicleId)          errors.push('Please select a vehicle.');
-      if (!val('pickup-address'))       errors.push('Pickup address is required.');
-      if (!val('trip-date'))            errors.push('Date is required.');
-      if (!val('trip-time'))            errors.push('Departure time is required.');
+      if (!selectedVehicleId)    errors.push('Please select a vehicle.');
+      if (!val('pickup-address')) errors.push('Pickup address is required.');
+      var dateVal = val('trip-date');
+      if (!dateVal) {
+        errors.push('Date is required.');
+      } else {
+        var now   = new Date();
+        var today = now.getFullYear() + '-' +
+          String(now.getMonth() + 1).padStart(2, '0') + '-' +
+          String(now.getDate()).padStart(2, '0');
+        if (dateVal < today) errors.push('Please select today or a future date.');
+      }
+      if (!val('trip-time')) errors.push('Departure time is required.');
       return errors;
     }
 
     function val(id) {
-      return document.getElementById(id).value.trim();
+      var el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    }
+
+    function showSuccess(tripId, t) {
+      // Swap form for success panel
+      document.getElementById('booking-form').classList.add('hidden');
+      document.getElementById('header-title').textContent = 'Booking Confirmed';
+      document.getElementById('header-back').href = 'index.html';
+
+      // Populate summary
+      document.getElementById('sc-when').textContent = formatSuccessDate(t.date) + ' at ' + formatTime(t.time);
+
+      var pickup = t.pickupAddress || '—';
+      if (t.pickupCity) pickup += ', ' + t.pickupCity;
+      document.getElementById('sc-pickup').textContent = pickup;
+
+      var destRow = document.getElementById('sc-dest-row');
+      var isAirport = t.tripType && t.tripType.includes('Airport');
+      var isHourly  = t.tripType && t.tripType.includes('Hourly');
+      if (isHourly) {
+        destRow.classList.add('hidden');
+      } else {
+        var dest = isAirport ? (t.airport || 'Airport') : (t.dropoffAddress || '');
+        if (!isAirport && t.dropoffCity) dest += ', ' + t.dropoffCity;
+        document.getElementById('sc-dest').textContent = dest || '—';
+      }
+
+      var v = t.vehicleSnap || {};
+      document.getElementById('sc-vehicle').textContent =
+        ((v.year ? v.year + ' ' : '') + (v.make || '') + ' ' + (v.model || '')).trim() || '—';
+
+      document.getElementById('sc-view-btn').href = 'trip-detail.html?id=' + tripId;
+
+      document.getElementById('sc-cal-btn').addEventListener('click', function() {
+        downloadICS(tripId, t);
+      });
+
+      document.getElementById('success-panel').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function downloadICS(tripId, t) {
+      var date = t.date || '';
+      var time = t.time || '09:00';
+      var parts = date.split('-');
+      var tp    = time.split(':');
+
+      var startH = parseInt(tp[0], 10);
+      var startM = parseInt(tp[1], 10);
+
+      // End time: use endTime if hourly, otherwise 1 hour after start
+      var endH = startH + 1;
+      var endM = startM;
+      if (t.tripType && t.tripType.includes('Hourly') && t.endTime) {
+        var ep = t.endTime.split(':');
+        endH = parseInt(ep[0], 10);
+        endM = parseInt(ep[1], 10);
+      }
+      if (endH >= 24) { endH = 23; endM = 59; }
+
+      var pad = function(n) { return String(n).padStart(2, '0'); };
+      var dateStr  = parts.join('');
+      var startStr = dateStr + 'T' + pad(startH) + pad(startM) + '00';
+      var endStr   = dateStr + 'T' + pad(endH)   + pad(endM)   + '00';
+
+      var isAirport = t.tripType && t.tripType.includes('Airport');
+      var isHourly  = t.tripType && t.tripType.includes('Hourly');
+
+      var summary = 'Steward — ' + (t.tripType || 'Ride');
+
+      var location = [t.pickupAddress, t.pickupCity].filter(Boolean).join(', ');
+
+      var descParts = [];
+      if (location)          descParts.push('Pickup: ' + location);
+      if (isAirport && t.airport) descParts.push('Airport: ' + t.airport);
+      if (!isAirport && !isHourly && t.dropoffAddress)
+        descParts.push('To: ' + [t.dropoffAddress, t.dropoffCity].filter(Boolean).join(', '));
+      var v = t.vehicleSnap || {};
+      var vehicleStr = ((v.year ? v.year + ' ' : '') + (v.make || '') + ' ' + (v.model || '')).trim();
+      if (vehicleStr) descParts.push('Vehicle: ' + vehicleStr);
+
+      var uid = 'steward-' + tripId + '@steward.app';
+      var now = new Date();
+      var stamp = now.getUTCFullYear() +
+        pad(now.getUTCMonth() + 1) + pad(now.getUTCDate()) + 'T' +
+        pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()) + 'Z';
+
+      var ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Steward//Steward App//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        'UID:' + uid,
+        'DTSTAMP:' + stamp,
+        'DTSTART:' + startStr,
+        'DTEND:' + endStr,
+        'SUMMARY:' + summary,
+        'LOCATION:' + location,
+        'DESCRIPTION:' + descParts.join('\\n'),
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'steward-ride-' + (date || 'trip') + '.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(url); }, 10000);
+    }
+
+    function formatSuccessDate(d) {
+      if (!d) return '—';
+      var p  = d.split('-');
+      var dt = new Date(+p[0], +p[1]-1, +p[2]);
+      var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      var MONS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      return DAYS[dt.getDay()] + ', ' + MONS[dt.getMonth()] + ' ' + dt.getDate();
+    }
+
+    function formatTime(t) {
+      if (!t) return '—';
+      var p = t.split(':'), h = +p[0], m = p[1];
+      return (h % 12 || 12) + ':' + m + (h >= 12 ? ' PM' : ' AM');
+    }
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js');
+      });
     }
   </script>
 </body>
