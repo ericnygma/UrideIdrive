@@ -559,27 +559,160 @@
           <label class="field-label" for="airport">Airport</label>
           <select id="airport" class="field-input">
             <option value="">Select airport…</option>
-            <option value="(JFK) John F. Kennedy">(JFK) John F. Kennedy</option>
-            <option value="(LGA) LaGuardia">(LGA) LaGuardia</option>
-            <option value="(EWR) Newark Liberty">(EWR) Newark Liberty</option>
-            <option value="(BDL) Bradley International">(BDL) Bradley International</option>
-            <option value="(HPN) Westchester County">(HPN) Westchester County</option>
+            <optgroup label="New York City">
+              <option value="JFK – John F. Kennedy International">JFK – John F. Kennedy International</option>
+              <option value="LGA – LaGuardia">LGA – LaGuardia</option>
+              <option value="EWR – Newark Liberty International">EWR – Newark Liberty International</option>
+            </optgroup>
+            <optgroup label="New York State">
+              <option value="HPN – Westchester County (White Plains)">HPN – Westchester County (White Plains)</option>
+              <option value="ISP – Long Island MacArthur (Islip)">ISP – Long Island MacArthur (Islip)</option>
+              <option value="SWF – New York Stewart International">SWF – New York Stewart International</option>
+              <option value="ALB – Albany International">ALB – Albany International</option>
+              <option value="BUF – Buffalo Niagara International">BUF – Buffalo Niagara International</option>
+              <option value="ROC – Greater Rochester International">ROC – Greater Rochester International</option>
+              <option value="SYR – Syracuse Hancock International">SYR – Syracuse Hancock International</option>
+            </optgroup>
+            <optgroup label="Connecticut">
+              <option value="BDL – Bradley International (Hartford)">BDL – Bradley International (Hartford)</option>
+              <option value="HVN – Tweed New Haven Regional">HVN – Tweed New Haven Regional</option>
+            </optgroup>
+            <optgroup label="New England">
+              <option value="BOS – Boston Logan International">BOS – Boston Logan International</option>
+              <option value="MHT – Manchester-Boston Regional">MHT – Manchester-Boston Regional</option>
+              <option value="PVD – Providence T.F. Green">PVD – Providence T.F. Green</option>
+              <option value="PWM – Portland International Jetport">PWM – Portland International Jetport</option>
+              <option value="BTV – Burlington International">BTV – Burlington International</option>
+            </optgroup>
+            <optgroup label="Mid-Atlantic">
+              <option value="PHL – Philadelphia International">PHL – Philadelphia International</option>
+              <option value="ABE – Lehigh Valley International">ABE – Lehigh Valley International</option>
+              <option value="AVP – Wilkes-Barre/Scranton International">AVP – Wilkes-Barre/Scranton International</option>
+              <option value="DCA – Reagan National (Washington D.C.)">DCA – Reagan National (Washington D.C.)</option>
+              <option value="IAD – Dulles International">IAD – Dulles International</option>
+              <option value="BWI – Baltimore/Washington International">BWI – Baltimore/Washington International</option>
+            </optgroup>
+            <optgroup label="Southeast">
+              <option value="ATL – Hartsfield-Jackson Atlanta">ATL – Hartsfield-Jackson Atlanta</option>
+              <option value="CLT – Charlotte Douglas International">CLT – Charlotte Douglas International</option>
+              <option value="RDU – Raleigh-Durham International">RDU – Raleigh-Durham International</option>
+              <option value="BNA – Nashville International">BNA – Nashville International</option>
+              <option value="MIA – Miami International">MIA – Miami International</option>
+              <option value="FLL – Fort Lauderdale-Hollywood">FLL – Fort Lauderdale-Hollywood</option>
+              <option value="MCO – Orlando International">MCO – Orlando International</option>
+              <option value="TPA – Tampa International">TPA – Tampa International</option>
+            </optgroup>
+            <optgroup label="Midwest">
+              <option value="ORD – O'Hare International (Chicago)">ORD – O'Hare International (Chicago)</option>
+              <option value="MDW – Chicago Midway">MDW – Chicago Midway</option>
+              <option value="DTW – Detroit Metropolitan">DTW – Detroit Metropolitan</option>
+              <option value="CLE – Cleveland Hopkins International">CLE – Cleveland Hopkins International</option>
+              <option value="PIT – Pittsburgh International">PIT – Pittsburgh International</option>
+              <option value="CMH – John Glenn Columbus International">CMH – John Glenn Columbus International</option>
+              <option value="MSP – Minneapolis-Saint Paul International">MSP – Minneapolis-Saint Paul International</option>
+              <option value="STL – St. Louis Lambert International">STL – St. Louis Lambert International</option>
+            </optgroup>
+            <optgroup label="South &amp; Southwest">
+              <option value="DFW – Dallas/Fort Worth International">DFW – Dallas/Fort Worth International</option>
+              <option value="DAL – Dallas Love Field">DAL – Dallas Love Field</option>
+              <option value="IAH – George Bush Intercontinental (Houston)">IAH – George Bush Intercontinental (Houston)</option>
+              <option value="HOU – William P. Hobby (Houston)">HOU – William P. Hobby (Houston)</option>
+              <option value="SAT – San Antonio International">SAT – San Antonio International</option>
+              <option value="AUS – Austin-Bergstrom International">AUS – Austin-Bergstrom International</option>
+              <option value="MSY – Louis Armstrong New Orleans">MSY – Louis Armstrong New Orleans</option>
+              <option value="PHX – Phoenix Sky Harbor International">PHX – Phoenix Sky Harbor International</option>
+              <option value="TUS – Tucson International">TUS – Tucson International</option>
+              <option value="LAS – Harry Reid International (Las Vegas)">LAS – Harry Reid International (Las Vegas)</option>
+              <option value="DEN – Denver International">DEN – Denver International</option>
+              <option value="SLC – Salt Lake City International">SLC – Salt Lake City International</option>
+            </optgroup>
+            <optgroup label="West Coast">
+              <option value="LAX – Los Angeles International">LAX – Los Angeles International</option>
+              <option value="BUR – Hollywood Burbank">BUR – Hollywood Burbank</option>
+              <option value="LGB – Long Beach Airport">LGB – Long Beach Airport</option>
+              <option value="ONT – Ontario International">ONT – Ontario International</option>
+              <option value="SNA – John Wayne (Orange County)">SNA – John Wayne (Orange County)</option>
+              <option value="SAN – San Diego International">SAN – San Diego International</option>
+              <option value="SFO – San Francisco International">SFO – San Francisco International</option>
+              <option value="OAK – Oakland International">OAK – Oakland International</option>
+              <option value="SJC – Norman Y. Mineta San José">SJC – Norman Y. Mineta San José</option>
+              <option value="SEA – Seattle-Tacoma International">SEA – Seattle-Tacoma International</option>
+              <option value="PDX – Portland International">PDX – Portland International</option>
+            </optgroup>
+            <optgroup label="Canada">
+              <option value="YYZ – Toronto Pearson International">YYZ – Toronto Pearson International</option>
+              <option value="YUL – Montréal-Trudeau International">YUL – Montréal-Trudeau International</option>
+              <option value="YOW – Ottawa Macdonald-Cartier">YOW – Ottawa Macdonald-Cartier</option>
+              <option value="YVR – Vancouver International">YVR – Vancouver International</option>
+            </optgroup>
           </select>
         </div>
         <div class="field">
           <label class="field-label field-label-muted" for="airline">Airline <span class="label-opt">(optional)</span></label>
           <select id="airline" class="field-input">
             <option value="">Select airline…</option>
-            <option>Delta Air Lines</option>
-            <option>American Airlines</option>
-            <option>United Airlines</option>
-            <option>JetBlue Airways</option>
-            <option>Air Canada</option>
-            <option>Alaska Airlines</option>
-            <option>Air France</option>
-            <option>British Airways</option>
-            <option>KLM</option>
-            <option>Lufthansa</option>
+            <optgroup label="US Carriers">
+              <option>Alaska Airlines</option>
+              <option>Allegiant Air</option>
+              <option>American Airlines</option>
+              <option>Avelo Airlines</option>
+              <option>Breeze Airways</option>
+              <option>Delta Air Lines</option>
+              <option>Frontier Airlines</option>
+              <option>Hawaiian Airlines</option>
+              <option>JetBlue Airways</option>
+              <option>Southwest Airlines</option>
+              <option>Spirit Airlines</option>
+              <option>Sun Country Airlines</option>
+              <option>United Airlines</option>
+            </optgroup>
+            <optgroup label="Canada">
+              <option>Air Canada</option>
+              <option>Air Transat</option>
+              <option>WestJet</option>
+            </optgroup>
+            <optgroup label="Europe">
+              <option>Aer Lingus</option>
+              <option>Air France</option>
+              <option>Austrian Airlines</option>
+              <option>British Airways</option>
+              <option>Condor</option>
+              <option>Eurowings</option>
+              <option>Finnair</option>
+              <option>Iberia</option>
+              <option>Icelandair</option>
+              <option>KLM Royal Dutch Airlines</option>
+              <option>LOT Polish Airlines</option>
+              <option>Lufthansa</option>
+              <option>Norwegian Air</option>
+              <option>SAS Scandinavian Airlines</option>
+              <option>Swiss International Air Lines</option>
+              <option>TAP Air Portugal</option>
+              <option>Turkish Airlines</option>
+              <option>Virgin Atlantic</option>
+            </optgroup>
+            <optgroup label="Middle East">
+              <option>El Al Israel Airlines</option>
+              <option>Emirates</option>
+              <option>Etihad Airways</option>
+              <option>Qatar Airways</option>
+            </optgroup>
+            <optgroup label="Asia &amp; Pacific">
+              <option>ANA All Nippon Airways</option>
+              <option>Air China</option>
+              <option>Cathay Pacific</option>
+              <option>EVA Air</option>
+              <option>Japan Airlines</option>
+              <option>Korean Air</option>
+              <option>Singapore Airlines</option>
+            </optgroup>
+            <optgroup label="Latin America &amp; Caribbean">
+              <option>Aeromexico</option>
+              <option>Avianca</option>
+              <option>Caribbean Airlines</option>
+              <option>Copa Airlines</option>
+              <option>LATAM Airlines</option>
+            </optgroup>
           </select>
         </div>
         <div class="field-row">

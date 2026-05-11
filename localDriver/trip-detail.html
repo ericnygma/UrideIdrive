@@ -735,12 +735,19 @@
         el.textContent = value;
       } else if (type === 'select') {
         el = document.createElement('select');
+        var currentGroup = null;
         (opts.options || []).forEach(function(o) {
+          if (o.optgroup) {
+            currentGroup = document.createElement('optgroup');
+            currentGroup.label = o.optgroup;
+            el.appendChild(currentGroup);
+            return;
+          }
           var opt = document.createElement('option');
-          opt.value = o.value || o;
+          opt.value = o.value !== undefined ? o.value : o;
           opt.textContent = o.label || o;
           if (opt.value === value) opt.selected = true;
-          el.appendChild(opt);
+          (currentGroup || el).appendChild(opt);
         });
       } else {
         el = document.createElement('input');
@@ -950,16 +957,103 @@
       on('airport-name', function() {
         var airportOpts = [
           { value: '', label: 'Select airport…' },
-          { value: '(JFK) John F. Kennedy', label: '(JFK) John F. Kennedy' },
-          { value: '(LGA) LaGuardia', label: '(LGA) LaGuardia' },
-          { value: '(EWR) Newark Liberty', label: '(EWR) Newark Liberty' },
-          { value: '(BDL) Bradley International', label: '(BDL) Bradley International' },
-          { value: '(HPN) Westchester County', label: '(HPN) Westchester County' }
+          { optgroup: 'New York City' },
+          { value: 'JFK – John F. Kennedy International', label: 'JFK – John F. Kennedy International' },
+          { value: 'LGA – LaGuardia', label: 'LGA – LaGuardia' },
+          { value: 'EWR – Newark Liberty International', label: 'EWR – Newark Liberty International' },
+          { optgroup: 'New York State' },
+          { value: 'HPN – Westchester County (White Plains)', label: 'HPN – Westchester County (White Plains)' },
+          { value: 'ISP – Long Island MacArthur (Islip)', label: 'ISP – Long Island MacArthur (Islip)' },
+          { value: 'SWF – New York Stewart International', label: 'SWF – New York Stewart International' },
+          { value: 'ALB – Albany International', label: 'ALB – Albany International' },
+          { value: 'BUF – Buffalo Niagara International', label: 'BUF – Buffalo Niagara International' },
+          { value: 'ROC – Greater Rochester International', label: 'ROC – Greater Rochester International' },
+          { value: 'SYR – Syracuse Hancock International', label: 'SYR – Syracuse Hancock International' },
+          { optgroup: 'Connecticut' },
+          { value: 'BDL – Bradley International (Hartford)', label: 'BDL – Bradley International (Hartford)' },
+          { value: 'HVN – Tweed New Haven Regional', label: 'HVN – Tweed New Haven Regional' },
+          { optgroup: 'New England' },
+          { value: 'BOS – Boston Logan International', label: 'BOS – Boston Logan International' },
+          { value: 'MHT – Manchester-Boston Regional', label: 'MHT – Manchester-Boston Regional' },
+          { value: 'PVD – Providence T.F. Green', label: 'PVD – Providence T.F. Green' },
+          { value: 'PWM – Portland International Jetport', label: 'PWM – Portland International Jetport' },
+          { value: 'BTV – Burlington International', label: 'BTV – Burlington International' },
+          { optgroup: 'Mid-Atlantic' },
+          { value: 'PHL – Philadelphia International', label: 'PHL – Philadelphia International' },
+          { value: 'ABE – Lehigh Valley International', label: 'ABE – Lehigh Valley International' },
+          { value: 'AVP – Wilkes-Barre/Scranton International', label: 'AVP – Wilkes-Barre/Scranton International' },
+          { value: 'DCA – Reagan National (Washington D.C.)', label: 'DCA – Reagan National (Washington D.C.)' },
+          { value: 'IAD – Dulles International', label: 'IAD – Dulles International' },
+          { value: 'BWI – Baltimore/Washington International', label: 'BWI – Baltimore/Washington International' },
+          { optgroup: 'Southeast' },
+          { value: 'ATL – Hartsfield-Jackson Atlanta', label: 'ATL – Hartsfield-Jackson Atlanta' },
+          { value: 'CLT – Charlotte Douglas International', label: 'CLT – Charlotte Douglas International' },
+          { value: 'RDU – Raleigh-Durham International', label: 'RDU – Raleigh-Durham International' },
+          { value: 'BNA – Nashville International', label: 'BNA – Nashville International' },
+          { value: 'MIA – Miami International', label: 'MIA – Miami International' },
+          { value: 'FLL – Fort Lauderdale-Hollywood', label: 'FLL – Fort Lauderdale-Hollywood' },
+          { value: 'MCO – Orlando International', label: 'MCO – Orlando International' },
+          { value: 'TPA – Tampa International', label: 'TPA – Tampa International' },
+          { optgroup: 'Midwest' },
+          { value: 'ORD – O\'Hare International (Chicago)', label: 'ORD – O\'Hare International (Chicago)' },
+          { value: 'MDW – Chicago Midway', label: 'MDW – Chicago Midway' },
+          { value: 'DTW – Detroit Metropolitan', label: 'DTW – Detroit Metropolitan' },
+          { value: 'CLE – Cleveland Hopkins International', label: 'CLE – Cleveland Hopkins International' },
+          { value: 'PIT – Pittsburgh International', label: 'PIT – Pittsburgh International' },
+          { value: 'CMH – John Glenn Columbus International', label: 'CMH – John Glenn Columbus International' },
+          { value: 'MSP – Minneapolis-Saint Paul International', label: 'MSP – Minneapolis-Saint Paul International' },
+          { value: 'STL – St. Louis Lambert International', label: 'STL – St. Louis Lambert International' },
+          { optgroup: 'South & Southwest' },
+          { value: 'DFW – Dallas/Fort Worth International', label: 'DFW – Dallas/Fort Worth International' },
+          { value: 'DAL – Dallas Love Field', label: 'DAL – Dallas Love Field' },
+          { value: 'IAH – George Bush Intercontinental (Houston)', label: 'IAH – George Bush Intercontinental (Houston)' },
+          { value: 'HOU – William P. Hobby (Houston)', label: 'HOU – William P. Hobby (Houston)' },
+          { value: 'SAT – San Antonio International', label: 'SAT – San Antonio International' },
+          { value: 'AUS – Austin-Bergstrom International', label: 'AUS – Austin-Bergstrom International' },
+          { value: 'MSY – Louis Armstrong New Orleans', label: 'MSY – Louis Armstrong New Orleans' },
+          { value: 'PHX – Phoenix Sky Harbor International', label: 'PHX – Phoenix Sky Harbor International' },
+          { value: 'TUS – Tucson International', label: 'TUS – Tucson International' },
+          { value: 'LAS – Harry Reid International (Las Vegas)', label: 'LAS – Harry Reid International (Las Vegas)' },
+          { value: 'DEN – Denver International', label: 'DEN – Denver International' },
+          { value: 'SLC – Salt Lake City International', label: 'SLC – Salt Lake City International' },
+          { optgroup: 'West Coast' },
+          { value: 'LAX – Los Angeles International', label: 'LAX – Los Angeles International' },
+          { value: 'BUR – Hollywood Burbank', label: 'BUR – Hollywood Burbank' },
+          { value: 'LGB – Long Beach Airport', label: 'LGB – Long Beach Airport' },
+          { value: 'ONT – Ontario International', label: 'ONT – Ontario International' },
+          { value: 'SNA – John Wayne (Orange County)', label: 'SNA – John Wayne (Orange County)' },
+          { value: 'SAN – San Diego International', label: 'SAN – San Diego International' },
+          { value: 'SFO – San Francisco International', label: 'SFO – San Francisco International' },
+          { value: 'OAK – Oakland International', label: 'OAK – Oakland International' },
+          { value: 'SJC – Norman Y. Mineta San José', label: 'SJC – Norman Y. Mineta San José' },
+          { value: 'SEA – Seattle-Tacoma International', label: 'SEA – Seattle-Tacoma International' },
+          { value: 'PDX – Portland International', label: 'PDX – Portland International' },
+          { optgroup: 'Canada' },
+          { value: 'YYZ – Toronto Pearson International', label: 'YYZ – Toronto Pearson International' },
+          { value: 'YUL – Montréal-Trudeau International', label: 'YUL – Montréal-Trudeau International' },
+          { value: 'YOW – Ottawa Macdonald-Cartier', label: 'YOW – Ottawa Macdonald-Cartier' },
+          { value: 'YVR – Vancouver International', label: 'YVR – Vancouver International' }
         ];
-        var airlineOpts = [{ value: '', label: 'Select airline…' },
-          'Delta Air Lines','American Airlines','United Airlines',
-          'JetBlue Airways','Air Canada','Alaska Airlines',
-          'Air France','British Airways','KLM','Lufthansa'
+        var airlineOpts = [
+          { value: '', label: 'Select airline…' },
+          { optgroup: 'US Carriers' },
+          'Alaska Airlines','Allegiant Air','American Airlines','Avelo Airlines',
+          'Breeze Airways','Delta Air Lines','Frontier Airlines','Hawaiian Airlines',
+          'JetBlue Airways','Southwest Airlines','Spirit Airlines','Sun Country Airlines','United Airlines',
+          { optgroup: 'Canada' },
+          'Air Canada','Air Transat','WestJet',
+          { optgroup: 'Europe' },
+          'Aer Lingus','Air France','Austrian Airlines','British Airways','Condor',
+          'Eurowings','Finnair','Iberia','Icelandair','KLM Royal Dutch Airlines',
+          'LOT Polish Airlines','Lufthansa','Norwegian Air','SAS Scandinavian Airlines',
+          'Swiss International Air Lines','TAP Air Portugal','Turkish Airlines','Virgin Atlantic',
+          { optgroup: 'Middle East' },
+          'El Al Israel Airlines','Emirates','Etihad Airways','Qatar Airways',
+          { optgroup: 'Asia & Pacific' },
+          'ANA All Nippon Airways','Air China','Cathay Pacific','EVA Air',
+          'Japan Airlines','Korean Air','Singapore Airlines',
+          { optgroup: 'Latin America & Caribbean' },
+          'Aeromexico','Avianca','Caribbean Airlines','Copa Airlines','LATAM Airlines'
         ].map(function(o) { return typeof o === 'string' ? { value: o, label: o } : o; });
 
         editField({

@@ -399,6 +399,8 @@
         } else {
           window.location.replace('onboarding.html');
         }
+      }).catch(function() {
+        window.location.replace('index.html');
       });
     });
 
@@ -485,6 +487,14 @@
       mode === 'signup' ? handleSignUp() : handleSignIn();
     });
 
+    function withTimeout(promise, ms, onTimeout) {
+      var t = setTimeout(onTimeout, ms);
+      return promise.then(
+        function(v) { clearTimeout(t); return v; },
+        function(e) { clearTimeout(t); return Promise.reject(e); }
+      );
+    }
+
     function handleSignIn() {
       var email = document.getElementById('email').value.trim();
       var pass  = document.getElementById('password').value;
@@ -495,7 +505,11 @@
       }
 
       setLoading(true);
-      auth.signInWithEmailAndPassword(email, pass)
+      withTimeout(
+        auth.signInWithEmailAndPassword(email, pass),
+        15000,
+        function() { setLoading(false); showError('Connection is taking too long. Check your network and try again.'); }
+      )
         .then(function() {
           window.location.replace('index.html');
         })
@@ -517,7 +531,11 @@
       }
 
       setLoading(true);
-      auth.createUserWithEmailAndPassword(email, pass)
+      withTimeout(
+        auth.createUserWithEmailAndPassword(email, pass),
+        15000,
+        function() { setLoading(false); showError('Connection is taking too long. Check your network and try again.'); }
+      )
         .then(function(cred) {
           var profile = {
             name: name,
