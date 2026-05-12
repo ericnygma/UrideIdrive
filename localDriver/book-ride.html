@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0E0D0B">
+  <meta name="theme-color" content="#0F1216">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Steward">
@@ -18,14 +18,15 @@
     .hidden { display: none !important; }
 
     :root {
-      --ink:     #EDE8DF;
-      --muted:   #9E9590;
-      --faint:   #2C2820;
-      --gold:    #B8923A;
-      --gold-lt: #D4AE62;
-      --bg:      #0E0D0B;
-      --surface: #15130E;
-      --border:  rgba(184,146,58,0.14);
+      --ink:      #E7EBF0;
+      --muted:    #8A93A0;
+      --line:     #2A313B;
+      --amber:    #F2A23C;
+      --amber-lt: #FFC97A;
+      --bg:       #0F1216;
+      --panel:    #171B21;
+      --border:   rgba(242,162,60,0.14);
+      --green:    #74C28A;
     }
 
     html, body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
@@ -34,8 +35,8 @@
       content: '';
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 90% 50% at 50% -5%, rgba(184,146,58,0.06) 0%, transparent 100%),
-        radial-gradient(ellipse 40% 30% at 90% 110%, rgba(6,5,3,0.4) 0%, transparent 100%);
+        radial-gradient(ellipse 90% 50% at 50% -5%, rgba(91,191,180,0.06) 0%, transparent 100%),
+        radial-gradient(ellipse 40% 30% at 90% 110%, rgba(0,5,10,0.4) 0%, transparent 100%);
     }
     body::after {
       content: '';
@@ -60,10 +61,10 @@
       position: sticky; top: 0; z-index: 30;
       padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 1rem;
       display: flex; align-items: center; gap: 1rem;
-      background: rgba(14,13,11,0.9);
+      background: rgba(15,18,22,0.9);
       -webkit-backdrop-filter: blur(18px);
       backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(184,146,58,0.08);
+      border-bottom: 1px solid rgba(242,162,60,0.08);
     }
     .back-link {
       color: var(--muted); text-decoration: none;
@@ -84,10 +85,10 @@
       display: none;
       margin-bottom: 2rem;
       padding: 0.65rem 0 0.65rem 0.85rem;
-      border-left: 2px solid #8B3A3A;
+      border-left: 2px solid rgba(226,109,92,0.5);
       font-family: 'Inter', sans-serif;
       font-size: 0.78rem;
-      color: #C07070;
+      color: #E26D5C;
       line-height: 1.5;
     }
     #form-error.visible { display: block; }
@@ -105,7 +106,7 @@
     }
     .section-rule {
       border: none; height: 1px;
-      background: linear-gradient(90deg, var(--faint), transparent);
+      background: linear-gradient(90deg, var(--line), transparent);
       margin-bottom: 1.25rem;
     }
 
@@ -117,7 +118,7 @@
       font-size: 0.65rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--gold-lt);
+      color: var(--amber-lt);
       margin-bottom: 0.5rem;
       font-weight: 400;
     }
@@ -126,23 +127,23 @@
       width: 100%;
       background: transparent;
       border: none;
-      border-bottom: 1px solid var(--faint);
+      border-bottom: 1px solid var(--line);
       outline: none;
       color: var(--ink);
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.05rem;
       font-weight: 300;
       padding: 0.25rem 0 0.5rem;
-      caret-color: var(--gold);
+      caret-color: var(--amber);
       transition: border-color 0.3s;
       letter-spacing: 0.02em;
     }
-    .field-input:focus { border-bottom-color: rgba(184,146,58,0.7); }
-    .field-input::placeholder { color: var(--faint); font-style: italic; }
+    .field-input:focus { border-bottom-color: rgba(242,162,60,0.7); }
+    .field-input::placeholder { color: var(--line); font-style: italic; }
     .field-input::-webkit-calendar-picker-indicator { filter: invert(0.4); }
 
     select.field-input { cursor: pointer; }
-    select.field-input option { background: #1A1812; }
+    select.field-input option { background: #1E232B; }
 
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     .field-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.25rem; }
@@ -153,12 +154,12 @@
     .vehicle-card input[type="radio"] { display: none; }
     .vehicle-card-inner {
       padding: 0.75rem 0;
-      border-bottom: 1px solid var(--faint);
+      border-bottom: 1px solid var(--line);
       display: flex; align-items: center; justify-content: space-between;
       transition: border-color 0.2s;
     }
     .vehicle-card input[type="radio"]:checked + .vehicle-card-inner {
-      border-bottom-color: rgba(184,146,58,0.6);
+      border-bottom-color: rgba(242,162,60,0.6);
     }
     .vehicle-card input[type="radio"]:checked + .vehicle-card-inner .vehicle-name {
       color: var(--ink);
@@ -168,7 +169,7 @@
     }
     .vehicle-name {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.05rem; color: #9A8E80;
+      font-size: 1.05rem; color: #8A93A0;
       transition: color 0.2s;
     }
     .vehicle-sub {
@@ -176,7 +177,7 @@
       color: var(--muted); margin-top: 0.15rem;
     }
     .vehicle-check {
-      color: var(--gold); font-size: 0.85rem;
+      color: var(--amber); font-size: 0.85rem;
       opacity: 0; transition: opacity 0.2s;
     }
 
@@ -184,7 +185,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-style: italic; font-size: 1rem; color: var(--muted);
     }
-    #no-vehicles a { color: var(--gold); text-decoration: none; }
+    #no-vehicles a { color: var(--amber); text-decoration: none; }
     #no-vehicles a:hover { text-decoration: underline; }
 
     /* ── Trip type pills ── */
@@ -198,22 +199,22 @@
       font-family: 'Inter', sans-serif;
       font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase;
       padding: 0.4rem 1rem;
-      border: 1px solid var(--faint); border-radius: 9999px;
+      border: 1px solid var(--line); border-radius: 9999px;
       background: transparent; color: var(--muted);
       cursor: pointer; white-space: nowrap;
       transition: border-color 0.2s, color 0.2s, background 0.2s;
     }
     .type-pill.active {
-      border-color: rgba(184,146,58,0.55);
-      background: rgba(184,146,58,0.08);
-      color: var(--gold-lt);
+      border-color: rgba(242,162,60,0.55);
+      background: rgba(242,162,60,0.08);
+      color: var(--amber-lt);
     }
 
     /* ── Submit ────────── */
     .submit-btn {
       width: 100%;
       padding: 1rem;
-      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      background: linear-gradient(135deg, var(--amber-lt) 0%, var(--amber) 100%);
       color: var(--bg);
       border: none; border-radius: 0.4rem;
       font-family: 'Inter', sans-serif;
@@ -235,7 +236,7 @@
     .btn-loading::after {
       content: '';
       width: 14px; height: 14px;
-      border: 1px solid rgba(14,13,11,0.3);
+      border: 1px solid rgba(15,18,22,0.3);
       border-top-color: var(--bg);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
@@ -254,6 +255,38 @@
     textarea.field-input { resize: none; line-height: 1.55; }
     #end-time-row { max-width: 180px; }
 
+    /* ── Address autocomplete ── */
+    .ac-field { position: relative; }
+    .ac-dropdown {
+      position: absolute;
+      top: calc(100% + 3px);
+      left: 0; right: 0;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      z-index: 300;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .ac-dropdown.hidden { display: none; }
+    .ac-group + .ac-group { border-top: 1px solid var(--line); }
+    .ac-group-label {
+      font-size: 0.59rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      padding: 0.5rem 0.85rem 0.2rem;
+    }
+    .ac-item {
+      padding: 0.5rem 0.85rem;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .ac-item:hover, .ac-item.ac-active { background: rgba(255,255,255,0.05); }
+    .ac-item-main { color: var(--ink); font-size: 0.88rem; display: block; }
+    .ac-item-sub  { color: var(--muted); font-size: 0.72rem; display: block; margin-top: 0.1rem; }
+    .ac-msg { padding: 0.5rem 0.85rem; color: var(--dim); font-size: 0.78rem; font-style: italic; }
+
     /* ── Success panel ── */
     @keyframes riseIn {
       from { opacity: 0; transform: translateY(18px); }
@@ -269,14 +302,14 @@
     .success-check {
       width: 52px; height: 52px;
       border-radius: 50%;
-      border: 1px solid rgba(100,200,140,0.35);
-      background: rgba(100,200,140,0.07);
+      border: 1px solid rgba(116,194,138,0.35);
+      background: rgba(116,194,138,0.07);
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 1.75rem;
       opacity: 0;
       animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.05s forwards;
     }
-    .success-check svg { width: 22px; height: 22px; stroke: #64c88c; fill: none; stroke-width: 1.5; }
+    .success-check svg { width: 22px; height: 22px; stroke: #74C28A; fill: none; stroke-width: 1.5; }
 
     .success-heading {
       font-family: 'Cormorant Garamond', serif;
@@ -302,7 +335,7 @@
     }
 
     .success-summary {
-      border-top: 1px solid var(--faint);
+      border-top: 1px solid var(--line);
       padding-top: 1.75rem;
       margin-bottom: 2.5rem;
       display: flex; flex-direction: column; gap: 1.1rem;
@@ -341,7 +374,7 @@
       display: block;
       width: 100%;
       padding: 1rem;
-      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      background: linear-gradient(135deg, var(--amber-lt) 0%, var(--amber) 100%);
       color: var(--bg);
       border: none;
       font-family: 'Inter', sans-serif;
@@ -357,7 +390,7 @@
       display: block;
       width: 100%;
       padding: 0.85rem;
-      border: 1px solid var(--faint);
+      border: 1px solid var(--line);
       background: none;
       color: var(--muted);
       font-family: 'Inter', sans-serif;
@@ -367,15 +400,15 @@
       cursor: pointer;
       transition: border-color 0.2s, color 0.2s;
     }
-    .action-secondary:hover { border-color: rgba(184,146,58,0.3); color: var(--ink); }
+    .action-secondary:hover { border-color: rgba(242,162,60,0.3); color: var(--ink); }
 
     .action-calendar {
       display: flex; align-items: center; justify-content: center; gap: 0.6rem;
       width: 100%;
       padding: 0.85rem;
-      border: 1px solid rgba(184,146,58,0.2);
-      background: rgba(184,146,58,0.04);
-      color: var(--gold-lt);
+      border: 1px solid rgba(242,162,60,0.2);
+      background: rgba(242,162,60,0.04);
+      color: var(--amber-lt);
       font-family: 'Inter', sans-serif;
       font-size: 0.65rem; font-weight: 400;
       letter-spacing: 0.14em; text-transform: uppercase;
@@ -384,9 +417,9 @@
       transition: border-color 0.25s, background 0.25s, color 0.25s;
     }
     .action-calendar:hover {
-      border-color: rgba(184,146,58,0.45);
-      background: rgba(184,146,58,0.09);
-      color: #E4C97A;
+      border-color: rgba(242,162,60,0.45);
+      background: rgba(242,162,60,0.09);
+      color: #FFD99A;
     }
     .action-calendar svg {
       width: 13px; height: 13px;
@@ -765,23 +798,51 @@
     var vehiclesReady;
     var resolveVehiclesReady;
     vehiclesReady = new Promise(function(res) { resolveVehiclesReady = res; });
+    var currentAirportCode = '';
+    var applyAirportFilter; // assigned by setupAirportAirlineFilter
+    var addressHistory = [];
 
     function initPage(user) {
       currentUser = user;
       populateTimeSelects();
       setDefaultDate();
       loadVehicles(user);
+      loadAddressHistory(user);
+      setupAirportAirlineFilter();
+      setupAddressAutocomplete('pickup-address',  'pickup-city',  'pickup-state',  'pickup-zip');
+      setupAddressAutocomplete('dropoff-address', 'dropoff-city', 'dropoff-state', null);
       setupTripTypeToggle();
       setupSubmit(user);
 
-      var copyId = new URLSearchParams(window.location.search).get('copy');
+      var params = new URLSearchParams(window.location.search);
+      var copyId = params.get('copy');
       if (copyId) {
         db.collection('trips').doc(copyId).get().then(function(doc) {
           if (doc.exists && doc.data().uid === user.uid) {
-            // vehicles may still be loading — wait for them then pre-fill
             vehiclesReady.then(function() { preFillFromTrip(doc.data()); });
           }
         });
+      } else if (params.get('route')) {
+        vehiclesReady.then(function() { preFillFromRoute(params); });
+      }
+    }
+
+    function preFillFromRoute(params) {
+      var type = params.get('type');
+      if (type) {
+        document.querySelectorAll('.type-pill').forEach(function(pill) {
+          if (pill.dataset.type === type) pill.click();
+        });
+      }
+      var set = function(id, val) { var el = document.getElementById(id); if (el && val) el.value = val; };
+      set('pickup-address',  params.get('pickup'));
+      set('pickup-city',     params.get('city'));
+      set('dropoff-address', params.get('dropoff'));
+      set('dropoff-city',    params.get('dropoffCity'));
+      set('airport',         params.get('airport'));
+      var airportEl = document.getElementById('airport');
+      if (airportEl && airportEl.value && applyAirportFilter) {
+        applyAirportFilter(airportEl.value.substring(0, 3));
       }
     }
 
@@ -807,8 +868,9 @@
       set('dropoff-city',    t.dropoffCity);
       set('dropoff-state',   t.dropoffState);
 
-      // Airport
-      set('airport',        t.airport);
+      // Airport — filter airlines first, then restore saved values
+      set('airport', t.airport);
+      if (t.airport && applyAirportFilter) { applyAirportFilter(t.airport.substring(0, 3)); }
       set('airline',        t.airline);
       set('flight-number',  t.flightNumber);
       set('terminal',       t.terminal);
@@ -835,7 +897,7 @@
           var mm = String(m).padStart(2, '0');
           var displayH = h % 12 || 12;
           var ampm = h < 12 ? 'AM' : 'PM';
-          html += '<option value="' + hh + ':' + mm + '">' + displayH + ':' + mm + ' ' + ampm + '</option>';
+          html += '<option value="' + hh + ':' + mm + '">' + displayH + ':' + mm + ' ' + ampm + '</option>';
         }
       }
       ids.forEach(function(id) {
@@ -899,6 +961,454 @@
           }
           resolveVehiclesReady();
         });
+    }
+
+    // ===== Airport–Airline filter data =====
+    (function() {
+      var D = ['Alaska Airlines','Allegiant Air','American Airlines','Avelo Airlines',
+        'Breeze Airways','Delta Air Lines','Frontier Airlines','Hawaiian Airlines',
+        'JetBlue Airways','Southwest Airlines','Spirit Airlines','Sun Country Airlines',
+        'United Airlines'];
+      var CA = ['Air Canada','Air Transat','WestJet'];
+      var EU = ['Aer Lingus','Air France','Austrian Airlines','British Airways','Condor',
+        'Eurowings','Finnair','Iberia','Icelandair','KLM Royal Dutch Airlines',
+        'LOT Polish Airlines','Lufthansa','Norwegian Air','SAS Scandinavian Airlines',
+        'Swiss International Air Lines','TAP Air Portugal','Turkish Airlines','Virgin Atlantic'];
+      var ME = ['El Al Israel Airlines','Emirates','Etihad Airways','Qatar Airways'];
+      var AS = ['ANA All Nippon Airways','Air China','Cathay Pacific','EVA Air',
+        'Japan Airlines','Korean Air','Singapore Airlines'];
+      var LA = ['Aeromexico','Avianca','Caribbean Airlines','Copa Airlines','LATAM Airlines'];
+      var ALL = D.concat(CA, EU, ME, AS, LA);
+      var DOM = D.concat(CA);
+
+      window._AIRPORT_AIRLINES = {
+        JFK: ALL,  LGA: D.concat(['Air Canada']),
+        EWR: D.concat(CA, EU, ME, LA, ['Aeromexico','Avianca','Copa Airlines','LATAM Airlines']),
+        BOS: D.concat(CA, ['Aer Lingus','Air France','British Airways','Icelandair','LOT Polish Airlines',
+          'Norwegian Air','TAP Air Portugal','Virgin Atlantic'], ME, LA),
+        PHL: D.concat(CA, ['Aer Lingus','British Airways','Iberia','Lufthansa']),
+        DCA: D.concat(['Air Canada']),
+        IAD: ALL,
+        BWI: D.concat(['Air Canada','WestJet','Norwegian Air']),
+        ATL: D.concat(CA, EU, ME, AS, LA),
+        CLT: D.concat(['Air Canada','British Airways']),
+        RDU: D.concat(['Air Canada','WestJet','British Airways']),
+        BNA: D.concat(['Air Canada']),
+        MIA: ALL,  FLL: D.concat(CA, EU, ME, LA),
+        MCO: D.concat(CA, EU, ME, LA, AS),
+        TPA: D.concat(['Air Canada','WestJet','British Airways','Norwegian Air','Virgin Atlantic']),
+        ORD: ALL,  MDW: ['Southwest Airlines','Spirit Airlines','Frontier Airlines',
+          'Delta Air Lines','American Airlines','United Airlines'],
+        DTW: D.concat(['Air Canada','WestJet','Air France','KLM Royal Dutch Airlines']),
+        CLE: DOM,  PIT: DOM,  CMH: DOM,
+        MSP: D.concat(['Air Canada','WestJet','Icelandair','KLM Royal Dutch Airlines']),
+        STL: DOM,
+        DFW: ALL,  DAL: ['Southwest Airlines'],
+        IAH: D.concat(CA, EU, ME, LA),
+        HOU: ['Southwest Airlines'],
+        SAT: DOM,  AUS: D.concat(['Air Canada','WestJet','British Airways']),
+        MSY: D.concat(['Air Canada']),
+        PHX: D.concat(CA, EU, ME, LA, AS),
+        TUS: DOM,
+        LAS: D.concat(CA, EU, ME, AS, LA),
+        DEN: D.concat(CA, EU, ME, AS, LA),
+        SLC: D.concat(['Air Canada','WestJet']),
+        LAX: ALL,  BUR: D,
+        LGB: ['JetBlue Airways','Delta Air Lines','Southwest Airlines','American Airlines'],
+        ONT: DOM,  SNA: DOM,
+        SAN: D.concat(['Air Canada','WestJet','British Airways','Aeromexico','LATAM Airlines']),
+        SFO: ALL,  OAK: DOM,  SJC: DOM,
+        SEA: D.concat(['Air Canada','WestJet','British Airways','Condor','Icelandair',
+          'KLM Royal Dutch Airlines','Lufthansa','Norwegian Air',
+          'ANA All Nippon Airways','Air China','Japan Airlines','Korean Air',
+          'Aeromexico','LATAM Airlines']),
+        PDX: D.concat(['Air Canada','WestJet','Condor','KLM Royal Dutch Airlines',
+          'Icelandair','Japan Airlines','Korean Air']),
+        HPN: DOM,  ISP: DOM,  SWF: DOM,  ALB: DOM,  BUF: DOM,
+        ROC: DOM,  SYR: DOM,  BDL: DOM,  HVN: DOM,
+        MHT: DOM,  PVD: DOM,  PWM: DOM,  BTV: DOM,
+        ABE: DOM,  AVP: DOM,
+        YYZ: ALL,  YUL: ALL,  YOW: DOM,  YVR: ALL
+      };
+
+      window._AIRPORT_TERMINAL_HINTS = {
+        JFK: 'T1, T2, T4, T5, T7, T8',  LGA: 'T1, T2',
+        EWR: 'A, B, C',                  BOS: 'A, B, C, E',
+        PHL: 'A–F',                       DCA: 'A, B, C',
+        IAD: 'Main, A, B, C, D',          BWI: 'A, B, C, D, E',
+        ATL: 'domestic, international',   CLT: 'A–F',
+        MIA: 'D, E, F, G, H, J',         FLL: 'T1, T2, T3, T4',
+        MCO: 'T1, T2, T3, T4',           ORD: 'T1, T2, T3, T5',
+        MDW: 'single terminal',           DTW: 'McNamara, North',
+        MSP: '1, 2',                      DFW: 'A, B, C, D, E',
+        IAH: 'A, B, C, D, E',            LAX: 'T1–T8, TBIT',
+        SFO: 'T1, T2, T3, Int\'l',       SEA: 'N, S, C',
+        DEN: 'A, B, C',                   PHX: 'T2, T3, T4',
+        LAS: 'T1, T3',                    SLC: 'T1, T2'
+      };
+
+      window._AIRLINE_TERMINAL = {
+        JFK: {
+          'American Airlines': 'T8',       'JetBlue Airways': 'T5',
+          'Delta Air Lines': 'T4',         'Alaska Airlines': 'T7',
+          'United Airlines': 'T7',         'British Airways': 'T7',
+          'Iberia': 'T7',                  'ANA All Nippon Airways': 'T7',
+          'Air France': 'T1',              'Korean Air': 'T1',
+          'Lufthansa': 'T1',               'Turkish Airlines': 'T1',
+          'Air China': 'T1',              'Japan Airlines': 'T1',
+          'Finnair': 'T8',                 'Icelandair': 'T1',
+          'El Al Israel Airlines': 'T4',   'Emirates': 'T4',
+          'Etihad Airways': 'T4',          'Singapore Airlines': 'T4',
+          'Swiss International Air Lines': 'T4', 'TAP Air Portugal': 'T4',
+          'Virgin Atlantic': 'T4',         'KLM Royal Dutch Airlines': 'T4',
+          'Air Canada': 'T4',              'Cathay Pacific': 'T4',
+          'Qatar Airways': 'T8'
+        },
+        LGA: {
+          'American Airlines': 'T2',       'Delta Air Lines': 'T1',
+          'United Airlines': 'T1',         'Southwest Airlines': 'T1'
+        },
+        EWR: {
+          'United Airlines': 'C',          'American Airlines': 'A',
+          'Delta Air Lines': 'B',          'JetBlue Airways': 'B',
+          'Spirit Airlines': 'B',          'Frontier Airlines': 'A',
+          'Southwest Airlines': 'A',       'Air Canada': 'A'
+        },
+        BOS: {
+          'American Airlines': 'B',        'Delta Air Lines': 'A',
+          'United Airlines': 'B',          'Southwest Airlines': 'E',
+          'JetBlue Airways': 'C',          'Air Canada': 'E',
+          'British Airways': 'E',          'Lufthansa': 'E',
+          'Air France': 'E',               'Aer Lingus': 'E',
+          'Norwegian Air': 'E',            'Icelandair': 'E',
+          'Virgin Atlantic': 'E',          'El Al Israel Airlines': 'E',
+          'Qatar Airways': 'E',            'TAP Air Portugal': 'E'
+        },
+        ORD: {
+          'United Airlines': 'T1',         'Air Canada': 'T1',
+          'Lufthansa': 'T1',               'ANA All Nippon Airways': 'T1',
+          'American Airlines': 'T3',       'Spirit Airlines': 'T3',
+          'Frontier Airlines': 'T3',       'Delta Air Lines': 'T2',
+          'Alaska Airlines': 'T2',         'Southwest Airlines': 'T5'
+        },
+        DFW: {
+          'American Airlines': 'A–D',      'Delta Air Lines': 'E',
+          'United Airlines': 'E',          'Spirit Airlines': 'E',
+          'Frontier Airlines': 'E',        'Alaska Airlines': 'D'
+        },
+        MIA: {
+          'American Airlines': 'D',        'Delta Air Lines': 'E',
+          'United Airlines': 'E'
+        },
+        ATL: {
+          'Delta Air Lines': 'domestic',   'Southwest Airlines': 'domestic',
+          'American Airlines': 'domestic', 'United Airlines': 'domestic',
+          'Air France': 'international',   'British Airways': 'international',
+          'Lufthansa': 'international',    'Korean Air': 'international',
+          'Air Canada': 'domestic'
+        },
+        LAX: {
+          'American Airlines': 'T4',       'Delta Air Lines': 'T2',
+          'United Airlines': 'T7',         'Alaska Airlines': 'T6',
+          'Southwest Airlines': 'T1',      'JetBlue Airways': 'T3',
+          'Spirit Airlines': 'T5',         'Frontier Airlines': 'T5',
+          'British Airways': 'TBIT',       'Air France': 'TBIT',
+          'Lufthansa': 'TBIT',             'Emirates': 'TBIT',
+          'Cathay Pacific': 'TBIT',        'Singapore Airlines': 'TBIT',
+          'ANA All Nippon Airways': 'TBIT','Japan Airlines': 'TBIT',
+          'Korean Air': 'TBIT',            'Air China': 'TBIT',
+          'Air Canada': 'TBIT',            'EVA Air': 'TBIT'
+        },
+        SFO: {
+          'United Airlines': 'T3',         'Alaska Airlines': 'T2',
+          'Delta Air Lines': 'T1',         'American Airlines': 'T1',
+          'Southwest Airlines': 'T1',      'JetBlue Airways': 'T1',
+          'Air Canada': 'Int\'l',          'British Airways': 'Int\'l',
+          'Lufthansa': 'Int\'l',           'Air France': 'Int\'l',
+          'Singapore Airlines': 'Int\'l',  'Japan Airlines': 'Int\'l',
+          'Korean Air': 'Int\'l',          'ANA All Nippon Airways': 'Int\'l',
+          'Cathay Pacific': 'Int\'l',      'Air China': 'Int\'l'
+        },
+        SEA: {
+          'Alaska Airlines': 'N',          'Delta Air Lines': 'S',
+          'American Airlines': 'S',        'United Airlines': 'C',
+          'Southwest Airlines': 'C'
+        },
+        PHL: {
+          'American Airlines': 'A, B, C, D, E, F',
+          'Southwest Airlines': 'E',       'United Airlines': 'B',
+          'Delta Air Lines': 'C'
+        },
+        DCA: {
+          'American Airlines': 'B, C',     'Delta Air Lines': 'A',
+          'United Airlines': 'A',          'Southwest Airlines': 'C',
+          'Alaska Airlines': 'A'
+        },
+        IAD: {
+          'United Airlines': 'C, D',       'American Airlines': 'A',
+          'Air Canada': 'A'
+        },
+        DTW: {
+          'Delta Air Lines': 'McNamara',   'American Airlines': 'McNamara',
+          'Southwest Airlines': 'North',   'Spirit Airlines': 'North',
+          'Air Canada': 'McNamara'
+        },
+        MSP: {
+          'Delta Air Lines': '1',          'Sun Country Airlines': '2',
+          'American Airlines': '1',        'United Airlines': '1',
+          'Southwest Airlines': '2',       'Spirit Airlines': '1'
+        }
+      };
+    })();
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function loadAddressHistory(user) {
+      var seen = {};
+      var results = [];
+      function add(addr, city, state, zip) {
+        if (!addr || !addr.trim()) return;
+        var key = addr.trim().toLowerCase() + '|' + (city || '').trim().toLowerCase();
+        if (seen[key]) return;
+        seen[key] = true;
+        results.push({
+          address: addr.trim(),
+          city:  (city  || '').trim(),
+          state: (state || '').trim(),
+          zip:   (zip   || '').trim()
+        });
+      }
+      Promise.all([
+        db.collection('users').doc(user.uid).collection('savedRoutes').get(),
+        db.collection('trips').where('uid', '==', user.uid).limit(40).get()
+      ]).then(function(snaps) {
+        snaps[0].forEach(function(doc) {
+          var r = doc.data();
+          add(r.pickupAddress,  r.pickupCity);
+          add(r.dropoffAddress, r.dropoffCity);
+        });
+        snaps[1].forEach(function(doc) {
+          var t = doc.data();
+          add(t.pickupAddress,  t.pickupCity,  t.pickupState, t.pickupZip);
+          add(t.dropoffAddress, t.dropoffCity, t.dropoffState);
+        });
+        addressHistory = results;
+      }).catch(function() {});
+    }
+
+    function setupAddressAutocomplete(addrId, cityId, stateId, zipId) {
+      var addrEl  = document.getElementById(addrId);
+      var cityEl  = cityId  ? document.getElementById(cityId)  : null;
+      var stateEl = stateId ? document.getElementById(stateId) : null;
+      var zipEl   = zipId   ? document.getElementById(zipId)   : null;
+      if (!addrEl) return;
+
+      var fieldEl = addrEl.closest('.field');
+      if (fieldEl) fieldEl.classList.add('ac-field');
+
+      var dropdown = document.createElement('div');
+      dropdown.className = 'ac-dropdown hidden';
+      (fieldEl || addrEl.parentNode).appendChild(dropdown);
+
+      var activeIdx = -1;
+      var allItems  = [];
+      var nomTimer  = null;
+      var lastQ     = '';
+
+      function histMatches(q) {
+        if (!q) return addressHistory.slice(0, 6);
+        var ql = q.toLowerCase();
+        return addressHistory.filter(function(h) {
+          return h.address.toLowerCase().indexOf(ql) !== -1 ||
+                 (h.city && h.city.toLowerCase().indexOf(ql) !== -1);
+        }).slice(0, 5);
+      }
+
+      function render(hItems, nItems, loading) {
+        activeIdx = -1;
+        allItems  = [];
+        var html  = '';
+        if (hItems.length) {
+          html += '<div class="ac-group"><div class="ac-group-label">Saved &amp; Recent</div>';
+          hItems.forEach(function(h) {
+            var idx = allItems.push(h) - 1;
+            var sub = [h.city, h.state].filter(Boolean).join(', ');
+            html += '<div class="ac-item" data-idx="' + idx + '">' +
+              '<span class="ac-item-main">' + esc(h.address) + '</span>' +
+              (sub ? '<span class="ac-item-sub">' + esc(sub) + '</span>' : '') +
+              '</div>';
+          });
+          html += '</div>';
+        }
+        if (loading) html += '<div class="ac-msg">Searching…</div>';
+        if (nItems && nItems.length) {
+          html += '<div class="ac-group"><div class="ac-group-label">Suggestions</div>';
+          nItems.forEach(function(n) {
+            var idx = allItems.push(n) - 1;
+            var sub = [n.city, n.state].filter(Boolean).join(', ');
+            html += '<div class="ac-item" data-idx="' + idx + '">' +
+              '<span class="ac-item-main">' + esc(n.address) + '</span>' +
+              (sub ? '<span class="ac-item-sub">' + esc(sub) + '</span>' : '') +
+              '</div>';
+          });
+          html += '</div>';
+        }
+        if (!html) { close(); return; }
+        dropdown.innerHTML = html;
+        dropdown.classList.remove('hidden');
+        dropdown.querySelectorAll('.ac-item').forEach(function(el) {
+          el.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            pick(allItems[parseInt(this.dataset.idx, 10)]);
+          });
+        });
+      }
+
+      function pick(item) {
+        addrEl.value = item.address;
+        if (cityEl  && item.city)  cityEl.value  = item.city;
+        if (stateEl && item.state) stateEl.value = item.state;
+        if (zipEl   && item.zip)   zipEl.value   = item.zip;
+        close();
+      }
+
+      function close() {
+        dropdown.classList.add('hidden');
+        dropdown.innerHTML = '';
+        activeIdx = -1;
+        allItems  = [];
+      }
+
+      function fetchNominatim(q) {
+        var h = histMatches(q);
+        render(h, null, true);
+        fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' +
+          encodeURIComponent(q), { headers: { 'Accept-Language': 'en' } })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (addrEl.value.trim() !== q) return; // discard stale response
+            var nItems = data.map(function(d) {
+              var a   = d.address || {};
+              var num = a.house_number || '';
+              var rd  = a.road || a.pedestrian || a.path || '';
+              var st  = num ? num + ' ' + rd : (rd || d.display_name.split(',')[0]);
+              return {
+                address: st.trim(),
+                city:  a.city || a.town || a.village || '',
+                state: a.state || '',
+                zip:   (a.postcode || '').split('-')[0]
+              };
+            }).filter(function(n) { return n.address; });
+            render(histMatches(q), nItems, false);
+          })
+          .catch(function() { render(histMatches(q), null, false); });
+      }
+
+      addrEl.setAttribute('autocomplete', 'off');
+
+      addrEl.addEventListener('focus', function() {
+        var h = histMatches(this.value.trim());
+        if (h.length) render(h, null, false);
+      });
+
+      addrEl.addEventListener('input', function() {
+        var q = this.value.trim();
+        clearTimeout(nomTimer);
+        var h = histMatches(q);
+        if (!q || q.length < 3) { if (h.length) render(h, null, false); else close(); return; }
+        if (q === lastQ) return;
+        lastQ = q;
+        render(h, null, h.length < 2);
+        nomTimer = setTimeout(function() { fetchNominatim(q); }, 420);
+      });
+
+      addrEl.addEventListener('blur',    function() { setTimeout(close, 160); });
+
+      addrEl.addEventListener('keydown', function(e) {
+        var els = dropdown.querySelectorAll('.ac-item');
+        if (!els.length) return;
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIdx = Math.min(activeIdx + 1, els.length - 1);
+          els.forEach(function(el, i) { el.classList.toggle('ac-active', i === activeIdx); });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIdx = Math.max(activeIdx - 1, 0);
+          els.forEach(function(el, i) { el.classList.toggle('ac-active', i === activeIdx); });
+        } else if (e.key === 'Enter' && activeIdx >= 0) {
+          e.preventDefault();
+          pick(allItems[activeIdx]);
+        } else if (e.key === 'Escape') {
+          close();
+        }
+      });
+    }
+
+    function setupAirportAirlineFilter() {
+      var airportSel = document.getElementById('airport');
+      var airlineSel = document.getElementById('airline');
+      var terminalIn = document.getElementById('terminal');
+      if (!airportSel || !airlineSel || !terminalIn) return;
+
+      var GROUPS = [
+        { label: 'US Carriers', airlines: ['Alaska Airlines','Allegiant Air','American Airlines',
+            'Avelo Airlines','Breeze Airways','Delta Air Lines','Frontier Airlines',
+            'Hawaiian Airlines','JetBlue Airways','Southwest Airlines','Spirit Airlines',
+            'Sun Country Airlines','United Airlines'] },
+        { label: 'Canada', airlines: ['Air Canada','Air Transat','WestJet'] },
+        { label: 'Europe', airlines: ['Aer Lingus','Air France','Austrian Airlines',
+            'British Airways','Condor','Eurowings','Finnair','Iberia','Icelandair',
+            'KLM Royal Dutch Airlines','LOT Polish Airlines','Lufthansa','Norwegian Air',
+            'SAS Scandinavian Airlines','Swiss International Air Lines','TAP Air Portugal',
+            'Turkish Airlines','Virgin Atlantic'] },
+        { label: 'Middle East', airlines: ['El Al Israel Airlines','Emirates',
+            'Etihad Airways','Qatar Airways'] },
+        { label: 'Asia & Pacific', airlines: ['ANA All Nippon Airways','Air China',
+            'Cathay Pacific','EVA Air','Japan Airlines','Korean Air','Singapore Airlines'] },
+        { label: 'Latin America & Caribbean', airlines: ['Aeromexico','Avianca',
+            'Caribbean Airlines','Copa Airlines','LATAM Airlines'] }
+      ];
+
+      applyAirportFilter = function(code) {
+        currentAirportCode = code || '';
+        var allowed = code && window._AIRPORT_AIRLINES[code] ? window._AIRPORT_AIRLINES[code] : null;
+        var prev = airlineSel.value;
+
+        var html = '<option value="">Select airline…</option>';
+        GROUPS.forEach(function(g) {
+          var opts = '';
+          g.airlines.forEach(function(a) {
+            if (!allowed || allowed.indexOf(a) !== -1) {
+              opts += '<option>' + a + '</option>';
+            }
+          });
+          if (opts) html += '<optgroup label="' + g.label + '">' + opts + '</optgroup>';
+        });
+        airlineSel.innerHTML = html;
+
+        if (prev) { airlineSel.value = prev; }
+
+        var hint = (code && window._AIRPORT_TERMINAL_HINTS[code])
+          ? window._AIRPORT_TERMINAL_HINTS[code] : '4';
+        terminalIn.placeholder = hint;
+      };
+
+      airportSel.addEventListener('change', function() {
+        var code = this.value ? this.value.substring(0, 3) : '';
+        applyAirportFilter(code);
+        airlineSel.value = '';
+        terminalIn.value = '';
+      });
+
+      airlineSel.addEventListener('change', function() {
+        var airline = this.value;
+        var map = window._AIRLINE_TERMINAL;
+        if (currentAirportCode && airline && map[currentAirportCode] && map[currentAirportCode][airline]) {
+          terminalIn.value = map[currentAirportCode][airline];
+        }
+      });
     }
 
     function setupTripTypeToggle() {

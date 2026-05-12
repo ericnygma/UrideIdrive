@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0E0D0B">
+  <meta name="theme-color" content="#0F1216">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Steward">
@@ -17,12 +17,13 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink:     #EDE8DF;
-      --muted:   #9E9590;
-      --faint:   #2C2820;
-      --gold:    #B8923A;
-      --gold-lt: #D4AE62;
-      --bg:      #0E0D0B;
+      --ink:      #E7EBF0;
+      --muted:    #8A93A0;
+      --line:     #2A313B;
+      --amber:    #F2A23C;
+      --amber-lt: #FFC97A;
+      --bg:       #0F1216;
+      --dim:      #5C6470;
     }
 
     html, body {
@@ -37,7 +38,7 @@
       content: '';
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 55% at 50% -10%, rgba(184,146,58,0.07) 0%, transparent 100%),
+        radial-gradient(ellipse 80% 55% at 50% -10%, rgba(91,191,180,0.06) 0%, transparent 100%),
         radial-gradient(ellipse 60% 40% at 50% 110%, rgba(10,20,40,0.8) 0%, transparent 100%);
     }
 
@@ -79,12 +80,12 @@
       animation: riseIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
     }
 
-    /* Thin gold rule */
+    /* Thin amber rule */
     .rule {
       margin: 1.6rem auto;
       width: 0;
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+      background: linear-gradient(90deg, transparent, var(--amber) 30%, var(--amber) 70%, transparent);
       animation: expandRule 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
     }
 
@@ -113,10 +114,10 @@
       display: none;
       margin-bottom: 1.75rem;
       padding: 0.7rem 0;
-      border-left: 2px solid #8B3A3A;
+      border-left: 2px solid rgba(226,109,92,0.5);
       padding-left: 0.85rem;
       font-size: 0.78rem;
-      color: #C07070;
+      color: #E26D5C;
       letter-spacing: 0.01em;
       line-height: 1.5;
     }
@@ -133,7 +134,7 @@
       font-size: 0.65rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--gold-lt);
+      color: var(--amber-lt);
       margin-bottom: 0.6rem;
       font-weight: 400;
     }
@@ -142,24 +143,24 @@
       width: 100%;
       background: transparent;
       border: none;
-      border-bottom: 1px solid var(--faint);
+      border-bottom: 1px solid var(--line);
       outline: none;
       color: var(--ink);
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.15rem;
       font-weight: 300;
       padding: 0.3rem 0 0.55rem;
-      caret-color: var(--gold);
+      caret-color: var(--amber);
       transition: border-color 0.3s;
       letter-spacing: 0.02em;
     }
 
     .field input:focus {
-      border-bottom-color: var(--gold);
+      border-bottom-color: var(--amber);
     }
 
     .field input::placeholder {
-      color: #322E28;
+      color: #2A313B;
       font-style: italic;
     }
 
@@ -169,7 +170,7 @@
       position: absolute;
       bottom: 0; left: 50%;
       width: 0; height: 1px;
-      background: var(--gold);
+      background: var(--amber);
       transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .field:focus-within::after {
@@ -185,9 +186,9 @@
     .submit-btn {
       width: 100%;
       padding: 0.9rem 1rem;
-      border: 1px solid rgba(184,146,58,0.35);
-      background: rgba(184,146,58,0.08);
-      color: var(--gold-lt);
+      border: 1px solid rgba(242,162,60,0.35);
+      background: rgba(242,162,60,0.08);
+      color: var(--amber-lt);
       font-family: 'Inter', sans-serif;
       font-size: 0.65rem;
       font-weight: 500;
@@ -201,20 +202,20 @@
     .submit-btn::before {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(184,146,58,0.15), transparent);
+      background: linear-gradient(135deg, rgba(242,162,60,0.15), transparent);
       opacity: 0;
       transition: opacity 0.3s;
     }
 
     .submit-btn:hover:not(:disabled) {
-      background: rgba(184,146,58,0.15);
-      border-color: rgba(184,146,58,0.6);
-      color: #E4C97A;
+      background: rgba(242,162,60,0.15);
+      border-color: rgba(242,162,60,0.6);
+      color: #FFD99A;
     }
     .submit-btn:hover:not(:disabled)::before { opacity: 1; }
 
     .submit-btn:active:not(:disabled) {
-      background: rgba(184,146,58,0.22);
+      background: rgba(242,162,60,0.22);
     }
 
     .submit-btn:disabled {
@@ -227,8 +228,8 @@
     .btn-loading::after {
       content: '';
       width: 14px; height: 14px;
-      border: 1px solid rgba(184,146,58,0.3);
-      border-top-color: var(--gold);
+      border: 1px solid rgba(242,162,60,0.3);
+      border-top-color: var(--amber);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -241,7 +242,7 @@
       margin-top: 3rem;
       font-size: 0.65rem;
       letter-spacing: 0.14em;
-      color: #3A3630;
+      color: #5C6470;
       text-align: center;
       text-transform: uppercase;
       opacity: 0;
@@ -270,7 +271,7 @@
     .pw-toggle {
       position: absolute; right: 0; bottom: 0.4rem;
       background: none; border: none; cursor: pointer;
-      color: #44474d; font-size: 0.8rem; line-height: 1;
+      color: #5C6470; font-size: 0.8rem; line-height: 1;
       padding: 0; transition: color 0.2s;
     }
     .pw-toggle:hover { color: var(--muted); }
@@ -288,7 +289,7 @@
       font-size: 0.65rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #3A3630;
+      color: #5C6470;
       text-decoration: none;
       transition: color 0.2s;
     }

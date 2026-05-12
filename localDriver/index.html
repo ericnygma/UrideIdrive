@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0E0D0B">
+  <meta name="theme-color" content="#0F1216">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Steward">
@@ -18,15 +18,19 @@
     .hidden { display: none !important; }
 
     :root {
-      --ink:      #EDE8DF;
-      --muted:   #9E9590;
-      --faint:    #2C2820;
-      --gold:     #B8923A;
-      --gold-lt:  #D4AE62;
-      --bg:       #0E0D0B;
-      --surface:  #15130E;
-      --surface2: #1C1914;
-      --border:   rgba(184,146,58,0.14);
+      --ink:      #E7EBF0;
+      --muted:    #8A93A0;
+      --line:     #2A313B;
+      --amber:    #F2A23C;
+      --amber-lt: #FFC97A;
+      --bg:       #0F1216;
+      --panel:    #171B21;
+      --panel2:   #1E232B;
+      --border:   rgba(242,162,60,0.14);
+      --dim:      #5C6470;
+      --teal:     #5BBFB4;
+      --red:      #E26D5C;
+      --green:    #74C28A;
     }
 
     html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
@@ -36,8 +40,8 @@
       content: '';
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 90% 55% at 50% -8%, rgba(184,146,58,0.07) 0%, transparent 100%),
-        radial-gradient(ellipse 50% 35% at 15% 105%, rgba(6,5,3,0.6) 0%, transparent 100%);
+        radial-gradient(ellipse 90% 55% at 50% -8%, rgba(91,191,180,0.06) 0%, transparent 100%),
+        radial-gradient(ellipse 50% 35% at 15% 105%, rgba(0,5,10,0.6) 0%, transparent 100%);
     }
     body::after {
       content: '';
@@ -64,10 +68,10 @@
       position: sticky; top: 0; z-index: 30;
       padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 1rem;
       display: flex; align-items: center; justify-content: space-between;
-      background: rgba(14,13,11,0.88);
+      background: rgba(15,18,22,0.88);
       -webkit-backdrop-filter: blur(18px);
       backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(184,146,58,0.08);
+      border-bottom: 1px solid rgba(242,162,60,0.08);
     }
     .wordmark {
       font-family: 'Cormorant SC', serif;
@@ -75,7 +79,7 @@
       font-size: 0.88rem;
       letter-spacing: 0.44em;
       text-indent: 0.44em;
-      color: var(--gold);
+      color: var(--amber);
     }
     .nav-link {
       font-size: 0.65rem;
@@ -105,7 +109,7 @@
     }
     .menu-btn span:nth-child(1) { width: 20px; }
     .menu-btn span:nth-child(2) { width: 13px; }
-    .menu-btn:hover span { background: var(--gold-lt); }
+    .menu-btn:hover span { background: var(--amber-lt); }
     .menu-btn.is-open span:nth-child(1) { width: 18px; transform: translateY(3px) rotate(45deg); }
     .menu-btn.is-open span:nth-child(2) { width: 18px; transform: translateY(-3px) rotate(-45deg); }
 
@@ -126,8 +130,8 @@
       position: fixed; top: 0; right: 0; bottom: 0;
       z-index: 50;
       width: min(280px, 82vw);
-      background: #13110D;
-      border-left: 1px solid rgba(184,146,58,0.14);
+      background: #171B21;
+      border-left: 1px solid rgba(242,162,60,0.14);
       transform: translateX(100%);
       transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex; flex-direction: column;
@@ -144,7 +148,7 @@
       font-family: 'Cormorant SC', serif;
       font-weight: 300; font-size: 0.65rem;
       letter-spacing: 0.44em; text-indent: 0.44em;
-      color: var(--faint);
+      color: var(--line);
     }
     .drawer-close {
       background: none; border: none; cursor: pointer;
@@ -155,7 +159,7 @@
 
     .drawer-rule {
       border: none; height: 1px;
-      background: linear-gradient(90deg, rgba(184,146,58,0.18), transparent);
+      background: linear-gradient(90deg, rgba(242,162,60,0.18), transparent);
       margin: 0;
     }
 
@@ -173,7 +177,7 @@
       background: none; border: none; cursor: pointer;
       display: flex; align-items: baseline; gap: 0.85rem;
       padding: 1.1rem 0;
-      border-bottom: 1px solid var(--faint);
+      border-bottom: 1px solid var(--line);
       text-align: left; width: 100%;
       opacity: 0; transform: translateX(16px);
       transition: color 0.2s,
@@ -190,7 +194,7 @@
     .drawer-num {
       font-family: 'Inter', sans-serif;
       font-size: 0.55rem; font-weight: 400;
-      letter-spacing: 0.08em; color: var(--faint);
+      letter-spacing: 0.08em; color: var(--line);
       flex-shrink: 0;
     }
 
@@ -233,16 +237,16 @@
     .gold-rule {
       border: none;
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent);
+      background: linear-gradient(90deg, transparent, var(--amber) 20%, var(--amber) 80%, transparent);
       opacity: 0.2;
       margin: 2.5rem 0;
     }
 
     /* ── Appointment card ────────────────────────────────────── */
     .appt-card {
-      background: var(--surface);
+      background: var(--panel);
       border: 1px solid var(--border);
-      border-left: 2px solid rgba(184,146,58,0.38);
+      border-left: 2px solid rgba(242,162,60,0.38);
       border-radius: 0.5rem;
       padding: 1.1rem 1.1rem 1rem 1rem;
       cursor: pointer;
@@ -250,7 +254,7 @@
       margin-bottom: 0.75rem;
     }
     .appt-card:last-child { margin-bottom: 0; }
-    .appt-card:hover { background: var(--surface2); border-left-color: rgba(184,146,58,0.9); }
+    .appt-card:hover { background: var(--panel2); border-left-color: rgba(242,162,60,0.9); }
 
     .appt-time {
       font-family: 'Cormorant Garamond', serif;
@@ -262,7 +266,7 @@
     .appt-pickup {
       font-family: 'Cormorant Garamond', serif;
       font-size: 0.95rem;
-      color: #9A8E80;
+      color: #8A93A0;
       margin-top: 0.3rem;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
@@ -283,14 +287,14 @@
     /* ── Next-trip card (dimmer, dashed border) ──────────────── */
     .next-card {
       background: transparent;
-      border: 1px solid var(--faint);
-      border-left: 2px solid var(--faint);
+      border: 1px solid var(--line);
+      border-left: 2px solid var(--line);
       border-radius: 0.5rem;
       padding: 1.1rem 1.1rem 1rem 1rem;
       cursor: pointer;
       transition: border-color 0.2s;
     }
-    .next-card:hover { border-color: rgba(184,146,58,0.3); }
+    .next-card:hover { border-color: rgba(242,162,60,0.3); }
 
     /* ── Badge ───────────────────────────────────────────────── */
     .badge {
@@ -314,87 +318,104 @@
       padding: 1.5rem;
     }
 
-    /* ── Fleet cards (horizontal scroll) ────────────────────── */
-    .fleet-scroll {
-      display: flex;
-      gap: 0.75rem;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-      scrollbar-width: none;
+    /* ── Route cards ─────────────────────────────────────────── */
+    .route-card {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--line);
     }
-    .fleet-scroll::-webkit-scrollbar { display: none; }
-
-    .fleet-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 0.45rem;
-      padding: 0.85rem 1rem;
-      min-width: 148px;
-      flex-shrink: 0;
-      transition: border-color 0.2s;
-    }
-    .fleet-card:hover { border-color: rgba(184,146,58,0.3); }
-
-    .fleet-car {
+    .route-card:last-child { border-bottom: none; }
+    .route-info { flex: 1; min-width: 0; }
+    .route-label {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem;
-      color: var(--ink);
-      line-height: 1.3;
+      font-size: 1rem; font-weight: 400; color: var(--ink);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .fleet-color {
+    .route-meta {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
+      font-style: italic; font-size: 0.85rem; color: var(--muted);
+      margin-top: 0.15rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .fleet-plate {
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      color: var(--gold-lt);
-      margin-top: 0.4rem;
+    .route-actions {
+      display: flex; flex-direction: column; align-items: flex-end;
+      gap: 0.3rem; flex-shrink: 0;
     }
-    .fleet-actions {
-      display: flex; gap: 0.85rem;
-      margin-top: 0.75rem;
+    .route-book {
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--amber-lt);
+      text-decoration: none; transition: color 0.2s;
     }
-    .fleet-edit, .fleet-remove {
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      background: none; border: none; cursor: pointer;
-      transition: color 0.2s;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
+    .route-book:hover { color: var(--ink); }
+    .route-remove {
+      font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--dim); background: none; border: none; cursor: pointer;
+      padding: 0; transition: color 0.2s; font-family: 'Inter', sans-serif;
     }
-    .fleet-edit  { color: rgba(184,146,58,0.45); }
-    .fleet-edit:hover  { color: var(--gold-lt); }
-    .fleet-remove { color: var(--faint); }
-    .fleet-remove:hover { color: #c07070; }
-
-    .fleet-confirm {
-      margin-top: 0.75rem;
-      font-size: 0.65rem;
-      font-family: 'Inter', sans-serif;
-      letter-spacing: 0.08em;
-      color: #c07070;
+    .route-remove:hover { color: #E26D5C; }
+    .route-confirm {
       display: flex; align-items: center; gap: 0.65rem;
+      padding-top: 0.45rem; width: 100%;
     }
-    .fleet-confirm span { opacity: 0.7; }
-    .fleet-confirm-yes, .fleet-confirm-no {
+    .route-confirm-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 0.82rem; color: var(--muted); flex: 1;
+    }
+    .route-confirm-yes, .route-confirm-no {
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
       background: none; border: none; cursor: pointer;
-      font-size: 0.65rem; font-family: 'Inter', sans-serif;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      transition: color 0.2s; padding: 0;
+      font-family: 'Inter', sans-serif; transition: color 0.2s;
     }
-    .fleet-confirm-yes { color: #c07070; }
-    .fleet-confirm-yes:hover { color: #e08080; }
-    .fleet-confirm-no  { color: var(--muted); }
-    .fleet-confirm-no:hover  { color: var(--ink); }
+    .route-confirm-yes { color: #E26D5C; }
+    .route-confirm-yes:hover { color: #ee8878; }
+    .route-confirm-no  { color: var(--muted); }
+    .route-confirm-no:hover  { color: var(--ink); }
+
+    /* ── Add-route form ──────────────────────────────────────── */
+    .route-add-form {
+      border: 1px solid rgba(242,162,60,0.2);
+      border-top: 2px solid var(--amber);
+      padding: 1rem; margin-top: 0.75rem;
+      background: rgba(23,27,33,0.5);
+    }
+    .rf-label {
+      display: block; font-size: 0.65rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--amber-lt);
+      margin-bottom: 0.4rem; margin-top: 0.75rem;
+    }
+    .rf-label:first-child { margin-top: 0; }
+    .rf-input, .rf-select {
+      width: 100%; background: transparent; border: none;
+      border-bottom: 1px solid var(--line); outline: none;
+      color: var(--ink); font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; font-weight: 300;
+      padding: 0.3rem 0 0.45rem; caret-color: var(--amber);
+    }
+    .rf-input::placeholder { color: var(--line); font-style: italic; }
+    .rf-select option { background: var(--panel); }
+    .rf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.25rem; }
+    .rf-actions { display: flex; gap: 0.75rem; align-items: center; margin-top: 1.25rem; }
+    .rf-save {
+      padding: 0.55rem 1.2rem;
+      border: 1px solid rgba(242,162,60,0.3);
+      background: rgba(242,162,60,0.07); color: var(--amber-lt);
+      font-family: 'Inter', sans-serif; font-size: 0.62rem;
+      font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    }
+    .rf-save:hover:not(:disabled) { background: rgba(242,162,60,0.14); border-color: rgba(242,162,60,0.55); }
+    .rf-save:disabled { opacity: 0.45; cursor: default; }
+    .rf-cancel {
+      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: color 0.2s;
+    }
+    .rf-cancel:hover { color: var(--ink); }
 
     /* ── FAB ─────────────────────────────────────────────────── */
     .fab-wrap { position: fixed; bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; display: flex; justify-content: center; z-index: 20; }
     .fab {
-      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      background: linear-gradient(135deg, var(--amber-lt) 0%, var(--amber) 100%);
       color: var(--bg);
       font-size: 0.65rem;
       font-weight: 500;
@@ -404,114 +425,23 @@
       padding: 1rem 2.5rem;
       border-radius: 9999px;
       transition: opacity 0.2s;
-      box-shadow: 0 8px 28px rgba(184,146,58,0.22);
+      box-shadow: 0 8px 28px rgba(242,162,60,0.22);
     }
     .fab:hover { opacity: 0.88; }
 
-    /* ── Modal ───────────────────────────────────────────────── */
-    .modal-backdrop {
-      position: fixed; inset: 0; z-index: 50;
-      background: rgba(0,0,0,0.72);
-      -webkit-backdrop-filter: blur(6px);
-      backdrop-filter: blur(6px);
-      display: flex; align-items: flex-end; justify-content: center;
-    }
-    .modal-sheet {
-      width: 100%; max-width: 480px;
-      background: #16140F;
-      border: 1px solid var(--border);
-      border-bottom: none;
-      border-radius: 1rem 1rem 0 0;
-      padding: 1.75rem 1.5rem 3rem;
-    }
-    .modal-title {
-      font-family: 'Cormorant SC', serif;
-      font-weight: 300;
-      font-size: 1.4rem;
-      letter-spacing: 0.08em;
-      color: var(--ink);
-    }
-    .modal-close {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 1.5rem; line-height: 1;
-      transition: color 0.2s;
-    }
-    .modal-close:hover { color: var(--ink); }
-    .modal-error {
-      display: none;
-      margin-bottom: 1rem;
-      padding: 0.6rem 0;
-      border-left: 2px solid #8B3A3A;
-      padding-left: 0.75rem;
-      font-size: 0.78rem;
-      color: #C07070;
-    }
-    .modal-error.visible { display: block; }
-
-    .modal-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 0.4rem;
-      margin-top: 0.85rem;
-    }
-    .modal-input {
-      background: rgba(255,255,255,0.03);
-      border: none;
-      border-bottom: 1px solid var(--faint);
-      color: var(--ink);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem;
-      font-weight: 300;
-      padding: 0.3rem 0 0.5rem;
-      width: 100%;
-      outline: none;
-      caret-color: var(--gold);
-      transition: border-color 0.25s;
-    }
-    .modal-input:focus { border-bottom-color: rgba(184,146,58,0.6); }
-    .modal-input::placeholder { color: var(--faint); font-style: italic; }
-
-    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-
-    .modal-save {
-      width: 100%;
-      margin-top: 2rem;
-      padding: 0.9rem;
-      background: linear-gradient(135deg, var(--gold-lt), var(--gold));
-      color: var(--bg);
-      border: none;
-      border-radius: 0.4rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .modal-save:hover { opacity: 0.88; }
-
     /* ── Layout helpers ─────────────────────────────────────── */
-    .greeting-wrap   { margin-bottom: 2.75rem; }
-    .today-section   { margin-bottom: 0; }
-    .today-head      { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1.4rem; }
-    .section-cap-mb  { margin-bottom: 1rem; }
-    .fleet-head      { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-    .modal-head      { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
-    #add-vehicle-btn { color: rgba(184,146,58,0.65); }
-    #v-plate         { text-transform: uppercase; }
-    .label-note      { font-style: italic; text-transform: none; color: var(--muted); }
+    .greeting-wrap  { margin-bottom: 2.75rem; }
+    .today-section  { margin-bottom: 0; }
+    .today-head     { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1.4rem; }
+    .section-head   { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
 
     /* ── Toast ───────────────────────────────────────────────── */
     #toast {
       position: fixed; bottom: 2rem; left: 50%;
       transform: translateX(-50%) translateY(0.5rem);
-      background: rgba(21,19,14,0.95);
-      border: 1px solid rgba(100,200,140,0.3);
-      color: #64c88c;
+      background: rgba(23,27,33,0.95);
+      border: 1px solid rgba(116,194,138,0.3);
+      color: #74C28A;
       font-family: 'Inter', sans-serif;
       font-size: 0.65rem; font-weight: 500;
       letter-spacing: 0.1em; text-transform: uppercase;
@@ -559,20 +489,20 @@
     .fr-steps { display: flex; flex-direction: column; gap: 0; }
     .fr-step {
       padding: 1.4rem 1.25rem 1.4rem 1.1rem;
-      border: 1px solid var(--faint);
+      border: 1px solid var(--line);
       border-top: none;
       position: relative;
     }
-    .fr-step:first-child { border-top: 1px solid var(--faint); }
+    .fr-step:first-child { border-top: 1px solid var(--line); }
     .fr-step::before {
       content: '';
       position: absolute;
       left: 0; top: 0; bottom: 0;
       width: 2px;
-      background: var(--faint);
+      background: var(--line);
       transition: background 0.3s;
     }
-    .fr-step.ready::before { background: var(--gold); }
+    .fr-step.ready::before { background: var(--amber); }
     .fr-num {
       display: block;
       font-family: 'Inter', sans-serif;
@@ -581,7 +511,7 @@
       color: var(--muted);
       margin-bottom: 0.55rem;
     }
-    .fr-step.ready .fr-num { color: var(--gold-lt); }
+    .fr-step.ready .fr-num { color: var(--amber-lt); }
     .fr-title {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
@@ -611,20 +541,20 @@
       transition: color 0.2s;
       display: inline-flex; align-items: center; gap: 0.4rem;
     }
-    .fr-cta:hover { color: var(--gold-lt); }
-    .fr-step.ready .fr-cta { color: var(--gold-lt); }
-    .fr-step.ready .fr-cta:hover { color: #E4C97A; }
+    .fr-cta:hover { color: var(--amber-lt); }
+    .fr-step.ready .fr-cta { color: var(--amber-lt); }
+    .fr-step.ready .fr-cta:hover { color: #FFD99A; }
     .fr-step.done .fr-title { color: var(--muted); text-decoration: line-through; }
     .fr-step.done .fr-cta  { display: none; }
-    .fr-step.done::before  { background: rgba(100,200,140,0.4); }
-    .fr-step.done .fr-num  { color: #64c88c; }
+    .fr-step.done::before  { background: rgba(116,194,138,0.4); }
+    .fr-step.done .fr-num  { color: #74C28A; }
 
     /* ── Onboarding reminder ─────────────────────────────────────── */
     .setup-reminder {
       margin-bottom: 1.75rem;
       padding: 0.85rem 1rem 0.85rem 1.1rem;
-      border-left: 2px solid rgba(184,146,58,0.3);
-      background: rgba(184,146,58,0.04);
+      border-left: 2px solid rgba(242,162,60,0.3);
+      background: rgba(242,162,60,0.04);
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -647,7 +577,7 @@
       font-size: 0.62rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--gold-lt);
+      color: var(--amber-lt);
       text-decoration: none;
       transition: color 0.2s;
     }
@@ -657,7 +587,7 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: #3A3630;
+      color: #5C6470;
       font-size: 1.1rem;
       line-height: 1;
       padding: 0;
@@ -699,24 +629,24 @@
         <h2 id="greeting-name" class="greeting-name"></h2>
       </div>
 
-      <!-- First-run panel (hidden until both data snapshots confirm empty) -->
+      <!-- First-run panel -->
       <div id="first-run" class="hidden">
         <div class="fr-intro">
-          <h3 class="fr-intro-head">Two steps to your first ride.</h3>
-          <p class="fr-intro-sub">Everything Steward needs to dispatch your driver with confidence.</p>
+          <h3 class="fr-intro-head">Ready when you are.</h3>
+          <p class="fr-intro-sub">Two things to get started — takes under two minutes.</p>
         </div>
         <div class="fr-steps">
-          <div class="fr-step ready" id="fr-step-1">
+          <div class="fr-step ready">
             <span class="fr-num">01</span>
-            <h4 class="fr-title">Register Your Vehicle</h4>
-            <p class="fr-desc">Make, model, color, and plate — everything your driver needs to identify the car.</p>
-            <button type="button" class="fr-cta" id="fr-add-vehicle">+ Add a vehicle</button>
-          </div>
-          <div class="fr-step" id="fr-step-2">
-            <span class="fr-num">02</span>
             <h4 class="fr-title">Schedule Your First Ride</h4>
-            <p class="fr-desc">Date, time, and pickup address. Ready in under a minute.</p>
-            <a href="book-ride.html" class="fr-cta">Schedule a ride →</a>
+            <p class="fr-desc">Date, time, and pickup address. Done in under a minute.</p>
+            <a href="book-ride.html" class="fr-cta">Book a ride →</a>
+          </div>
+          <div class="fr-step ready">
+            <span class="fr-num">02</span>
+            <h4 class="fr-title">Register Your Vehicle</h4>
+            <p class="fr-desc">Make, model, and plate — so your driver can identify the car.</p>
+            <a href="settings.html#vehicles-section" class="fr-cta">Go to Settings →</a>
           </div>
         </div>
       </div>
@@ -729,24 +659,113 @@
         </div>
 
         <div id="trips-today"></div>
-
-        <div id="trips-empty" class="hidden">
-          <p class="section-cap section-cap-mb">No trips today &mdash; Next Up</p>
-          <div id="next-trip-card"></div>
-          <p id="no-upcoming" class="hidden empty-note">Nothing scheduled. Ready when you are.</p>
-        </div>
+        <p id="trips-empty" class="hidden empty-note">No trips scheduled for today.</p>
       </section>
 
       <hr class="gold-rule a3" id="mid-rule">
 
-      <!-- Fleet -->
-      <section class="a4" id="fleet-section">
-        <div class="fleet-head">
-          <h3 class="section-cap">My Fleet</h3>
-          <button type="button" id="add-vehicle-btn" class="nav-link">+ Add Vehicle</button>
+      <!-- Upcoming -->
+      <section class="a3" id="upcoming-section">
+        <div class="section-head">
+          <h3 class="section-cap">Upcoming</h3>
+          <a href="trips.html" class="nav-link">All trips</a>
         </div>
-        <div id="fleet-list" class="fleet-scroll"></div>
-        <p id="fleet-empty" class="hidden empty-note">No vehicles registered yet.</p>
+        <div id="upcoming-list"></div>
+        <p id="upcoming-empty" class="hidden empty-note">Nothing on the calendar ahead.</p>
+      </section>
+
+      <hr class="gold-rule a4" id="routes-rule">
+
+      <!-- Saved Routes -->
+      <section class="a4" id="routes-section">
+        <div class="section-head">
+          <h3 class="section-cap">Saved Routes</h3>
+          <button type="button" id="add-route-btn" class="nav-link">+ Save a Route</button>
+        </div>
+        <div id="routes-list"></div>
+        <p id="routes-empty" class="hidden empty-note">No routes saved yet.</p>
+
+        <!-- Add-route form -->
+        <div id="route-add-form" class="route-add-form hidden">
+          <label class="rf-label" for="rf-label">Route name</label>
+          <input id="rf-label" type="text" class="rf-input" placeholder="Home → JFK">
+
+          <label class="rf-label" for="rf-type">Trip type</label>
+          <select id="rf-type" class="rf-select">
+            <option value="Point to Point">Point to Point</option>
+            <option value="Airport Drop-off">Airport Drop-off</option>
+            <option value="Airport Pick-up">Airport Pick-up</option>
+            <option value="Hourly - Wait &amp; Return">Hourly</option>
+          </select>
+
+          <div class="rf-grid">
+            <div>
+              <label class="rf-label" for="rf-pickup">Pickup address</label>
+              <input id="rf-pickup" type="text" class="rf-input" placeholder="123 Main St">
+            </div>
+            <div>
+              <label class="rf-label" for="rf-city">City</label>
+              <input id="rf-city" type="text" class="rf-input" placeholder="Greenwich">
+            </div>
+          </div>
+
+          <div id="rf-dest-section">
+            <div class="rf-grid">
+              <div>
+                <label class="rf-label" for="rf-dropoff">Drop-off address</label>
+                <input id="rf-dropoff" type="text" class="rf-input" placeholder="456 Park Ave">
+              </div>
+              <div>
+                <label class="rf-label" for="rf-dropoff-city">City</label>
+                <input id="rf-dropoff-city" type="text" class="rf-input" placeholder="New York">
+              </div>
+            </div>
+          </div>
+
+          <div id="rf-airport-section" class="hidden">
+            <label class="rf-label" for="rf-airport">Airport</label>
+            <select id="rf-airport" class="rf-select">
+              <option value="">Select airport…</option>
+              <optgroup label="New York City">
+                <option value="JFK – John F. Kennedy International">JFK – John F. Kennedy International</option>
+                <option value="LGA – LaGuardia">LGA – LaGuardia</option>
+                <option value="EWR – Newark Liberty International">EWR – Newark Liberty International</option>
+              </optgroup>
+              <optgroup label="New York State">
+                <option value="HPN – Westchester County (White Plains)">HPN – Westchester County (White Plains)</option>
+                <option value="ISP – Long Island MacArthur (Islip)">ISP – Long Island MacArthur (Islip)</option>
+                <option value="SWF – New York Stewart International">SWF – New York Stewart International</option>
+              </optgroup>
+              <optgroup label="Connecticut">
+                <option value="BDL – Bradley International (Hartford)">BDL – Bradley International (Hartford)</option>
+                <option value="HVN – Tweed New Haven Regional">HVN – Tweed New Haven Regional</option>
+              </optgroup>
+              <optgroup label="New England">
+                <option value="BOS – Boston Logan International">BOS – Boston Logan International</option>
+                <option value="MHT – Manchester-Boston Regional">MHT – Manchester-Boston Regional</option>
+                <option value="PVD – Providence T.F. Green">PVD – Providence T.F. Green</option>
+              </optgroup>
+              <optgroup label="Mid-Atlantic">
+                <option value="PHL – Philadelphia International">PHL – Philadelphia International</option>
+                <option value="DCA – Reagan National (Washington D.C.)">DCA – Reagan National (Washington D.C.)</option>
+                <option value="IAD – Dulles International">IAD – Dulles International</option>
+                <option value="BWI – Baltimore/Washington International">BWI – Baltimore/Washington International</option>
+              </optgroup>
+              <optgroup label="Major Hubs">
+                <option value="ATL – Hartsfield-Jackson Atlanta">ATL – Hartsfield-Jackson Atlanta</option>
+                <option value="ORD – O'Hare International (Chicago)">ORD – O'Hare International (Chicago)</option>
+                <option value="LAX – Los Angeles International">LAX – Los Angeles International</option>
+                <option value="MIA – Miami International">MIA – Miami International</option>
+                <option value="MCO – Orlando International">MCO – Orlando International</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="rf-actions">
+            <button type="button" id="rf-save" class="rf-save">Save Route</button>
+            <button type="button" id="rf-cancel" class="rf-cancel">Cancel</button>
+          </div>
+        </div>
       </section>
 
     </main>
@@ -786,46 +805,6 @@
     <a href="book-ride.html" class="fab">Book a Ride</a>
   </div>
 
-  <!-- Add Vehicle Modal -->
-  <div id="vehicle-modal" class="modal-backdrop hidden">
-    <div class="modal-sheet">
-      <div class="modal-head">
-        <h3 class="modal-title" id="vehicle-modal-title">Add a Vehicle</h3>
-        <button type="button" id="close-modal-btn" class="modal-close">&times;</button>
-      </div>
-
-      <div id="vehicle-form-error" class="modal-error"></div>
-
-      <div class="modal-grid">
-        <div>
-          <label class="modal-label" for="v-year">Year</label>
-          <input id="v-year" type="text" maxlength="4" placeholder="2022" class="modal-input">
-        </div>
-        <div>
-          <label class="modal-label" for="v-make">Make</label>
-          <input id="v-make" type="text" placeholder="Tesla" class="modal-input">
-        </div>
-        <div>
-          <label class="modal-label" for="v-model">Model</label>
-          <input id="v-model" type="text" placeholder="Model 3" class="modal-input">
-        </div>
-        <div>
-          <label class="modal-label" for="v-color">Color</label>
-          <input id="v-color" type="text" placeholder="Midnight Silver" class="modal-input">
-        </div>
-      </div>
-
-      <label class="modal-label" for="v-plate">License Plate</label>
-      <input id="v-plate" type="text" placeholder="ABC-1234" class="modal-input">
-
-      <label class="modal-label" for="v-notes">Notes <span class="label-note">(optional)</span></label>
-      <input id="v-notes" type="text" placeholder="Key in glove box" class="modal-input">
-
-      <button type="button" id="save-vehicle-btn" class="modal-save">Save Vehicle</button>
-      <input type="hidden" id="v-edit-id" value="">
-    </div>
-  </div>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -845,20 +824,18 @@
       initPage(user);
     });
 
-    // ── First-run coordination ────────────────────────────────────
-    var frNoTrips    = true;
-    var frNoVehicles = true;
-    var frResolved   = false;
+    // ── First-run ─────────────────────────────────────────────────
+    var frResolved = false;
 
     function checkFirstRun() {
       if (frResolved) return;
-      if (frNoTrips && frNoVehicles) {
-        frResolved = true;
-        document.getElementById('first-run').classList.remove('hidden');
-        document.getElementById('today-section').classList.add('hidden');
-        document.getElementById('mid-rule').classList.add('hidden');
-        document.getElementById('fleet-section').classList.add('hidden');
-      }
+      frResolved = true;
+      document.getElementById('first-run').classList.remove('hidden');
+      document.getElementById('today-section').classList.add('hidden');
+      document.getElementById('mid-rule').classList.add('hidden');
+      document.getElementById('upcoming-section').classList.add('hidden');
+      document.getElementById('routes-rule').classList.add('hidden');
+      document.getElementById('routes-section').classList.add('hidden');
     }
 
     function exitFirstRun() {
@@ -866,27 +843,24 @@
         document.getElementById('first-run').classList.add('hidden');
         document.getElementById('today-section').classList.remove('hidden');
         document.getElementById('mid-rule').classList.remove('hidden');
-        document.getElementById('fleet-section').classList.remove('hidden');
+        document.getElementById('upcoming-section').classList.remove('hidden');
+        document.getElementById('routes-rule').classList.remove('hidden');
+        document.getElementById('routes-section').classList.remove('hidden');
       }
       frResolved = true;
     }
 
     function initPage(user) {
-      // Single Firestore read — shared between greeting and reminder check
       db.collection('users').doc(user.uid).get().then(function(doc) {
         var profile = doc.exists ? doc.data() : {};
         setGreeting(user, profile.name);
         checkOnboardingReminder(profile);
       });
 
-      loadTodaysTrips(user);
-      loadFleet(user);
-      setupVehicleModal(user);
+      loadTrips(user);
+      loadSavedRoutes(user);
+      setupRouteForm(user);
       setupDrawer();
-
-      document.getElementById('fr-add-vehicle').addEventListener('click', function() {
-        openVehicleModal(null, null);
-      });
     }
 
     function checkOnboardingReminder(profile) {
@@ -950,7 +924,7 @@
         String(now.getDate()).padStart(2, '0');
     }
 
-    function loadTodaysTrips(user) {
+    function loadTrips(user) {
       var today = localToday();
       var tp    = today.split('-');
       var DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -959,55 +933,56 @@
       document.getElementById('today-date-label').textContent =
         DAYS[dt.getDay()] + ' · ' + MONS[dt.getMonth()] + ' ' + dt.getDate();
 
-      var container  = document.getElementById('trips-today');
-      var emptyEl    = document.getElementById('trips-empty');
+      var todayCont    = document.getElementById('trips-today');
+      var todayEmpty   = document.getElementById('trips-empty');
+      var upcomingList = document.getElementById('upcoming-list');
+      var upcomingEmpty = document.getElementById('upcoming-empty');
 
       db.collection('trips').where('uid', '==', user.uid)
         .onSnapshot(function(snap) {
-          frNoTrips = snap.empty;
-          if (!snap.empty) exitFirstRun(); else checkFirstRun();
+          if (snap.empty) { checkFirstRun(); } else { exitFirstRun(); }
 
-          var todayTrips = [], allTrips = [];
+          var todayTrips = [], futureTrips = [];
           snap.forEach(function(doc) {
             var t = doc.data();
-            allTrips.push({ id: doc.id, data: t });
-            if (t.date === today && t.status !== 'cancelled') {
-              todayTrips.push({ id: doc.id, data: t });
-            }
+            if (t.status === 'cancelled') return;
+            if (t.date === today)  todayTrips.push({ id: doc.id, data: t });
+            else if (t.date > today) futureTrips.push({ id: doc.id, data: t });
           });
+
           todayTrips.sort(function(a, b) {
             return (a.data.time || '') < (b.data.time || '') ? -1 : 1;
           });
+          futureTrips.sort(function(a, b) {
+            var ak = (a.data.date || '') + (a.data.time || '');
+            var bk = (b.data.date || '') + (b.data.time || '');
+            return ak < bk ? -1 : 1;
+          });
 
-          container.innerHTML = '';
-
+          // Today
+          todayCont.innerHTML = '';
           if (todayTrips.length === 0) {
-            emptyEl.classList.remove('hidden');
-            var upcoming = allTrips.filter(function(t) {
-              return t.data.date > today && t.data.status !== 'cancelled';
-            }).sort(function(a, b) {
-              var ak = (a.data.date || '') + (a.data.time || '');
-              var bk = (b.data.date || '') + (b.data.time || '');
-              return ak < bk ? -1 : 1;
+            todayEmpty.classList.remove('hidden');
+          } else {
+            todayEmpty.classList.add('hidden');
+            todayTrips.forEach(function(item) {
+              todayCont.appendChild(makeTripCard(item.id, item.data, false));
             });
-            var nextCard   = document.getElementById('next-trip-card');
-            var noUpcoming = document.getElementById('no-upcoming');
-            nextCard.innerHTML = '';
-            if (upcoming.length > 0) {
-              nextCard.appendChild(makeTripCard(upcoming[0].id, upcoming[0].data, true));
-              noUpcoming.classList.add('hidden');
-            } else {
-              noUpcoming.classList.remove('hidden');
-            }
-            return;
           }
 
-          emptyEl.classList.add('hidden');
-          todayTrips.forEach(function(item) {
-            container.appendChild(makeTripCard(item.id, item.data, false));
-          });
+          // Upcoming — next 3
+          upcomingList.innerHTML = '';
+          var next3 = futureTrips.slice(0, 3);
+          if (next3.length === 0) {
+            upcomingEmpty.classList.remove('hidden');
+          } else {
+            upcomingEmpty.classList.add('hidden');
+            next3.forEach(function(item) {
+              upcomingList.appendChild(makeTripCard(item.id, item.data, true));
+            });
+          }
         }, function(err) {
-          emptyEl.classList.remove('hidden');
+          todayEmpty.classList.remove('hidden');
           console.error('trips query error:', err);
         });
     }
@@ -1029,7 +1004,7 @@
       var ts = tripTypeColor(t.tripType);
 
       var dateRow = showDate
-        ? '<p style="font-family:\'Inter\',sans-serif;font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;color:#9E9590;margin-bottom:0.65rem;">' +
+        ? '<p style="font-family:\'Inter\',sans-serif;font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;color:#8A93A0;margin-bottom:0.65rem;">' +
           formatCardDate(t.date) + '</p>'
         : '';
 
@@ -1054,159 +1029,167 @@
       return el;
     }
 
-    function loadFleet(user) {
-      var container = document.getElementById('fleet-list');
-      var emptyEl   = document.getElementById('fleet-empty');
+    // ── Saved Routes ──────────────────────────────────────────────
+    function loadSavedRoutes(user) {
+      var list     = document.getElementById('routes-list');
+      var emptyEl  = document.getElementById('routes-empty');
 
-      db.collection('users').doc(user.uid).collection('vehicles')
-        .onSnapshot(function(snap) {
-          frNoVehicles = snap.empty;
-          if (!snap.empty) {
-            exitFirstRun();
-            // Mark step 1 done if first-run panel is still visible
-            document.getElementById('fr-step-1').classList.add('done');
-            document.getElementById('fr-step-2').classList.add('ready');
-          } else {
-            checkFirstRun();
-          }
-
-          var vehicles = [];
-          snap.forEach(function(doc) { vehicles.push({ id: doc.id, data: doc.data() }); });
-          vehicles.sort(function(a, b) {
-            var ta = a.data.createdAt ? a.data.createdAt.toMillis() : 0;
-            var tb = b.data.createdAt ? b.data.createdAt.toMillis() : 0;
-            return ta - tb;
-          });
-          container.innerHTML = '';
-          if (vehicles.length === 0) { emptyEl.classList.remove('hidden'); return; }
+      db.collection('users').doc(user.uid).collection('savedRoutes')
+        .get()
+        .then(function(snap) {
+          list.innerHTML = '';
+          if (snap.empty) { emptyEl.classList.remove('hidden'); return; }
           emptyEl.classList.add('hidden');
-          vehicles.forEach(function(v) {
-            container.appendChild(makeVehicleCard(v.id, v.data, user));
+          snap.forEach(function(doc) {
+            list.appendChild(makeRouteCard(doc.id, doc.data(), user));
           });
-        }, function(err) {
-          emptyEl.classList.remove('hidden');
-          console.error('fleet onSnapshot error:', err);
-        });
+        })
+        .catch(function() { emptyEl.classList.remove('hidden'); });
     }
 
-    function makeVehicleCard(id, v, user) {
+    function makeRouteCard(id, r, user) {
       var el = document.createElement('div');
-      el.className = 'fleet-card';
+      el.className = 'route-card';
+
+      var pickup = [r.pickupAddress, r.pickupCity].filter(Boolean).join(', ');
+      var dest = r.tripType && r.tripType.includes('Airport')
+        ? (r.airport || 'Airport')
+        : [r.dropoffAddress, r.dropoffCity].filter(Boolean).join(', ');
+      var meta = pickup + (dest ? ' → ' + dest : '');
+
       el.innerHTML =
-        '<p class="fleet-car">' + (v.year ? v.year + ' ' : '') + v.make + ' ' + v.model + '</p>' +
-        '<p class="fleet-color">' + (v.color || '') + '</p>' +
-        '<p class="fleet-plate">' + (v.plate || '') + '</p>' +
-        '<div class="fleet-actions">' +
-          '<button type="button" class="fleet-edit">Edit</button>' +
-          '<button type="button" class="fleet-remove">Remove</button>' +
+        '<div class="route-info">' +
+          '<p class="route-label">' + esc(r.label || 'Unnamed route') + '</p>' +
+          (meta ? '<p class="route-meta">' + esc(meta) + '</p>' : '') +
         '</div>' +
-        '<div class="fleet-confirm hidden">' +
-          '<span>Remove this vehicle?</span>' +
-          '<button type="button" class="fleet-confirm-yes">Yes</button>' +
-          '<button type="button" class="fleet-confirm-no">Cancel</button>' +
+        '<div class="route-actions">' +
+          '<a href="' + buildRouteUrl(r) + '" class="route-book">Book →</a>' +
+          '<button type="button" class="route-remove">Remove</button>' +
         '</div>';
 
-      el.querySelector('.fleet-edit').addEventListener('click', function(e) {
-        e.stopPropagation();
-        openVehicleModal(id, v);
-      });
-
-      var actionsRow = el.querySelector('.fleet-actions');
-      var confirmRow = el.querySelector('.fleet-confirm');
-
-      el.querySelector('.fleet-remove').addEventListener('click', function(e) {
-        e.stopPropagation();
-        actionsRow.classList.add('hidden');
-        confirmRow.classList.remove('hidden');
-      });
-      el.querySelector('.fleet-confirm-no').addEventListener('click', function(e) {
-        e.stopPropagation();
-        confirmRow.classList.add('hidden');
-        actionsRow.classList.remove('hidden');
-      });
-      el.querySelector('.fleet-confirm-yes').addEventListener('click', function(e) {
-        e.stopPropagation();
-        db.collection('users').doc(user.uid).collection('vehicles').doc(id).delete();
+      el.querySelector('.route-remove').addEventListener('click', function() {
+        var existing = el.querySelector('.route-confirm');
+        if (existing) { existing.remove(); return; }
+        var row = document.createElement('div');
+        row.className = 'route-confirm';
+        row.innerHTML =
+          '<span class="route-confirm-text">Remove this route?</span>' +
+          '<button type="button" class="route-confirm-yes">Yes</button>' +
+          '<button type="button" class="route-confirm-no">Cancel</button>';
+        el.appendChild(row);
+        row.querySelector('.route-confirm-no').addEventListener('click', function() { row.remove(); });
+        row.querySelector('.route-confirm-yes').addEventListener('click', function() {
+          db.collection('users').doc(user.uid).collection('savedRoutes').doc(id)
+            .delete()
+            .then(function() {
+              el.remove();
+              var list = document.getElementById('routes-list');
+              if (!list.children.length) {
+                document.getElementById('routes-empty').classList.remove('hidden');
+              }
+              showToast('Route removed');
+            });
+        });
       });
 
       return el;
     }
 
-    function openVehicleModal(editId, v) {
-      var modal     = document.getElementById('vehicle-modal');
-      var titleEl   = document.getElementById('vehicle-modal-title');
-      var saveBtnEl = document.getElementById('save-vehicle-btn');
-      var editIdEl  = document.getElementById('v-edit-id');
-
-      if (editId) {
-        titleEl.textContent   = 'Edit Vehicle';
-        saveBtnEl.textContent = 'Save Changes';
-        editIdEl.value        = editId;
-        document.getElementById('v-year').value  = v.year  || '';
-        document.getElementById('v-make').value  = v.make  || '';
-        document.getElementById('v-model').value = v.model || '';
-        document.getElementById('v-color').value = v.color || '';
-        document.getElementById('v-plate').value = v.plate || '';
-        document.getElementById('v-notes').value = v.notes || '';
-      } else {
-        titleEl.textContent   = 'Add a Vehicle';
-        saveBtnEl.textContent = 'Save Vehicle';
-        editIdEl.value        = '';
-      }
-
-      document.getElementById('vehicle-form-error').classList.remove('visible');
-      modal.classList.remove('hidden');
+    function buildRouteUrl(r) {
+      var p = new URLSearchParams();
+      p.set('route', '1');
+      if (r.tripType)       p.set('type', r.tripType);
+      if (r.pickupAddress)  p.set('pickup', r.pickupAddress);
+      if (r.pickupCity)     p.set('city', r.pickupCity);
+      if (r.dropoffAddress) p.set('dropoff', r.dropoffAddress);
+      if (r.dropoffCity)    p.set('dropoffCity', r.dropoffCity);
+      if (r.airport)        p.set('airport', r.airport);
+      return 'book-ride.html?' + p.toString();
     }
 
-    function setupVehicleModal(user) {
-      var modal = document.getElementById('vehicle-modal');
-      var errEl = document.getElementById('vehicle-form-error');
+    function setupRouteForm(user) {
+      var addBtn      = document.getElementById('add-route-btn');
+      var form        = document.getElementById('route-add-form');
+      var cancelBtn   = document.getElementById('rf-cancel');
+      var saveBtn     = document.getElementById('rf-save');
+      var typeSelect  = document.getElementById('rf-type');
+      var destSection = document.getElementById('rf-dest-section');
+      var airSection  = document.getElementById('rf-airport-section');
 
-      document.getElementById('add-vehicle-btn').addEventListener('click', function() {
-        openVehicleModal(null, null);
+      addBtn.addEventListener('click', function() {
+        form.classList.remove('hidden');
+        addBtn.classList.add('hidden');
+        document.getElementById('rf-label').focus();
       });
-      document.getElementById('close-modal-btn').addEventListener('click', closeModal);
-      modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
-      document.getElementById('save-vehicle-btn').addEventListener('click', function() {
-        var year  = document.getElementById('v-year').value.trim();
-        var make  = document.getElementById('v-make').value.trim();
-        var model = document.getElementById('v-model').value.trim();
-        var color = document.getElementById('v-color').value.trim();
-        var plate = document.getElementById('v-plate').value.trim().toUpperCase();
-        var notes = document.getElementById('v-notes').value.trim();
-        var editId = document.getElementById('v-edit-id').value;
+      cancelBtn.addEventListener('click', function() {
+        form.classList.add('hidden');
+        addBtn.classList.remove('hidden');
+        clearRouteForm();
+      });
 
-        errEl.classList.remove('visible');
-        if (!make || !model || !plate) {
-          errEl.textContent = 'Make, model, and license plate are required.';
-          errEl.classList.add('visible');
+      typeSelect.addEventListener('change', function() {
+        var isAirport = this.value.includes('Airport');
+        destSection.classList.toggle('hidden', isAirport);
+        airSection.classList.toggle('hidden', !isAirport);
+      });
+
+      saveBtn.addEventListener('click', function() {
+        var label  = document.getElementById('rf-label').value.trim();
+        var type   = typeSelect.value;
+        var pickup = document.getElementById('rf-pickup').value.trim();
+        var city   = document.getElementById('rf-city').value.trim();
+
+        if (!label || !pickup) {
+          document.getElementById(label ? 'rf-pickup' : 'rf-label').focus();
           return;
         }
 
-        var data = { year: year, make: make, model: model, color: color, plate: plate, notes: notes };
-        var ref  = db.collection('users').doc(user.uid).collection('vehicles');
-        var op   = editId
-          ? ref.doc(editId).update(data)
-          : ref.add(Object.assign(data, { createdAt: firebase.firestore.FieldValue.serverTimestamp() }));
+        var data = {
+          label: label, tripType: type,
+          pickupAddress: pickup, pickupCity: city,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        if (type.includes('Airport')) {
+          data.airport = document.getElementById('rf-airport').value;
+        } else {
+          data.dropoffAddress = document.getElementById('rf-dropoff').value.trim();
+          data.dropoffCity    = document.getElementById('rf-dropoff-city').value.trim();
+        }
 
-        op.then(function() {
-          closeModal();
-          showToast(editId ? 'Vehicle updated' : 'Vehicle added');
-        }).catch(function(err) {
-          errEl.textContent = 'Error: ' + err.message;
-          errEl.classList.add('visible');
-        });
+        saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+
+        db.collection('users').doc(user.uid).collection('savedRoutes')
+          .add(data)
+          .then(function(ref) {
+            saveBtn.disabled = false; saveBtn.textContent = 'Save Route';
+            document.getElementById('routes-empty').classList.add('hidden');
+            document.getElementById('routes-list').appendChild(makeRouteCard(ref.id, data, user));
+            form.classList.add('hidden');
+            addBtn.classList.remove('hidden');
+            clearRouteForm();
+            showToast('Route saved');
+          })
+          .catch(function() {
+            saveBtn.disabled = false; saveBtn.textContent = 'Save Route';
+            showToast('Save failed — try again.');
+          });
       });
+    }
 
-      function closeModal() {
-        modal.classList.add('hidden');
-        ['v-year','v-make','v-model','v-color','v-plate','v-notes'].forEach(function(id) {
-          document.getElementById(id).value = '';
-        });
-        document.getElementById('v-edit-id').value = '';
-        errEl.classList.remove('visible');
-      }
+    function clearRouteForm() {
+      ['rf-label','rf-pickup','rf-city','rf-dropoff','rf-dropoff-city']
+        .forEach(function(id) { document.getElementById(id).value = ''; });
+      document.getElementById('rf-type').value = 'Point to Point';
+      document.getElementById('rf-airport').value = '';
+      document.getElementById('rf-dest-section').classList.remove('hidden');
+      document.getElementById('rf-airport-section').classList.add('hidden');
+    }
+
+    function esc(str) {
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function formatTime(t) {
@@ -1233,17 +1216,17 @@
     }
 
     function tripTypeColor(type) {
-      if (type && type.includes('Airport')) return { bg: 'rgba(90,130,160,0.14)', text: '#7aa0b8' };
-      if (type && type.includes('Hourly'))  return { bg: 'rgba(140,110,80,0.14)',  text: '#9A8060' };
-      return { bg: 'rgba(184,146,58,0.12)', text: '#9A7E42' };
+      if (type && type.includes('Airport')) return { bg: 'rgba(91,191,180,0.14)', text: '#5BBFB4' };
+      if (type && type.includes('Hourly'))  return { bg: 'rgba(242,162,60,0.14)',  text: '#F2A23C' };
+      return { bg: 'rgba(242,162,60,0.12)', text: '#F2A23C' };
     }
 
     function statusBadgeStyle(status) {
       switch (status) {
-        case 'confirmed': return { bg: 'rgba(100,200,140,0.12)', text: '#64c88c' };
-        case 'completed': return { bg: 'rgba(107,99,88,0.2)',    text: '#9E9590' };
-        case 'cancelled': return { bg: 'rgba(220,80,80,0.12)',   text: '#c07070' };
-        default:          return { bg: 'rgba(184,146,58,0.12)',  text: '#B8923A' };
+        case 'confirmed': return { bg: 'rgba(116,194,138,0.12)', text: '#74C28A' };
+        case 'completed': return { bg: 'rgba(107,99,88,0.2)',    text: '#8A93A0' };
+        case 'cancelled': return { bg: 'rgba(226,109,92,0.12)',  text: '#E26D5C' };
+        default:          return { bg: 'rgba(242,162,60,0.12)',  text: '#F2A23C' };
       }
     }
   </script>

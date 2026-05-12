@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0E0D0B">
+  <meta name="theme-color" content="#0F1216">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Steward">
@@ -18,14 +18,19 @@
     .hidden { display: none !important; }
 
     :root {
-      --ink:     #EDE8DF;
-      --muted:   #9E9590;
-      --faint:   #2C2820;
-      --gold:    #B8923A;
-      --gold-lt: #D4AE62;
-      --bg:      #0E0D0B;
-      --surface: #15130E;
-      --border:  rgba(184,146,58,0.14);
+      --ink:      #E7EBF0;
+      --muted:    #8A93A0;
+      --dim:      #5C6470;
+      --line:     #2A313B;
+      --amber:    #F2A23C;
+      --amber-lt: #FFC97A;
+      --teal:     #5BBFB4;
+      --red:      #E26D5C;
+      --green:    #74C28A;
+      --bg:       #0F1216;
+      --panel:    #171B21;
+      --panel2:   #1E232B;
+      --border:   rgba(242,162,60,0.14);
     }
 
     html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
@@ -34,8 +39,8 @@
       content: '';
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 90% 50% at 50% -5%, rgba(184,146,58,0.06) 0%, transparent 100%),
-        radial-gradient(ellipse 50% 30% at 85% 100%, rgba(6,5,3,0.5) 0%, transparent 100%);
+        radial-gradient(ellipse 90% 50% at 50% -5%, rgba(91,191,180,0.06) 0%, transparent 100%),
+        radial-gradient(ellipse 50% 30% at 85% 100%, rgba(0,5,10,0.6) 0%, transparent 100%);
     }
     body::after {
       content: '';
@@ -60,10 +65,10 @@
       position: sticky; top: 0; z-index: 30;
       padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.5rem 1rem;
       display: flex; align-items: center; justify-content: space-between;
-      background: rgba(14,13,11,0.9);
+      background: rgba(15,18,22,0.9);
       -webkit-backdrop-filter: blur(18px);
       backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(184,146,58,0.08);
+      border-bottom: 1px solid rgba(242,162,60,0.08);
     }
     .header-left { display: flex; align-items: center; gap: 1rem; }
     .back-link {
@@ -101,7 +106,7 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
       padding: 0.4rem 1rem;
-      border: 1px solid var(--faint);
+      border: 1px solid var(--line);
       border-radius: 9999px;
       background: transparent;
       color: var(--muted);
@@ -109,9 +114,9 @@
       transition: border-color 0.2s, color 0.2s, background 0.2s;
     }
     .filter-pill.active {
-      border-color: rgba(184,146,58,0.55);
-      background: rgba(184,146,58,0.08);
-      color: var(--gold-lt);
+      border-color: rgba(242,162,60,0.55);
+      background: rgba(242,162,60,0.08);
+      color: var(--amber-lt);
     }
 
     /* ── Group header ────────── */
@@ -120,7 +125,7 @@
       font-size: 0.65rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--faint);
+      color: var(--dim);
       padding: 1.25rem 0 0.6rem;
     }
     .group-header:first-child { padding-top: 0; }
@@ -130,9 +135,9 @@
       display: flex;
       align-items: stretch;
       gap: 1rem;
-      background: var(--surface);
+      background: var(--panel);
       border: 1px solid var(--border);
-      border-left: 2px solid rgba(184,146,58,0.3);
+      border-left: 2px solid rgba(242,162,60,0.3);
       border-radius: 0.5rem;
       padding: 1rem 1rem 1rem 0.9rem;
       cursor: pointer;
@@ -140,14 +145,14 @@
       margin-bottom: 0.6rem;
     }
     .trip-row:last-child { margin-bottom: 0; }
-    .trip-row:hover { background: #1A1810; border-left-color: rgba(184,146,58,0.85); }
+    .trip-row:hover { background: var(--panel2); border-left-color: rgba(242,162,60,0.85); }
 
     .trip-date {
       display: flex; flex-direction: column; align-items: center;
       justify-content: flex-start;
       min-width: 2.25rem;
       padding-top: 0.1rem;
-      border-right: 1px solid var(--faint);
+      border-right: 1px solid var(--line);
       padding-right: 0.85rem;
     }
     .trip-day {
@@ -177,7 +182,7 @@
     .trip-dest {
       font-family: 'Cormorant Garamond', serif;
       font-size: 0.875rem;
-      color: #9A8E80;
+      color: #8A93A0;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .trip-vehicle {
@@ -189,7 +194,7 @@
     }
 
     .trip-arrow {
-      color: var(--faint);
+      color: var(--line);
       font-size: 1.2rem;
       align-self: center;
       flex-shrink: 0;
@@ -213,7 +218,7 @@
     #empty-state {
       text-align: center;
       padding: 3rem 1.5rem;
-      border: 1px solid var(--faint);
+      border: 1px solid var(--line);
       border-radius: 0.5rem;
     }
     .empty-title {
@@ -238,9 +243,9 @@
     }
     .skel-row {
       display: flex; align-items: stretch; gap: 1rem;
-      background: var(--surface);
+      background: var(--panel);
       border: 1px solid var(--border);
-      border-left: 2px solid var(--faint);
+      border-left: 2px solid var(--line);
       border-radius: 0.5rem;
       padding: 1rem 1rem 1rem 0.9rem;
       margin-bottom: 0.6rem;
@@ -248,13 +253,13 @@
     .skel-date {
       display: flex; flex-direction: column; align-items: center;
       min-width: 2.25rem; padding-right: 0.85rem;
-      border-right: 1px solid var(--faint);
+      border-right: 1px solid var(--line);
       gap: 0.45rem; padding-top: 0.1rem;
     }
     .skel-body { flex: 1; display: flex; flex-direction: column; gap: 0.55rem; padding-top: 0.2rem; }
     .skel {
       border-radius: 2px;
-      background: var(--faint);
+      background: var(--line);
       position: relative; overflow: hidden;
     }
     .skel::after {
@@ -273,7 +278,7 @@
     /* ── FAB ─────────────────── */
     .fab-wrap { position: fixed; bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; display: flex; justify-content: center; z-index: 20; }
     .fab {
-      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 100%);
+      background: linear-gradient(135deg, var(--amber-lt) 0%, var(--amber) 100%);
       color: var(--bg);
       font-family: 'Inter', sans-serif;
       font-size: 0.65rem;
@@ -284,7 +289,7 @@
       padding: 1rem 2.5rem;
       border-radius: 9999px;
       transition: opacity 0.2s;
-      box-shadow: 0 8px 28px rgba(184,146,58,0.22);
+      box-shadow: 0 8px 28px rgba(242,162,60,0.22);
     }
     .fab:hover { opacity: 0.88; }
 
@@ -407,7 +412,7 @@
           renderTrips();
         }, function(err) {
           document.getElementById('trip-list').innerHTML =
-            '<p style="color:#c07070;font-size:0.85rem;padding:1rem 0;">Could not load trips: ' + err.message + '</p>';
+            '<p style="color:#E26D5C;font-size:0.85rem;padding:1rem 0;">Could not load trips: ' + err.message + '</p>';
           console.error('trips onSnapshot error:', err);
         });
     }
@@ -538,10 +543,10 @@
 
     function statusBadgeStyle(status) {
       switch (status) {
-        case 'confirmed': return { bg: 'rgba(100,200,140,0.12)', text: '#64c88c' };
-        case 'completed': return { bg: 'rgba(107,99,88,0.2)',    text: '#6B6358' };
-        case 'cancelled': return { bg: 'rgba(220,80,80,0.12)',   text: '#c07070' };
-        default:          return { bg: 'rgba(184,146,58,0.12)',  text: '#B8923A' };
+        case 'confirmed': return { bg: 'rgba(116,194,138,0.12)', text: '#74C28A' };
+        case 'completed': return { bg: 'rgba(138,147,160,0.15)', text: '#8A93A0' };
+        case 'cancelled': return { bg: 'rgba(226,109,92,0.12)',  text: '#E26D5C' };
+        default:          return { bg: 'rgba(242,162,60,0.12)',  text: '#F2A23C' };
       }
     }
   </script>
